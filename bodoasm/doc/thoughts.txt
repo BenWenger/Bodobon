@@ -1,0 +1,65 @@
+I can assume that all instructions consist of two basic parts:  the mnemonic, and the "operand".
+
+The "operand" may take different forms (or may be multiple operands) depending on the instruction and the
+addressing mode.
+
+The assembler will need a general table that matches the mnemonic, and pattern matches the "operand", and
+uses that to produce output.
+
+Simple case:
+    LDA #$05
+    
+Here, 'LDA' is the mnemonic, and '#$05' is the operand.  The pattern matching for the operand would
+actually be something like ['#', expression].  That is, the "#" string, followed by any expression
+This particular instruction would output A9 05.  A9 in this case can be deduced from pattern matching, but
+05 needs to actually evaluation the expression $05.
+
+
+
+Problems:
+    - Expressions may not be immediately resolvable.  For example, "LDA SomeLabel \ NOP \ SomeLabel:".  The pattern
+        for LDA here would match ZP and AB modes, but there's no way to know which until 'SomeLabel' is resolved
+        and has a concrete value.  And there's no way to resolve SomeLabel without knowing whether the LDA is
+        ZP or AB (SomeLabel will be 1 higher if AB).
+        
+        Possible solution:  Give some instructions a mode to default to when the expression(s) can't be fully
+        resolved.
+        
+    - Operands may match multiple patterns.  For example, "LDA 5" matches both zero page and absolute patterns.
+        It also matches relative pattern (but assume that is not available for LDA).  Which to use?  Obviously
+        we'd want to use zero page, but how can that be determined
+        
+        Possible solution:  Give operands priorities, so it multiple patterns are matched, the priority breaks
+        ties.
+        
+    - Size may depend on external factors.  In 65c816, the size of immediate depends on an external variable.
+        "LDA #0" may be "A9 00" or "A9 00 00" depending on whether or not the M status flag is set.
+        
+        Possible solution:  External modes can be tracked somehow.  Maybe have the json give a list of variables
+        to track, as well as default values.  Also give a list of directives for the assembler to register.
+        
+        Maybe this shouldn't be done in json, but in Lua instead.  Json is pretty limited for this.
+        
+        
+        
+        
+Should we use JSon for this at all?  Or is Lua the way to go?  Doing this in JSon would require some extra text
+processing and expression evaluation, which Lua already has built in.  Plus you can add new types and whatnot
+in Lua.
+
+
+
+
+Each instruction needs the following:
+    - mnemonic
+    - addr mode patterns
+    - default size (if mode can't be fully resolved)
+    - output (once can be resolved)
+    
+    
+Assembler flow:
+    0) get list of mnemonics from Lua at startup
+    For each instruction:
+        1) Match mnemonic
+        2) From Lua, get possible operand patterns for that mnemonic
+        3) Match operand patterns
