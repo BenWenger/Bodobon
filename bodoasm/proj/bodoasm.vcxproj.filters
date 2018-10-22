@@ -12,9 +12,21 @@
     <ClCompile Include="..\src\asmblueprint.cpp">
       <Filter>src</Filter>
     </ClCompile>
+    <ClCompile Include="..\src\assembler.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\srcfilemanager.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\src\asmblueprint.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\assembler.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\srcfilemanager.h">
       <Filter>src</Filter>
     </ClInclude>
   </ItemGroup>
