@@ -1,0 +1,46 @@
+
+SCOPE
+======================
+- Namespaces can be defined and nested
+- Top level labels define the scope for local symbols
+- Local symbols start with a dot .
+- dot is also scope qualifier
+- To access global scope, prefix with +
+
+        Label:                  ; (1)
+        #ns   ns                ; Entering 'ns' namespace
+            Label:              ; (2)
+                .Label:         ; (3)
+                    JMP Label   ;  -> 2
+                    JMP .Label  ;  -> 3
+                    JMP +Label  ;  -> 1
+        #endns                  ; exiting 'ns' namespace
+        JMP Label               ;  -> 1
+        JMP ns.Label            ;  -> 2
+        JMP ns.Label.Label      ;  -> 3
+        JMP +Label              ;  -> 1
+
+Nameless labels effectively have local scope, but are completely inaccessible
+from outside their Top-level label
+
+        Foo:
+            :                   ; (1)
+                JMP :-          ; -> 1
+                JMP :+          ; -> 2
+            :                   ; (2)
+                JMP :+          ; error, (3) in Bar scope
+        Bar:                    
+            :                   ; (3)
+                JMP :-          ; (3)
+                JMP :--         ; error, (2) is in Foo scope
+                
+Nameless and local don't need a top level label, but it generally makes them
+easier to use
+
+        .local                  ; (1)
+        :                       ; (2)
+            JMP :-              ; -> 2
+        Foo:
+            JMP :-              ; error, (2) is in global scope
+            JMP .local          ; error, (1) is in global scope
+            JMP +.local         ; -> 1

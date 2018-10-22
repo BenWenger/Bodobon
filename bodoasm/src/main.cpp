@@ -24,20 +24,20 @@ std::string getPathToLua()
     return path;
 }
 
-
 int main(int argc, char* argv[])
 {
-    if(argc < 3)
+    /*if(argc < 3)
     {
         std::cout << "Usage:  bodoasm <asm_mode> <file_name>\n\tSee readme for details." << std::endl;
     }
-    else
+    else*/
     {
         try
         {
-            auto luaFile = getPathToLua() + argv[1];
-            bodoasm::Assembler assembler(luaFile, argv[2]);
-            assembler.run();
+            bodoasm::Assembler as("","");
+//            auto luaFile = getPathToLua() + argv[1];
+//            bodoasm::Assembler assembler(luaFile, argv[2]);
+//            assembler.run();
         }
         catch(std::exception& e)
         {

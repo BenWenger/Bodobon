@@ -3,6 +3,7 @@
 
 #include <string>
 #include <luawrap.h>
+#include "srcfilemanager.h"
 using luawrap::Lua;
 
 namespace bodoasm
@@ -13,8 +14,8 @@ namespace bodoasm
         Assembler(const std::string pathToLua, const std::string pathToSrc);
 
     private:
-        Lua         lua;
-
+        Lua                 lua;
+        SrcFileManager      srcFileMgr;
     };
 }
 

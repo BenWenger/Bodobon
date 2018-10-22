@@ -17,7 +17,7 @@ namespace bodoasm
             unsigned        lineNo;
         };
 
-        bool                next(Block& blk);
+        const Block*        next();
         void                runNewFile(const std::string& filename);
 
     private:
@@ -30,9 +30,9 @@ namespace bodoasm
             dshfs::FileStream   file;
         };
 
-        std::vector<InternalBlock>      blocks;
+        std::vector<std::unique_ptr<InternalBlock>>     blocks;
 
-        static const std::size_t        maxBlockDepth = 100;    // pretty arbitrary
+        static const std::size_t        maxBlockDepth = 1000;       // pretty arbitrary
     };
 
 }

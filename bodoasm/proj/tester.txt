@@ -1,0 +1,8 @@
+There is another test
+some text on lines
+woooo
+Okay next line is interesting
+Line after this is from a different file!!!!
+Okay back to original file.
+And now we're done. Only one more line should be visible
+This is the last line!

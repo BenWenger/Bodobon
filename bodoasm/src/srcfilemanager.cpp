@@ -6,55 +6,39 @@ namespace bodoasm
 {
     void SrcFileManager::runNewFile(const std::string& filename)
     {
-        InternalBlock blk(filename);
-        blk.blk.fileName =      filename;
-        blk.blk.lineNo =        0;
+        if(blocks.size() >= maxBlockDepth)
+            throw std::runtime_error("Maximum include depth exceeded when attempting to open file '" + filename + "'");
 
-        if(!blk.file.good())
-            throw std::runtime_error("Unable to open file: '" + filename + "' for reading.");
+        auto ptr = std::make_unique<InternalBlock>(filename);
+        if(!ptr->file.good())
+            throw std::runtime_error("Unable to open file '" + filename + "' for reading");
 
-        blocks.emplace_back( std::move(blk) );
+        ptr->blk.fileName = filename;
+        ptr->blk.lineNo = 0;
+        blocks.emplace_back( std::move(ptr) );
     }
 
-    bool SrcFileManager::next(Block& out)
+    const SrcFileManager::Block* SrcFileManager::next()
     {
-        bool good = false;
-        while(!good && !blocks.empty())
+        while(!blocks.empty())
         {
+            if(blocks.back()->file.eof())
+                blocks.pop_back();
+            else
+                break;
         }
+        if(blocks.empty())
+            return nullptr;
+
+        auto& iblk = *blocks.back();
+        auto& f = iblk.file;
+        std::getline(f, iblk.blk.line);
+            
+        if(f.fail() && !f.eof())
+            throw std::runtime_error("Unknown error occurred when reading file '" + iblk.blk.fileName + "'");
+
+        iblk.blk.lineNo++;
+        return &iblk.blk;
     }
 
 }
-
-
-/*
-namespace bodoasm
-{
-    class SrcFileManager
-    {
-    public:
-        struct Block
-        {
-            std::string     line;
-            std::string     fileName;
-            unsigned        lineNo;
-        };
-
-        bool                next(Block& blk);
-        void                runNewFile(const std::string& filename);
-
-    private:
-        struct InternalBlock
-        {
-            Block               blk;
-            dshfs::File::Ptr    file;
-        };
-
-        std::vector<InternalBlock>      blocks;
-    };
-
-}
-
-
-#endif
-*/
