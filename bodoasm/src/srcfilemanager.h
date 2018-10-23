@@ -3,36 +3,39 @@
 
 #include <string>
 #include <vector>
+#include <memory>
 #include <dshfs.h>
+
+#include "position.h"
 
 namespace bodoasm
 {
+    class ErrorReporter;
+
     class SrcFileManager
     {
     public:
-        struct Block
-        {
-            std::string     line;
-            std::string     fileName;       // TODO pool this
-            unsigned        lineNo;
-        };
+        typedef std::size_t         fileid_t;
 
-        const Block*        next();
-        void                runNewFile(const std::string& filename);
+                            SrcFileManager(ErrorReporter& er);
+        bool                next(Position& pos, std::string& str);
+        void                runNewFile(const std::string& filename, Position* errposition = nullptr);
 
     private:
-        struct InternalBlock
+        struct Block
         {
-            InternalBlock(const std::string filename)
+            Block(const std::string filename)
                 : file(filename)
             {}
-            Block               blk;
+            Position            pos;
             dshfs::FileStream   file;
         };
-
-        std::vector<std::unique_ptr<InternalBlock>>     blocks;
-
         static const std::size_t        maxBlockDepth = 1000;       // pretty arbitrary
+
+
+        std::vector<std::unique_ptr<Block>> blocks;
+        ErrorReporter&                      err;
+        bool                                eofReached;
     };
 
 }

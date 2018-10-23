@@ -4,6 +4,7 @@
 #include <string>
 #include <luawrap.h>
 #include "srcfilemanager.h"
+#include "error.h"
 using luawrap::Lua;
 
 namespace bodoasm
@@ -15,6 +16,7 @@ namespace bodoasm
 
     private:
         Lua                 lua;
+        ErrorReporter       err;
         SrcFileManager      srcFileMgr;
     };
 }

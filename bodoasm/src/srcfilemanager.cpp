@@ -1,24 +1,34 @@
 
 #include <stdexcept>
 #include "srcfilemanager.h"
+#include "filenamepool.h"
+#include "error.h"
 
 namespace bodoasm
 {
-    void SrcFileManager::runNewFile(const std::string& filename)
+    SrcFileManager::SrcFileManager(ErrorReporter& er)
+        : err(er)
+    {}
+
+    void SrcFileManager::runNewFile(const std::string& filename, Position* errposition)
     {
+        Position pos;
+        pos.fileId = FilenamePool::add(filename);
+        pos.lineNo = 0;
+        pos.linePos = 0;
+
         if(blocks.size() >= maxBlockDepth)
-            throw std::runtime_error("Maximum include depth exceeded when attempting to open file '" + filename + "'");
+            err.fatal(errposition, "Maximum include depth exceeded when attempting to open file '" + filename + "'");
 
-        auto ptr = std::make_unique<InternalBlock>(filename);
+        auto ptr = std::make_unique<Block>(filename);
         if(!ptr->file.good())
-            throw std::runtime_error("Unable to open file '" + filename + "' for reading");
+            err.error(errposition, "Unable to open file '" + filename + "' for reading");
 
-        ptr->blk.fileName = filename;
-        ptr->blk.lineNo = 0;
+        ptr->pos = pos;
         blocks.emplace_back( std::move(ptr) );
     }
 
-    const SrcFileManager::Block* SrcFileManager::next()
+    bool SrcFileManager::next(Position& pos, std::string& str)
     {
         while(!blocks.empty())
         {
@@ -30,15 +40,16 @@ namespace bodoasm
         if(blocks.empty())
             return nullptr;
 
-        auto& iblk = *blocks.back();
-        auto& f = iblk.file;
-        std::getline(f, iblk.blk.line);
+        auto& blk = *blocks.back();
+        auto& f = blk.file;
+        std::getline(f, str);
             
         if(f.fail() && !f.eof())
-            throw std::runtime_error("Unknown error occurred when reading file '" + iblk.blk.fileName + "'");
+            err.fatal(nullptr, "Unknown error occurred when reading file '" + FilenamePool::get(blk.pos.fileId) + "'");
 
-        iblk.blk.lineNo++;
-        return &iblk.blk;
+        blk.pos.lineNo++;
+        pos = blk.pos;
+        return true;
     }
 
 }

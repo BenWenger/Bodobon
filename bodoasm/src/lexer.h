@@ -4,15 +4,20 @@
 #include <string>
 #include <cstdint>
 #include <vector>
+#include <memory>
+#include <dshfs.h>
 #include "srcfilemanager.h"
+#include "position.h"
+#include "error.h"
 
 namespace bodoasm
 {
+    class ErrorReporter;
+
     class Lexer
     {
     public:
         typedef std::int64_t            int_t;
-        typedef SrcFileManager::Block   Block;
         struct Token
         {
             enum class Type 
@@ -22,26 +27,60 @@ namespace bodoasm
                 Integer,
                 String,
                 CmdEnd,             // end of command (end of line or \ symbol)
-                InputEnd            // end of all input (all files fully traversed)
+                InputEnd            // end of all input (file fully traversed)
             };
-            const Block*        blk;
-            std::string         str;        // the operator/string/symbol
-            int_t               val;        // the integer
-            Type                type;
-            bool                ws_after;   // true if there is whitespace after this token
+            Position                    pos;
+
+            std::string                 str;                    // the operator/string/symbol
+            int_t                       val = 0;                // the integer
+            Type                        type = Type::InputEnd;
+            bool                        ws_after = true;        // true if there is whitespace after this token
         };
 
 
-                    Lexer(SrcFileManager* src);
+                    Lexer(ErrorReporter& er);
         Token       getNext();
         void        unget(const Token& t);
+        
+        void        startFile(const std::string& filename);
+        void        startInclude(const std::string& filename, const Position* errpos);
 
 
     private:
-        SrcFileManager*         srcFile;
-        std::vector<Token>      unGotten;
+        typedef std::unique_ptr<dshfs::FileStream>  file_t;
+        struct State
+        {
+            Position    pos;
+            std::string text;
+            file_t      file;
 
-        SrcFileManager::Block   
+            void clear()
+            {
+                pos.fileId = 0;
+                pos.lineNo = 0;
+                pos.linePos = 0;
+                text.clear();
+                file.reset();
+            }
+        };
+        ErrorReporter&          err;
+        std::vector<Token>      ungotten;
+        std::vector<State>      includeStack;
+        State                   cur;
+        bool                    eocReported;        // true if end of command has been reported
+                                                    //  when true, skip over all future EOCs because
+                                                    //  there is no point in returning consecutives
+
+        bool                    getNextLine();
+
+        bool                    skipToNextToken(Token& tok);
+        bool                    onSkippableChar() const;
+        bool                    onWhitespaceChar() const;
+        bool                    eol() const;
+        char                    peek() const;
+        char                    advance();
+        bool                    handleEol(Token& tok, bool errorOnEof);
+
     };
 }
 

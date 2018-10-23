@@ -69,6 +69,21 @@ Expressions
     The only string operator is + which concatenates two strings, but there might also be
     surrounding parens.
     
+    Other things:
+        ?pc    = constant being the current PC
+        
+=======================
+Comments
+=======================
+    Single line comments begin with a semicolon                     ; example comment
+    Block comments have a semicolon, dash, and reversed closing     ;- example comment -;
+    
+    Since line breaks are part of command processing (addr mode matching must all be on the same line),
+a block comment that spans multiple lines will count as a line break, whereas a block comment that
+closes on the same line it opens does not.
+    
+    
+    
 =======================
 Directives
 =======================
