@@ -44,3 +44,64 @@ easier to use
             JMP :-              ; error, (2) is in global scope
             JMP .local          ; error, (1) is in global scope
             JMP +.local         ; -> 1
+            
+            
+            
+======================
+Expressions
+======================
+    Integer operator precedence (highest at top, lowest at bottom):
+    
+        ()                      (parenthesis)
+        ?defined    ?set        (unary operators
+        -   +   !   ~           (unary operators)
+        *   /   %
+        +   -
+        <<  >>
+        <   <=  >   >=
+        ==  !=
+        &
+        ^
+        |
+        &&
+        ||
+        
+    The only string operator is + which concatenates two strings, but there might also be
+    surrounding parens.
+    
+=======================
+Directives
+=======================
+    List is incomplete.  I'll add more later
+    
+    
+#org    addr,   offset, [size], [fill]
+    - addr is the address (mandatory)
+    - offset is the binary file offset to place this code
+    - size is the maximum size allowed for this block.  If negative, it specifies
+        an upper-bound address instead of a size
+    - fill is the value to fill output with if the output was less than the
+        desired size
+
+#rebase     addr
+#endrebase
+    - For relocatable code (does anyone actually use this?)
+    - Changes the org addr but not output offset.  Ending reverts org
+        addr to what it would be after all that binary was output
+    - Throw error if #org happens before #endrebase
+
+#if     expr
+#elif   expr
+#else
+#endif
+    - for conditional compilation.  'Expr' must be able to be evaluated on
+        first pass.  A value of Zero is false, any other value is true
+        
+#macro  name, [args...]
+#endmacro
+    - define a macro with name 'name', invoked with '!name'.
+    - args can be any number of optional arguments to be passed in
+    - macros operate on copy/paste semantics.  IE they are not parsed when first declared, rather
+        they are merely lexed and then injected into their invokations with parameters being replaced
+        with whatever was passed in
+    - no nesting macro definitions!!!!

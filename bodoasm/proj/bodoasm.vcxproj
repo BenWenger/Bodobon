@@ -112,12 +112,14 @@
   <ItemGroup>
     <ClCompile Include="..\src\asmblueprint.cpp" />
     <ClCompile Include="..\src\assembler.cpp" />
+    <ClCompile Include="..\src\lexer.cpp" />
     <ClCompile Include="..\src\main.cpp" />
     <ClCompile Include="..\src\srcfilemanager.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\src\asmblueprint.h" />
     <ClInclude Include="..\src\assembler.h" />
+    <ClInclude Include="..\src\lexer.h" />
     <ClInclude Include="..\src\srcfilemanager.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

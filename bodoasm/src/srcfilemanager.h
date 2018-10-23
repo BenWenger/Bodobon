@@ -13,7 +13,7 @@ namespace bodoasm
         struct Block
         {
             std::string     line;
-            std::string     fileName;
+            std::string     fileName;       // TODO pool this
             unsigned        lineNo;
         };
 
