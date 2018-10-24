@@ -67,9 +67,6 @@ namespace bodoasm
         std::vector<Token>      ungotten;
         std::vector<State>      includeStack;
         State                   cur;
-        bool                    eocReported;        // true if end of command has been reported
-                                                    //  when true, skip over all future EOCs because
-                                                    //  there is no point in returning consecutives
 
         bool                    getNextLine();
 
@@ -79,7 +76,6 @@ namespace bodoasm
         bool                    eol() const;
         char                    peek() const;
         char                    advance();
-        bool                    handleEol(Token& tok, bool errorOnEof);
 
     };
 }

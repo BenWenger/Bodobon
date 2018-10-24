@@ -8,9 +8,7 @@ namespace bodoasm
     
     Lexer::Lexer(ErrorReporter& er)
         : err(er)
-    {
-        eocReported = true;
-    }
+    {}
 
     void Lexer::unget(const Token& t)
     {
@@ -29,7 +27,6 @@ namespace bodoasm
 
         ungotten.clear();
         includeStack.clear();
-        eocReported = true;
     }
     
     void Lexer::startInclude(const std::string& filename, const Position* errpos)
@@ -61,7 +58,8 @@ namespace bodoasm
     auto Lexer::getNext() -> Token
     {
         Token out;
-
+        //   TODO
+        return out;
     }
 
     inline bool Lexer::eol() const
@@ -118,23 +116,31 @@ namespace bodoasm
             // are we at EOL? 
             if(eol())
             {
-                if(!handleEol(tok, false))
-                    return false;
+                tok.pos = cur.pos;
+                tok.type = Token::Type::CmdEnd;
+                if(!getNextLine())                  // EOF reached.  If we have an include stack, go back on it
+                {
+                    if(includeStack.empty())
+                    {
+                        cur.clear();
+                        tok.type = Token::Type::InputEnd;
+                    }
+                    else
+                    {
+                        cur = std::move(includeStack.back());
+                        includeStack.pop_back();
+                    }
+                }
+                return false;
             }
 
-            // manual EOC?
+            // same-line EOC?
             if(peek() == '\\')
             {
-                if(!eocReported)
-                {
-                    tok.pos = cur.pos;
-                    tok.type = Token::Type::CmdEnd;
-                    eocReported = true;
-                    advance();
-                    return false;
-                }
-                else
-                    ++cur.pos.linePos;
+                tok.pos = cur.pos;
+                tok.type = Token::Type::CmdEnd;
+                advance();
+                return false;
             }
 
             // skip over any whitespace
@@ -149,51 +155,19 @@ namespace bodoasm
                 {
                     while(true)
                     {
-                        // TODO
+                        if(advance() == '-' && peek() == ';')
+                        {
+                            advance();
+                            break;
+                        }
+                        if(eol() && !getNextLine())
+                            err.error(&cur.pos,"Unexpected EOF reached in block comment");
                     }
                 }
                 else                    // line comment
                     cur.pos.linePos = cur.text.size();          // skip to EOL
             }
         }
-    }
-    
-    bool Lexer::handleEol(Token& tok, bool errorOnEof)
-    {
-        if(eocReported)
-        {
-            // get next line
-            if(!getNextLine())
-            {
-                // no more lines?  Unwind include stack
-                /*
-                auto oldpos = cur.pos;
-                if(includeStack.empty())        // nothing else on include stack
-                {
-                    cur.clear();
-                else
-                {
-
-                }
-                if(errorOnEof)
-                {
-                    err.error(
-                }
-                */
-                tok.pos = cur.pos;
-                tok.type = Token::Type::InputEnd;
-                return false;
-            }
-        }
-        else
-        {
-            // we haven't reported EOC yet.  Do it now
-            tok.pos = cur.pos;
-            tok.type = Token::Type::CmdEnd;
-            eocReported = true;
-            return false;
-        }
-
         return true;
     }
 }
