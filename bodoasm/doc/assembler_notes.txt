@@ -52,9 +52,8 @@ Expressions
 ======================
     Integer operator precedence (highest at top, lowest at bottom):
     
-        ()                      (parenthesis)
-        ?defined    ?set        (unary operators)
-        -   !   ~               (unary operators)
+        ()                              (parenthesis)
+        [unary operators (see below)]
         *   /   %
         +   -
         <<  >>
@@ -68,6 +67,9 @@ Expressions
         
     The only string operator is + which concatenates two strings, but there might also be
     surrounding parens.
+    
+    Unary operators all have the same precedence, but are right-to-left associative:
+        ?defined    -   !   ~   <   >   ^   <>
     
     Other things:
         ?pc    = constant being the current PC

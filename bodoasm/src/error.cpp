@@ -1,5 +1,6 @@
 
 #include <iostream>
+#include <string>
 #include "error.h"
 #include "filenamepool.h"
 
@@ -34,18 +35,16 @@ namespace bodoasm
     
     void ErrorReporter::output(const char* prefix, const Position* pos, const std::string& msg)
     {
-        // This could theoretically throw a fatal error, so do this first
-        std::string name;
-        if(pos)         name = FilenamePool::get(pos->fileId);
-
-        // at this point we should be good to go
         auto& out = std::cout;
         out << prefix << ": " << msg;
         if(pos)
-        {
-            out << "  (" << name << " :" << pos->lineNo << ", " << pos->linePos << ")";
-        }
+            out << "  " << formatPosition(*pos);
         out << '\n';
+    }
+
+    std::string ErrorReporter::formatPosition(const Position& pos)
+    {
+        return "(" + FilenamePool::get(pos.fileId) + " :" + std::to_string(pos.lineNo) + ", " + std::to_string(pos.linePos) + ")";
     }
 
 }

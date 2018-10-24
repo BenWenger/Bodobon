@@ -8,6 +8,7 @@
 #include <dshfs.h>
 #include "position.h"
 #include "error.h"
+#include "basetypes.h"
 
 namespace bodoasm
 {
@@ -16,14 +17,12 @@ namespace bodoasm
     class Lexer
     {
     public:
-        typedef std::int64_t            int_t;
         struct Token
         {
             enum class Type 
             {
                 Operator,
-                Symbol,
-                Integer,
+                Symbol,             // and also numeric literals
                 String,
                 CmdEnd,             // end of command (end of line or \ symbol)
                 FileEnd,            // end of a single file
@@ -81,9 +80,6 @@ namespace bodoasm
 
 
         void                    lexStringLiteral(Token& tok, char closer);
-        void                    lexHexLiteral(Token& tok);
-        void                    lexBinLiteral(Token& tok);
-        void                    lexDecLiteral(Token& tok, char c);
         void                    lexSymbol(Token& tok, char c);
 
         static bool             isSymbolChar(char c);
