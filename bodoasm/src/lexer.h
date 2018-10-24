@@ -6,7 +6,6 @@
 #include <vector>
 #include <memory>
 #include <dshfs.h>
-#include "srcfilemanager.h"
 #include "position.h"
 #include "error.h"
 
@@ -27,6 +26,7 @@ namespace bodoasm
                 Integer,
                 String,
                 CmdEnd,             // end of command (end of line or \ symbol)
+                FileEnd,            // end of a single file
                 InputEnd            // end of all input (file fully traversed)
             };
             Position                    pos;
@@ -67,6 +67,7 @@ namespace bodoasm
         std::vector<Token>      ungotten;
         std::vector<State>      includeStack;
         State                   cur;
+        bool                    inputDone;
 
         bool                    getNextLine();
 
@@ -76,7 +77,16 @@ namespace bodoasm
         bool                    eol() const;
         char                    peek() const;
         char                    advance();
+        void                    skipWhitespace();
 
+
+        void                    lexStringLiteral(Token& tok, char closer);
+        void                    lexHexLiteral(Token& tok);
+        void                    lexBinLiteral(Token& tok);
+        void                    lexDecLiteral(Token& tok, char c);
+        void                    lexSymbol(Token& tok, char c);
+
+        static bool             isSymbolChar(char c);
     };
 }
 

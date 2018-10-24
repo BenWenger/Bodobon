@@ -24,6 +24,9 @@ std::string getPathToLua()
     return path;
 }
 
+#include "error.h"
+#include "lexer.h"
+
 int main(int argc, char* argv[])
 {
     /*if(argc < 3)
@@ -34,10 +37,17 @@ int main(int argc, char* argv[])
     {
         try
         {
-            bodoasm::Assembler as("","");
-//            auto luaFile = getPathToLua() + argv[1];
-//            bodoasm::Assembler assembler(luaFile, argv[2]);
-//            assembler.run();
+            using namespace bodoasm;
+            ErrorReporter err;
+            Lexer lex(err);
+            lex.startFile("lextest.txt");
+            Lexer::Token tok;
+            do
+            {
+                tok = lex.getNext();
+                auto strsiz = tok.str.length();
+                int foo = 5;
+            } while(tok.type != Lexer::Token::Type::InputEnd);
         }
         catch(std::exception& e)
         {

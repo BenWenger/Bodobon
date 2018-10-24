@@ -15,9 +15,6 @@
     <ClCompile Include="..\src\assembler.cpp">
       <Filter>src</Filter>
     </ClCompile>
-    <ClCompile Include="..\src\srcfilemanager.cpp">
-      <Filter>src</Filter>
-    </ClCompile>
     <ClCompile Include="..\src\lexer.cpp">
       <Filter>src</Filter>
     </ClCompile>
@@ -33,9 +30,6 @@
     <ClInclude Include="..\src\assembler.h">
       <Filter>src</Filter>
     </ClInclude>
-    <ClInclude Include="..\src\srcfilemanager.h">
-      <Filter>src</Filter>
-    </ClInclude>
     <ClInclude Include="..\src\lexer.h">
       <Filter>src</Filter>
     </ClInclude>
@@ -46,6 +40,12 @@
       <Filter>src</Filter>
     </ClInclude>
     <ClInclude Include="..\src\error.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\orgblock.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\basetypes.h">
       <Filter>src</Filter>
     </ClInclude>
   </ItemGroup>

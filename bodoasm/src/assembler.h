@@ -3,8 +3,8 @@
 
 #include <string>
 #include <luawrap.h>
-#include "srcfilemanager.h"
 #include "error.h"
+#include "lexer.h"
 using luawrap::Lua;
 
 namespace bodoasm
@@ -12,12 +12,14 @@ namespace bodoasm
     class Assembler
     {
     public:
-        Assembler(const std::string pathToLua, const std::string pathToSrc);
+                            Assembler(const std::string& pathToLua);
+        bool                doFile(const std::string& path);
+        bool                finalizeAndOutput(const std::string& path);
 
     private:
         Lua                 lua;
         ErrorReporter       err;
-        SrcFileManager      srcFileMgr;
+        Lexer               lexer;
     };
 }
 

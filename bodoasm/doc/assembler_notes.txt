@@ -53,8 +53,8 @@ Expressions
     Integer operator precedence (highest at top, lowest at bottom):
     
         ()                      (parenthesis)
-        ?defined    ?set        (unary operators
-        -   +   !   ~           (unary operators)
+        ?defined    ?set        (unary operators)
+        -   !   ~               (unary operators)
         *   /   %
         +   -
         <<  >>
@@ -79,8 +79,7 @@ Comments
     Block comments have a semicolon, dash, and reversed closing     ;- example comment -;
     
     Since line breaks are part of command processing (addr mode matching must all be on the same line),
-a block comment that spans multiple lines will count as a line break, whereas a block comment that
-closes on the same line it opens does not.
+a block comment that spans multiple lines will not count as a line break.
     
     
     

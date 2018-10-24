@@ -55,13 +55,6 @@ namespace bodoasm
         return true;
     }
 
-    auto Lexer::getNext() -> Token
-    {
-        Token out;
-        //   TODO
-        return out;
-    }
-
     inline bool Lexer::eol() const
     {
         return cur.pos.linePos >= cur.text.size();
@@ -82,8 +75,8 @@ namespace bodoasm
 
     bool Lexer::onWhitespaceChar() const
     {
-        if(eol())
-            return false;
+        if(eol())               // have to check EOL first, because peek will return whitespace if on EOL, but that
+            return false;       //   technically isn't whitespace
         switch(peek())
         {
         case ' ':
@@ -106,6 +99,12 @@ namespace bodoasm
         return false;
     }
 
+    void Lexer::skipWhitespace()
+    {
+        while(onWhitespaceChar())
+            advance();
+    }
+
     // Return true if we reached a new token and it is ready to be lexed
     // Return false if we ran into interesting whitespace (end of file, end of command)
     //     in which case, 'tok' is populated with the token
@@ -123,10 +122,15 @@ namespace bodoasm
                     if(includeStack.empty())
                     {
                         cur.clear();
+                        //  This is a bit of a cheese.  To make parsing easier, I always want InputEnd to immediately follow a CmdEnd.
+                        //   To ensure that, "unget" the InputEnd so it'll be the next thing returned, and return CmdEnd here
                         tok.type = Token::Type::InputEnd;
+                        unget(tok);
+                        tok.type = Token::Type::CmdEnd;
                     }
                     else
                     {
+                        tok.type = Token::Type::FileEnd;
                         cur = std::move(includeStack.back());
                         includeStack.pop_back();
                     }
@@ -144,8 +148,7 @@ namespace bodoasm
             }
 
             // skip over any whitespace
-            while( onWhitespaceChar() )
-                advance();
+            skipWhitespace();
 
             // skip over any comments
             if(peek() == ';')
@@ -169,6 +172,201 @@ namespace bodoasm
             }
         }
         return true;
+    }
+    
+    auto Lexer::getNext() -> Token
+    {
+        Token tok;
+        
+        // if anything is ungotten, return that
+        if(!ungotten.empty())
+        {
+            tok = ungotten.back();
+            ungotten.pop_back();
+            return tok;
+        }
+
+
+        if(!skipToNextToken(tok))
+            return tok;
+
+        tok.pos = cur.pos;
+
+        char c = advance();
+        switch(c)
+        {
+        case '!':   case '@':   case '#':   case '^':   case '&':   case '*':   case '(':   case ')':
+        case '/':   case '[':   case ']':   case '{':   case '}':   case '<':   case '=':   case '>':
+        case ':':   case '?':   case '~':   case '`':   case ',':   case '|':   case '-':   case '+':
+        case '.':
+            tok.str.clear();
+            tok.str.push_back(c);
+            tok.type = Token::Type::Operator;
+            break;
+
+        case '\'':  case '\"':              lexStringLiteral(tok, c);   break;
+            
+        case '$':                           lexHexLiteral(tok);         break;
+        case '%':                           lexBinLiteral(tok);         break;
+
+        default:
+            if(c >= '0' && c <= '9')        lexDecLiteral(tok, c);
+            else if(isSymbolChar(c))        lexSymbol(tok, c);
+            else
+                err.error(&cur.pos, std::string("Unexpected character '") + c + "'");
+            break;
+        }
+
+        tok.ws_after = onSkippableChar();
+        return tok;
+    }
+
+    void Lexer::lexStringLiteral(Token& tok, char closer)
+    {
+        char c;
+        while(true)
+        {
+            while(eol())
+            {
+                if(!getNextLine())
+                    err.error(&cur.pos, "Unexpected EOF reached in string literal");
+            }
+
+            c = advance();
+            if(c == closer)
+                break;
+            if(c == '\\')
+            {
+                bool escaped = true;
+                switch(peek())
+                {
+                    // TODO hex input
+                case '\\':  c = '\\';           break;
+                case 'n':   c = '\n';           break;
+                case 't':   c = '\t';           break;
+                case 'r':   c = '\r';           break;
+                case '\'':  c = '\'';           break;
+                case '\"':  c = '\"';           break;
+                default:
+                    err.warning(&cur.pos, std::string("Unrecognized escape character (") + peek() + ") found in string literal");
+                    escaped = false;
+                    break;
+                }
+                if(escaped)
+                {
+                    tok.str.push_back(c);
+                    advance();
+                }
+            }
+            else
+                tok.str.push_back(c);
+        }
+
+        // double-quote strings are null terminated
+        tok.type = Token::Type::String;
+        if(closer == '\"')
+            tok.str.push_back('\0');
+    }
+
+    bool Lexer::isSymbolChar(char c)
+    {
+        if(c >= 'a' && c <= 'z')        return true;
+        if(c >= 'A' && c <= 'Z')        return true;
+        if(c == '_')                    return true;
+        if(c >= '0' && c <= '9')        return true;
+        return false;
+    }
+
+    void Lexer::lexDecLiteral(Token& tok, char c)
+    {
+        int_t val = c - '0';
+        int_t tmp = 0;
+        
+        while(true)
+        {
+            c = peek();
+            if(c >= '0' && c <= '9')
+            {
+                tmp = (val * 10) + (c - '0');
+                if(tmp < val)
+                    err.error(&cur.pos, "Numeric literal too large");
+                val = tmp;
+                advance();
+            }
+            else
+                break;
+        }
+
+        tok.val = val;
+        tok.type = Token::Type::Integer;
+    }
+    
+    void Lexer::lexHexLiteral(Token& tok)
+    {
+        skipWhitespace();
+        bool foundone = false;
+        int_t val = 0;
+        int_t tmp = 0;
+        char c;
+        
+        while(true)
+        {
+            c = peek();
+            if(c >= '0' && c <= '9')            tmp = (val << 4) + (c - '0');
+            else if(c >= 'a' && c <= 'f')       tmp = (val << 4) + (c - 'a' + 10);
+            else if(c >= 'A' && c <= 'F')       tmp = (val << 4) + (c - 'A' + 10);
+            else                                break;
+
+            foundone = true;
+            if(tmp < val)
+                err.error(&cur.pos, "Numeric literal too large");
+            val = tmp;
+            advance();
+        }
+        if(!foundone)
+            err.error(&cur.pos, std::string("Unexpected character '") + c + "' following '$'");
+
+        tok.val = val;
+        tok.type = Token::Type::Integer;
+    }
+    
+    void Lexer::lexBinLiteral(Token& tok)
+    {
+        skipWhitespace();
+        bool foundone = false;
+        int_t val = 0;
+        int_t tmp = 0;
+        char c;
+        
+        while(true)
+        {
+            c = peek();
+            if(c >= '0' && c <= '1')            tmp = (val << 1) + (c - '0');
+            else                                break;
+
+            foundone = true;
+            if(tmp < val)
+                err.error(&cur.pos, "Numeric literal too large");
+            val = tmp;
+            advance();
+        }
+        if(!foundone)
+            err.error(&cur.pos, std::string("Unexpected character '") + c + "' following '%'");
+
+        tok.val = val;
+        tok.type = Token::Type::Integer;
+    }
+
+    void Lexer::lexSymbol(Token& tok, char c)
+    {
+        tok.type = Token::Type::Symbol;
+        tok.str.clear();
+        tok.str.push_back(c);
+        while(isSymbolChar(c = peek()))
+        {
+            tok.str.push_back(c);
+            advance();
+        }
     }
 }
 

@@ -116,16 +116,16 @@
     <ClCompile Include="..\src\filenamepool.cpp" />
     <ClCompile Include="..\src\lexer.cpp" />
     <ClCompile Include="..\src\main.cpp" />
-    <ClCompile Include="..\src\srcfilemanager.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\src\asmblueprint.h" />
     <ClInclude Include="..\src\assembler.h" />
+    <ClInclude Include="..\src\basetypes.h" />
     <ClInclude Include="..\src\error.h" />
     <ClInclude Include="..\src\filenamepool.h" />
     <ClInclude Include="..\src\lexer.h" />
+    <ClInclude Include="..\src\orgblock.h" />
     <ClInclude Include="..\src\position.h" />
-    <ClInclude Include="..\src\srcfilemanager.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
