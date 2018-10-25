@@ -63,8 +63,6 @@ namespace bodoasm
         inline static Ptr   buildOp(const Position& pos, UnOp op, Ptr&& v)                                      { return std::unique_ptr<Expression>( new Expression(pos, op, std::move(v)) );                  }
         inline static Ptr   buildOp(const Position& pos, BinOp op, Ptr&& a, Ptr&& b)                            { return std::unique_ptr<Expression>( new Expression(pos, op, std::move(a), std::move(b)) );    }
 
-        Expression::Ptr     cloneIfResolved() const;
-
     private:
         Expression () = delete;
         Expression(const Expression&) = delete;

@@ -4,8 +4,8 @@ SCOPE
 - Namespaces can be defined and nested
 - Top level labels define the scope for local symbols
 - Local symbols start with a dot .
-- dot is also scope qualifier
-- To access global scope, prefix with +
+- dash - is scope qualifier for non-local symbols
+- To access global scope, prefix with -
 
         Label:                  ; (1)
         #ns   ns                ; Entering 'ns' namespace
@@ -13,12 +13,12 @@ SCOPE
                 .Label:         ; (3)
                     JMP Label   ;  -> 2
                     JMP .Label  ;  -> 3
-                    JMP +Label  ;  -> 1
+                    JMP -Label  ;  -> 1
         #endns                  ; exiting 'ns' namespace
         JMP Label               ;  -> 1
-        JMP ns.Label            ;  -> 2
-        JMP ns.Label.Label      ;  -> 3
-        JMP +Label              ;  -> 1
+        JMP ns-Label            ;  -> 2
+        JMP ns-Label.Label      ;  -> 3
+        JMP -Label              ;  -> 1
 
 Nameless labels effectively have local scope, but are completely inaccessible
 from outside their Top-level label
@@ -43,7 +43,7 @@ easier to use
         Foo:
             JMP :-              ; error, (2) is in global scope
             JMP .local          ; error, (1) is in global scope
-            JMP +.local         ; -> 1
+            JMP -.local         ; -> 1
             
             
             
