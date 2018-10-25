@@ -49,9 +49,10 @@ namespace bodoasm
         typedef std::unique_ptr<dshfs::FileStream>  file_t;
         struct State
         {
-            Position    pos;
-            std::string text;
-            file_t      file;
+            Position            pos;
+            std::string         text;
+            file_t              file;
+            std::vector<Token>  ungotten;
 
             void clear()
             {
@@ -59,11 +60,11 @@ namespace bodoasm
                 pos.lineNo = 0;
                 pos.linePos = 0;
                 text.clear();
+                ungotten.clear();
                 file.reset();
             }
         };
         ErrorReporter&          err;
-        std::vector<Token>      ungotten;
         std::vector<State>      includeStack;
         State                   cur;
         bool                    inputDone;

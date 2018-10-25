@@ -12,7 +12,7 @@ namespace bodoasm
 
     void Lexer::unget(const Token& t)
     {
-        ungotten.push_back(t);
+        cur.ungotten.push_back(t);
     }
 
     void Lexer::startFile(const std::string& filename)
@@ -25,7 +25,7 @@ namespace bodoasm
         cur.pos.fileId = FilenamePool::add(filename);
         cur.file = std::move(file);
 
-        ungotten.clear();
+        cur.ungotten.clear();
         includeStack.clear();
     }
     
@@ -175,10 +175,10 @@ namespace bodoasm
         Token tok;
         
         // if anything is ungotten, return that
-        if(!ungotten.empty())
+        if(!cur.ungotten.empty())
         {
-            tok = ungotten.back();
-            ungotten.pop_back();
+            tok = cur.ungotten.back();
+            cur.ungotten.pop_back();
             return tok;
         }
 
