@@ -10,8 +10,8 @@ namespace bodoasm
     class StringPool
     {
     public:
-        static std::string      get(unsigned id);
-        static unsigned         add(const std::string& str);
+        static std::string      toStr(unsigned id);
+        static unsigned         toInt(const std::string& str);
 
     private:
         ~StringPool() = delete;

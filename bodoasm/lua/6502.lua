@@ -51,7 +51,7 @@ suffixes = {
     [".w"]= {"ab","ax","ay"}
 }
 
-operandPatterns = {
+modePatterns = {
     ["ip"]= {},
     ["ac"]= {"a"},
     ["im"]= {"#", 1},
@@ -65,6 +65,22 @@ operandPatterns = {
     ["ix"]= {"(", 1, ",", "x", ")"},
     ["iy"]= {"(", 1, ")", ",", "y"},
     ["rl"]= {1}
+}
+
+modeSizes = {
+    ["ip"]= 1,
+    ["ac"]= 1,
+    ["im"]= 2,
+    ["zp"]= 2,
+    ["zx"]= 2,
+    ["zy"]= 2,
+    ["ab"]= 3,
+    ["ax"]= 3,
+    ["ay"]= 3,
+    ["in"]= 3,
+    ["ix"]= 2,
+    ["iy"]= 2,
+    ["rl"]= 2
 }
 
 
@@ -101,22 +117,73 @@ buildOpcodeTables = function()
     end
 end
 
+modes_priority = {"ip","ac","im","in","rl","ix","iy"}   -- use these modes if they're an option -- always
+modes_short = {"zp","zx","zy"}
+modes_long = {"ab","ax","ay"}
+
+getBestMode = function(patterns)
+    -- if there is a priority mode, use it
+    for i,v in ipairs(modes_priority) do
+        if patterns[v] then return v end
+    end
+    
+    local short = nil
+    -- otherwise, see if this can be a short instruction
+    for i,v in ipairs(modes_short) do
+        if patterns[v] then
+            short = v
+            -- use it unconditionally if the expression is evaluated now
+            --   and it can fit in a byte
+            if patterns[v][1] ~= nil and patterns[v][1] >= 0 and patterns[v][1] <= 0xFF then
+                return v
+            end
+        end
+    end
+    
+    -- otherwise, it probably matches a long one
+    for i,v in ipairs(modes_long) do
+        if patterns[v] then return v end
+    end
+        
+    -- if there wasn't a long version, but there was a short one, use the short one.
+    --   this can happen for STX/STY instructions, which have zero page indexed, but not
+    --   absolute indexed
+    return short
+end
+
 -------------------------
 
 bodoasm_init = function()
     buildOpcodeTables()
     return {
         ["Mnemonics"]=  asmMnemonics,
-        ["AddrModes"]=  operandPatterns,
+        ["AddrModes"]=  modePatterns,
         ["Suffixes"]=   suffixes
     }
 end
 
-bodoasm_approxSize = function(mnemonic, patterns)
-    -- default to larger (word size) versions if they work
-    if patterns["ab"] or patterns["ax"] or patterns["ay"] or patterns["in"] then
-        return 2
-    end
-    return 1
+bodoasm_guessSize = function(mnemonic, patterns)
+    local mode = getBestMode(patterns)
+    return modeSizes[mode], {mode}
 end
 
+bodoasm_getBinary = function(mnemonic, patterns)
+    local mode = getBestMode(patterns)
+    local size = modeSizes[mode];
+    local opcode = opcodeLookup[mnemonic .. mode]
+    local val = patterns[mode][1]
+    
+    -- TODO error if opcode is nill?
+    
+    if mode == "rl" then
+        -- TODO need to get the PC to calculate the relative address
+        return opcode, 0
+    -- TODO allow negative numbers for immediate?  Or should that go in getBestMode?
+    elseif size == 3 then
+        return opcode, val & 0xFF, (val >> 8) & 0xFF
+    elseif size == 2 then
+        return opcode, val & 0xFF
+    end
+    
+    return opcode
+end

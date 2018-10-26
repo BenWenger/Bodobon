@@ -45,12 +45,9 @@ namespace bodoasm
         };
         std::vector<El>     elements;
     };
-    
-    struct AddrModeMatch
-    {
-        unsigned                    addrMode;   // ID of the addr mode
-        std::vector<Expression*>    exprs;      // expressions to plug into the pattern
-    };
+
+    typedef std::vector<Expression*>            AddrModeExprs;
+    typedef std::map<unsigned, AddrModeExprs>   AddrModeMatchMap;
 }
 
 #endif

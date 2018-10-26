@@ -54,6 +54,9 @@ namespace bodoasm
         inline bool isString() const        { return type == Type::String;      }
         inline bool isResolved() const      { return isInteger() || isString(); }
         inline bool isSymbol() const        { return type == Type::Symbol;      }
+        
+        std::string         asString() const;
+        int_t               asInteger() const;
 
         bool                eval(ErrorReporter& err, SymbolTable& syms, bool force);
         

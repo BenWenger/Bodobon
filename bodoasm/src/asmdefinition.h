@@ -32,8 +32,8 @@ namespace bodoasm
         vec_t           getAddrModeForMnemonic(const Position& pos, std::string& mnemonic);
         const Pattern*  getPatternForAddrMode(unsigned addrmode);
 
-        int             guessInstructionSize(const std::string& mnemonic, const AddrModeMatch* matches, int count);
-        void            generateBinary(const std::string& mnemonic, const AddrModeMatch* match);
+        int             guessInstructionSize(const Position& pos, const std::string& mnemonic, AddrModeMatchMap& patterns);
+        int             generateBinary(const Position& pos, const std::string& mnemonic, const AddrModeMatchMap& patterns, std::vector<u8>& bin, int insertoffset = 0, int requiredsize = -1);
 
     private:
         ErrorReporter&  err;
@@ -49,6 +49,8 @@ namespace bodoasm
         void            loadSuffixes()      {   loadModeMap("Suffixes", suffixModes);       }
 
         void            loadModeMap(const std::string& name, std::unordered_map<std::string,vec_t>& mp);
+
+        void            pushPatterns(const AddrModeMatchMap& patterns);
 
     };
 }

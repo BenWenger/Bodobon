@@ -32,7 +32,7 @@ std::vector<std::string> getNames(const std::vector<unsigned>& vec)
     out.reserve(vec.size());
 
     for(auto& i : vec)
-        out.emplace_back( bodoasm::StringPool::get(i) );
+        out.emplace_back( bodoasm::StringPool::toStr(i) );
 
     return out;
 }
@@ -61,8 +61,8 @@ int main(int argc, char* argv[])
             auto lda = getNames( face.getAddrModeForMnemonic(p, s) );
             s = "LDA.w";
             auto ldaw = getNames( face.getAddrModeForMnemonic(p, s) );
-            s = "BPL.w";
-            auto bplw = getNames( face.getAddrModeForMnemonic(p, s) );
+            s = "lda.b";
+            auto ldab = getNames( face.getAddrModeForMnemonic(p, s) );
 
             int butt = 5;
 

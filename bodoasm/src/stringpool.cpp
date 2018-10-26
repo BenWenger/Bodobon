@@ -7,14 +7,14 @@ namespace bodoasm
     std::unordered_map<std::string, unsigned>   StringPool::nameToId;
     std::vector<std::string>                    StringPool::idToName;
     
-    std::string StringPool::get(unsigned id)
+    std::string StringPool::toStr(unsigned id)
     {
         if(id >= idToName.size())
             throw std::runtime_error("Invalid ID passed to StringPool");
         return idToName[id];
     }
 
-    unsigned StringPool::add(const std::string& str)
+    unsigned StringPool::toInt(const std::string& str)
     {
         auto res = nameToId.insert( std::make_pair(str, idToName.size()) );
         if(res.second)

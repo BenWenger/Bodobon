@@ -4,6 +4,7 @@
 #include "asmdefinition.h"
 #include "stringpool.h"
 #include "error.h"
+#include "expression.h"
 
 using namespace luawrap;
 
@@ -115,7 +116,7 @@ namespace bodoasm
 
             // at this point the pattern is complete!
             //   put it in the mode table!
-            auto modeid = StringPool::add(modename);
+            auto modeid = StringPool::toInt(modename);
             addrModePatterns[modeid] = std::move(pat);
 
             lua_pop(*lua, 1);       // pop the value before continuing the loop
@@ -146,7 +147,7 @@ namespace bodoasm
             while(lua_next(*lua, -2) != 0)
             {
                 auto str = lua->toString(-1,false);
-                auto id = StringPool::add(str);
+                auto id = StringPool::toInt(str);
                 if(addrModePatterns.find(id) == addrModePatterns.end())
                     err.fatal(nullptr, "In lang Lua:  operand pattern name '" + str + "' appears in '" + name + "' table, but not in OperandPatterns table");
                 modevec.push_back(id);
@@ -225,13 +226,120 @@ namespace bodoasm
         mnemonic = mn->first;
         return out;
     }
+    
+    
+    ////////////////////////////////////////////
+    ////////////////////////////////////////////
+    ////////////////////////////////////////////
 
-    /*
-        vec_t           getAddrModeForMnemonic(std::string& mnemonic);
-        const Pattern*  getPatternForAddrMode(unsigned addrmode);
+    const Pattern* AsmDefinition::getPatternForAddrMode(unsigned addrmode)
+    {
+        auto i = addrModePatterns.find(addrmode);
+        if(i == addrModePatterns.end())
+            err.fatal(nullptr, "Internal Error:  bad addrmode ID passed to getPatternForAddrMode");
 
-        int             guessInstructionSize(const std::string& mnemonic, const AddrModeMatch* matches, int count);
-        void            generateBinary(const std::string& mnemonic, const AddrModeMatch* match);
-        */
+        return &i->second;
+    }
+
+    void AsmDefinition::pushPatterns(const AddrModeMatchMap& patterns)
+    {
+        lua_createtable(*lua, 0, static_cast<int>(patterns.size()));
+        for(auto& i : patterns)
+        {
+            lua->pushString( StringPool::toStr(i.first) );
+            lua_createtable(*lua, static_cast<int>(i.second.size()), 0);
+            for(std::size_t idx = 0; idx < i.second.size(); ++idx)
+            {
+                auto expr = i.second[idx];
+                if(expr->isInteger())           lua_pushinteger(*lua, static_cast<lua_Integer>(expr->asInteger()));
+                else if(expr->isString())       lua->pushString(expr->asString());
+                else                            lua_pushnil(*lua);
+                
+                lua_seti( *lua, -2, static_cast<lua_Integer>(idx+1) );
+            }
+            lua_settable( *lua, -3 );
+        }
+    }
+
+    int AsmDefinition::guessInstructionSize(const Position& pos, const std::string& mnemonic, AddrModeMatchMap& patterns)
+    {
+        LuaStackSaver stk(*lua);
+        if(lua_getglobal(*lua, "bodoasm_guessSize") != LUA_TFUNCTION)
+            err.error(&pos, "In lang Lua:  global function 'bodo_guessSize' must be defined");
+        lua->pushString(mnemonic);
+        pushPatterns(patterns);
+
+        lua->callFunction(2, 2);
+
+        if(!lua_isinteger(*lua, -2))
+            err.error(&pos, "In lang Lua:  'bodo_guessSize' first return value must be an integer");
+        int result = static_cast<int>(lua_tointeger(*lua, -2));
+
+        switch(lua_type(*lua, -1))
+        {
+        case LUA_TNIL:  case LUA_TNONE:         // optional, just ignore it
+            break;
+        case LUA_TTABLE:
+            {
+                // Here, we need to get all the modes they supplied and filter them
+                AddrModeMatchMap newpats;
+
+                lua_pushnil(*lua);
+                while(lua_next(*lua, -2) != 0)
+                {
+                    if(!lua_isstring(*lua,-1))
+                        err.error(&pos, "In lang Lua:  'bodo_guessSize' second return value, if exists, must be an array of strings");
+                    auto id = StringPool::toInt( lua->toString(-1,false) );
+                    auto iter = patterns.find(id);
+                    if(iter != patterns.end())
+                    {
+                        newpats.insert({id, std::move(iter->second)});
+                        patterns.erase(iter);
+                    }
+                    lua_pop(*lua, 1);
+                }
+                patterns = std::move(newpats);
+            }break;
+        default:
+            err.error(&pos, "In lang Lua:  'bodo_guessSize' second return value, if exists, must be an array of strings");
+        }
+
+        return result;
+    }
+
+    int AsmDefinition::generateBinary(const Position& pos, const std::string& mnemonic, const AddrModeMatchMap& patterns, std::vector<u8>& bin, int insertoffset, int requiredsize)
+    {
+        auto toppos = lua_gettop(*lua);
+
+        LuaStackSaver stk(*lua);
+        if(lua_getglobal(*lua, "bodoasm_getBinary") != LUA_TFUNCTION)
+            err.error(&pos, "In lang Lua:  global function 'bodoasm_getBinary' must be defined");
+        lua->pushString(mnemonic);
+        pushPatterns(patterns);
+
+        int numvals = lua->callFunction(2,-1);
+
+        if(numvals <= 0)
+            err.error(&pos, "In lang Lua:  'bodoasm_getBinary' must return a series of bytes to output");
+        if((requiredsize > 0) && (numvals != requiredsize))
+            err.error(&pos, "In lang Lua:  'bodoasm_getBinary' returned " + std::to_string(numvals) + " bytes, but assembler was previously promised " + std::to_string(requiredsize));
+
+        constexpr const char* errmsg = "In lang Lua:  'bodoasm_getBinary' must return an array of unsigned integers within the range 0-255";
+
+        for(int i = 0; i < numvals; ++i)
+        {
+            int v = -1;
+            if(lua_isinteger(*lua, toppos+i))
+                v = lua_tointeger(*lua, toppos+i);
+
+            if(v < 0 || v > 255)
+                err.error(&pos, "In lang Lua:  'bodoasm_getBinary' must return an array of unsigned integers within the range 0-255");
+
+            if(requiredsize > 0)        bin[insertoffset+i] = static_cast<u8>(v);
+            else                        bin.push_back(static_cast<u8>(v));
+        }
+
+        return numvals;
+    }
 
 }

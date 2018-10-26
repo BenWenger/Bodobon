@@ -88,6 +88,18 @@ namespace bodoasm
         if(!lhs || !rhs)
             throw std::runtime_error("Internal error:  null expression passed to binary expression ctor");
     }
+    
+    std::string Expression::asString() const
+    {
+        if(!isString())     throw std::runtime_error("Internal error:  Expression::asString called when expression is not a string");
+        return valStr;
+    }
+        
+    int_t Expression::asInteger() const
+    {
+        if(!isInteger())    throw std::runtime_error("Internal error:  Expression::asString called when expression is not a string");
+        return valInt;
+    }
 
     bool Expression::eval(ErrorReporter& err, SymbolTable& syms, bool force)
     {
