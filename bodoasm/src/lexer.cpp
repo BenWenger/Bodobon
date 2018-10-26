@@ -1,7 +1,7 @@
 
 #include "lexer.h"
 #include "error.h"
-#include "filenamepool.h"
+#include "stringpool.h"
 
 namespace bodoasm
 {
@@ -22,7 +22,7 @@ namespace bodoasm
             err.fatal(nullptr, "Unable to open file '" + filename + "' for reading");
         
         cur.clear();
-        cur.pos.fileId = FilenamePool::add(filename);
+        cur.pos.fileId = StringPool::add(filename);
         cur.file = std::move(file);
 
         cur.ungotten.clear();
@@ -37,7 +37,7 @@ namespace bodoasm
 
         includeStack.emplace_back( std::move(cur) );
         cur.clear();
-        cur.pos.fileId = FilenamePool::add(filename);
+        cur.pos.fileId = StringPool::add(filename);
         cur.file = std::move(file);
     }
     

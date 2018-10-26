@@ -58,28 +58,12 @@ namespace bodoasm
         bool                eval(ErrorReporter& err, SymbolTable& syms, bool force);
         
         inline static Ptr   buildInt(const Position& pos, int_t val)                                            { return std::unique_ptr<Expression>( new Expression(pos, val) );                               }
-        inline static Ptr   buildStr(const Position& pos, const std::string& str)                               { return std::unique_ptr<Expression>( new Expression(pos, str) );                               }
-        inline static Ptr   buildSymbol(const Position& pos, const std::string& scope, const std::string& name) { return std::unique_ptr<Expression>( new Expression(pos, scope, name) );                       }
+        inline static Ptr   buildStr(const Position& pos, const std::string& str)                               { return std::unique_ptr<Expression>( new Expression(pos, str, Type::String) );                 }
+        inline static Ptr   buildSymbol(const Position& pos, const std::string& name)                           { return std::unique_ptr<Expression>( new Expression(pos, name, Type::Symbol) );                }
         inline static Ptr   buildOp(const Position& pos, UnOp op, Ptr&& v)                                      { return std::unique_ptr<Expression>( new Expression(pos, op, std::move(v)) );                  }
         inline static Ptr   buildOp(const Position& pos, BinOp op, Ptr&& a, Ptr&& b)                            { return std::unique_ptr<Expression>( new Expression(pos, op, std::move(a), std::move(b)) );    }
 
     private:
-        Expression () = delete;
-        Expression(const Expression&) = delete;
-        Expression& operator = (const Expression&) = delete;
-        Expression(Expression&&) = delete;
-        Expression& operator = (Expression&&) = delete;
-        
-        Expression(const Position& p, int_t val);
-        Expression(const Position& p, const std::string& strLiteral);
-        Expression(const Position& p, const std::string& scope, const std::string& symbolName);
-        Expression(const Position& p, UnOp op, Ptr&& v);
-        Expression(const Position& p, BinOp op, Ptr&& a, Ptr&& b);
-        
-        bool                eval_unop(ErrorReporter& err, SymbolTable& syms, bool force);
-        bool                eval_binop(ErrorReporter& err, SymbolTable& syms, bool force);
-        bool                eval_symbol(ErrorReporter& err, SymbolTable& syms, bool force);
-        
         enum class Type
         {
             Symbol,
@@ -88,6 +72,22 @@ namespace bodoasm
             Unary,
             Binary
         };
+
+        Expression () = delete;
+        Expression(const Expression&) = delete;
+        Expression& operator = (const Expression&) = delete;
+        Expression(Expression&&) = delete;
+        Expression& operator = (Expression&&) = delete;
+        
+        Expression(const Position& p, int_t val);
+        Expression(const Position& p, const std::string& s, Type t);
+        Expression(const Position& p, UnOp op, Ptr&& v);
+        Expression(const Position& p, BinOp op, Ptr&& a, Ptr&& b);
+        
+        bool                eval_unop(ErrorReporter& err, SymbolTable& syms, bool force);
+        bool                eval_binop(ErrorReporter& err, SymbolTable& syms, bool force);
+        bool                eval_symbol(ErrorReporter& err, SymbolTable& syms, bool force);
+        
         
         static std::string  getName(UnOp op);
         static std::string  getName(BinOp op);
@@ -101,7 +101,6 @@ namespace bodoasm
         Ptr             rhs;
         int_t           valInt;
         std::string     valStr;
-        std::string     scope;
     };
 }
 

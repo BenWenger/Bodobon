@@ -4,23 +4,23 @@
 
 mnemonicTable = { [0]=
 --         x0    x1    x2    x3     x4    x5    x6    x7       x8    x9    xA    xB     xC    xD    xE    xF
---[[0x]] "BRK","ORA","---","---", "---","ORA","ASL","---",   "PHP","ORA","ASL","---", "---","ORA","ASL","---",  --[[0x]]
---[[1x]] "BPL","ORA","---","---", "---","ORA","ASL","---",   "CLC","ORA","---","---", "---","ORA","ASL","---",  --[[1x]]
---[[2x]] "JSR","AND","---","---", "BIT","AND","ROL","---",   "PLP","AND","ROL","---", "BIT","AND","ROL","---",  --[[2x]]
---[[3x]] "BMI","AND","---","---", "---","AND","ROL","---",   "SEC","AND","---","---", "---","AND","ROL","---",  --[[3x]]
---[[4x]] "RTI","EOR","---","---", "---","EOR","LSR","---",   "PHA","EOR","LSR","---", "JMP","EOR","LSR","---",  --[[4x]]
---[[5x]] "BVC","EOR","---","---", "---","EOR","LSR","---",   "CLI","EOR","---","---", "---","EOR","LSR","---",  --[[5x]]
---[[6x]] "RTS","ADC","---","---", "---","ADC","ROR","---",   "PLA","ADC","ROR","---", "JMP","ADC","ROR","---",  --[[6x]]
---[[7x]] "BVS","ADC","---","---", "---","ADC","ROR","---",   "SEI","ADC","---","---", "---","ADC","ROR","---",  --[[7x]]
+--[[0x]] "brk","ora","---","---", "---","ora","asl","---",   "php","ora","asl","---", "---","ora","asl","---",  --[[0x]]
+--[[1x]] "bpl","ora","---","---", "---","ora","asl","---",   "clc","ora","---","---", "---","ora","asl","---",  --[[1x]]
+--[[2x]] "jsr","and","---","---", "bit","and","rol","---",   "plp","and","rol","---", "bit","and","rol","---",  --[[2x]]
+--[[3x]] "bmi","and","---","---", "---","and","rol","---",   "sec","and","---","---", "---","and","rol","---",  --[[3x]]
+--[[4x]] "rti","eor","---","---", "---","eor","lsr","---",   "pha","eor","lsr","---", "jmp","eor","lsr","---",  --[[4x]]
+--[[5x]] "bvc","eor","---","---", "---","eor","lsr","---",   "cli","eor","---","---", "---","eor","lsr","---",  --[[5x]]
+--[[6x]] "rts","adc","---","---", "---","adc","ror","---",   "pla","adc","ror","---", "jmp","adc","ror","---",  --[[6x]]
+--[[7x]] "bvs","adc","---","---", "---","adc","ror","---",   "sei","adc","---","---", "---","adc","ror","---",  --[[7x]]
 --         x0    x1    x2    x3     x4    x5    x6    x7       x8    x9    xA    xB     xC    xD    xE    xF
---[[8x]] "---","STA","---","---", "STY","STA","STX","---",   "DEY","---","TXA","---", "STY","STA","STX","---",  --[[8x]]
---[[9x]] "BCC","STA","---","---", "STY","STA","STX","---",   "TYA","STA","TXS","---", "---","STA","---","---",  --[[9x]]
---[[Ax]] "LDY","LDA","LDX","---", "LDY","LDA","LDX","---",   "TAY","LDA","TAX","---", "LDY","LDA","LDX","---",  --[[Ax]]
---[[Bx]] "BCS","LDA","---","---", "LDY","LDA","LDX","---",   "CLV","LDA","TSX","---", "LDY","LDA","LDX","---",  --[[Bx]]
---[[Cx]] "CPY","CMP","---","---", "CPY","CMP","DEC","---",   "INY","CMP","DEX","---", "CPY","CMP","DEC","---",  --[[Cx]]
---[[Dx]] "BNE","CMP","---","---", "---","CMP","DEC","---",   "CLD","CMP","---","---", "---","CMP","DEC","---",  --[[Dx]]
---[[Ex]] "CPX","SBC","---","---", "CPX","SBC","INC","---",   "INX","SBC","NOP","---", "CPX","SBC","INC","---",  --[[Ex]]
---[[Fx]] "BEQ","SBC","---","---", "---","SBC","INC","---",   "SED","SBC","---","---", "---","SBC","INC","---"   --[[Fx]]
+--[[8x]] "---","sta","---","---", "sty","sta","stx","---",   "dey","---","txa","---", "sty","sta","stx","---",  --[[8x]]
+--[[9x]] "bcc","sta","---","---", "sty","sta","stx","---",   "tya","sta","txs","---", "---","sta","---","---",  --[[9x]]
+--[[Ax]] "ldy","lda","ldx","---", "ldy","lda","ldx","---",   "tay","lda","tas","---", "ldy","lda","ldx","---",  --[[Ax]]
+--[[Bx]] "bcs","lda","---","---", "ldy","lda","ldx","---",   "clv","lda","tsx","---", "ldy","lda","ldx","---",  --[[Bx]]
+--[[Cx]] "cpy","cmp","---","---", "cpy","cmp","dec","---",   "iny","cmp","dex","---", "cpy","cmp","dec","---",  --[[Cx]]
+--[[Dx]] "bne","cmp","---","---", "---","cmp","dec","---",   "cld","cmp","---","---", "---","cmp","dec","---",  --[[Dx]]
+--[[Ex]] "cpx","sbc","---","---", "cpx","sbc","inc","---",   "inx","sbc","nop","---", "cpx","sbc","inc","---",  --[[Ex]]
+--[[Fx]] "beq","sbc","---","---", "---","sbc","inc","---",   "sed","sbc","---","---", "---","sbc","inc","---"   --[[Fx]]
 --         x0    x1    x2    x3     x4    x5    x6    x7       x8    x9    xA    xB     xC    xD    xE    xF
 }
 
@@ -53,17 +53,17 @@ suffixes = {
 
 operandPatterns = {
     ["ip"]= {},
-    ["ac"]= {"A"},
+    ["ac"]= {"a"},
     ["im"]= {"#", 1},
     ["zp"]= {1},
-    ["zx"]= {1, ",", "X"},
-    ["zy"]= {1, ",", "Y"},
+    ["zx"]= {1, ",", "x"},
+    ["zy"]= {1, ",", "y"},
     ["ab"]= {1},
-    ["ax"]= {1, ",", "X"},
-    ["ay"]= {1, ",", "Y"},
+    ["ax"]= {1, ",", "x"},
+    ["ay"]= {1, ",", "y"},
     ["in"]= {"(", 1, ")"},
-    ["ix"]= {"(", 1, ",", "X", ")"},
-    ["iy"]= {"(", 1, ")", ",", "Y"},
+    ["ix"]= {"(", 1, ",", "x", ")"},
+    ["iy"]= {"(", 1, ")", ",", "y"},
     ["rl"]= {1}
 }
 
@@ -79,7 +79,7 @@ asmMnemonics = {}           -- the mnemonic table to give to the assembler
 addOpcodeConfig = function(opcode, mnm, adm)
     opcodeLookup[mnm..adm] = opcode
     
-    if asmMnemonics[mnm] == nil
+    if asmMnemonics[mnm] == nil then
         asmMnemonics[mnm] = {adm}
     else
         table.insert(asmMnemonics[mnm], adm)
@@ -94,7 +94,7 @@ buildOpcodeTables = function()
             addOpcodeConfig(opcode,mnm,adm)
             -- special case for 'ac' mode, we also want to use 'ip' mode because some
             --   people are lazy and don't want to type out the explicit 'A'
-            if adm == "ac"
+            if adm == "ac" then
                 addOpcodeConfig(opcode,mnm,"ip")
             end
         end
@@ -103,16 +103,18 @@ end
 
 -------------------------
 
-bodo_init = function()
+bodoasm_init = function()
     buildOpcodeTables()
-    bodo.setMnemonics(asmMnemonics)
-    bobo.setOperandPatterns(operandPatterns)
-    bodo.addMnemonicSuffixes(suffixes)
+    return {
+        ["Mnemonics"]=  asmMnemonics,
+        ["AddrModes"]=  operandPatterns,
+        ["Suffixes"]=   suffixes
+    }
 end
 
-bodo_approxSize = function(mnemonic, patterns)
+bodoasm_approxSize = function(mnemonic, patterns)
     -- default to larger (word size) versions if they work
-    if patterns["ab"] or patterns["ax"] or patterns["ay"] or patterns["in"]
+    if patterns["ab"] or patterns["ax"] or patterns["ay"] or patterns["in"] then
         return 2
     end
     return 1

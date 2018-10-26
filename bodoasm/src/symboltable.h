@@ -13,14 +13,14 @@ namespace bodoasm
     {
     public:
                             SymbolTable(ErrorReporter& er);
-        void                addSymbol(const std::string& fullName, const Position& definePos, Expression::Ptr&& expr);
-        bool                isSymbolDefined(const std::string& scope, const std::string& name);
+        void                addSymbol(const std::string& name, const Position& definePos, Expression::Ptr&& expr);
+        bool                isSymbolDefined(const std::string& name);
         
-        void                addIncompleteSymbol(const std::string& fullName, const Position& definePos);
-        void                changeSymbolValue(const std::string& scope, const std::string& name, Expression::Ptr&& expr);
+        void                addIncompleteSymbol(const std::string& name, const Position& definePos);
+        void                changeSymbolValue(const std::string& name, Expression::Ptr&& expr);
 
-        bool                isSymbolResolved(const std::string& scope, const std::string& name);
-        Expression*         get(const std::string& scope, const std::string& name);
+        bool                isSymbolResolved(const std::string& name);
+        Expression*         get(const std::string& name);
 
         void                forceResolveAll();
 
@@ -35,7 +35,6 @@ namespace bodoasm
 
         bool                resolveSymbol(const map_t::iterator& iter, bool force);
 
-        map_t::iterator     getEntry(const std::string& scope, const std::string& name);
         ErrorReporter&      err;
         map_t               symbols;
         guard_t             loopGuard;

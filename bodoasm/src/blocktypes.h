@@ -9,6 +9,8 @@
 
 namespace bodoasm
 {
+    class Expression;
+
     struct OrgBlock
     {
         int_t               orgAddr;
@@ -21,6 +23,33 @@ namespace bodoasm
         unsigned            orgBlockId;
         unsigned            size;
         //  TODO more here
+    };
+
+
+    struct Pattern
+    {
+        struct El
+        {
+            enum class Type
+            {
+                Match,          // this element is a pattern that needs to be matched
+                String,         // this element is an expression that must resolve to a string
+                Integer         // this element is an expression that must resolve to an integer
+            };
+            Type            type;
+            std::string     match;  // that pattern to match if type==Match
+
+
+            El(Type t) : type(t) {}
+            El(const std::string& m) : type(Type::Match), match(m) {}
+        };
+        std::vector<El>     elements;
+    };
+    
+    struct AddrModeMatch
+    {
+        unsigned                    addrMode;   // ID of the addr mode
+        std::vector<Expression*>    exprs;      // expressions to plug into the pattern
     };
 }
 

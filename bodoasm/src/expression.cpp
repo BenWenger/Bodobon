@@ -62,17 +62,10 @@ namespace bodoasm
     {}
 
 
-    Expression::Expression(const Position& p, const std::string& strLiteral)
+    Expression::Expression(const Position& p, const std::string& s, Type t)
         : pos(p)
-        , type( Type::String )
-        , valStr(strLiteral)
-    {}
-    
-    Expression::Expression(const Position& p, const std::string& scp, const std::string& symbolName)
-        : pos(p)
-        , type( Type::Symbol )
-        , valStr(symbolName)
-        , scope(scp)
+        , type(t)
+        , valStr(s)
     {}
 
     Expression::Expression(const Position& p, UnOp op, Ptr&& v)
@@ -119,7 +112,7 @@ namespace bodoasm
         case UnOp::Defined:
             if(!lhs->isSymbol())
                 err.error(&pos, getName(unOp) + " operator must be followed by a symbol name");
-            valInt = syms.isSymbolDefined(lhs->scope, lhs->valStr) ? 1 : 0;
+            valInt = syms.isSymbolDefined(lhs->valStr) ? 1 : 0;
             type = Type::Integer;
             lhs.reset();
             return true;
@@ -235,7 +228,7 @@ namespace bodoasm
     
     bool Expression::eval_symbol(ErrorReporter& err, SymbolTable& syms, bool force)
     {
-        auto expr = syms.get(scope, valStr);
+        auto expr = syms.get(valStr);
         if(expr && expr->isResolved())
         {
             type = expr->type;
@@ -245,7 +238,7 @@ namespace bodoasm
         }
         else if(force)
         {
-            if(syms.isSymbolDefined(scope, valStr))
+            if(syms.isSymbolDefined(valStr))
                 err.error(&pos, "Unable to resolve symbol '" + valStr + "'");
             else
                 err.error(&pos, "'" + valStr + "' is undefined");

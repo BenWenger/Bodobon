@@ -1,50 +1,36 @@
 
 SCOPE
 ======================
-- Namespaces can be defined and nested
-- Top level labels define the scope for local symbols
-- Local symbols start with a dot .
-- dash - is scope qualifier for non-local symbols
-- To access global scope, prefix with -
-
-        Label:                  ; (1)
-        #ns   ns                ; Entering 'ns' namespace
-            Label:              ; (2)
-                .Label:         ; (3)
-                    JMP Label   ;  -> 2
-                    JMP .Label  ;  -> 3
-                    JMP -Label  ;  -> 1
-        #endns                  ; exiting 'ns' namespace
-        JMP Label               ;  -> 1
-        JMP ns-Label            ;  -> 2
-        JMP ns-Label.Label      ;  -> 3
-        JMP -Label              ;  -> 1
-
-Nameless labels effectively have local scope, but are completely inaccessible
-from outside their Top-level label
-
-        Foo:
-            :                   ; (1)
-                JMP :-          ; -> 1
-                JMP :+          ; -> 2
-            :                   ; (2)
-                JMP :+          ; error, (3) in Bar scope
-        Bar:                    
-            :                   ; (3)
-                JMP :-          ; (3)
-                JMP :--         ; error, (2) is in Foo scope
-                
-Nameless and local don't need a top level label, but it generally makes them
-easier to use
-
-        .local                  ; (1)
-        :                       ; (2)
-            JMP :-              ; -> 2
-        Foo:
-            JMP :-              ; error, (2) is in global scope
-            JMP .local          ; error, (1) is in global scope
-            JMP -.local         ; -> 1
+    A global label defines your current scope.
+    Local symbols are prefixed with a dot (.) and are local to your current scope.
+    Local symbols in other scopes can be accessed by giving the full scope qualifier.
+    Example:
+    
+        MyCode:
+            .MySym = 1
+            .LocalLabel:
+                LDA .MySym          ; OK
             
+        NewScope:
+            LDA .MySym              ; error, no .MySym in this scope
+            LDA MyCode.MySym        ; OK
+            JMP .LocalLabel         ; error
+            JMP MyCode.LocalLabel   ; OK
+            
+    Nameless labels are local to the current scope.  Nameless labels outside your current
+    scope cannot be accessed at all.
+    
+    
+    In macros:
+    
+    Macros have their own scope.  Global symbols defined in a macro are exported normally (be
+careful!!!).  However, a global label defined in a macro does not change your scope until the
+macro exits and you return to your "true" scope.
+
+    Local symbols are local to the macro.  However you can export local symbols to your true
+scope (and access existing locals in your true scope) by prefixing them with the @ operator:
+
+    (TODO come up with an example for this)
             
             
 ======================

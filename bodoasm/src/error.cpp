@@ -2,7 +2,7 @@
 #include <iostream>
 #include <string>
 #include "error.h"
-#include "filenamepool.h"
+#include "stringpool.h"
 
 namespace bodoasm
 {
@@ -44,7 +44,7 @@ namespace bodoasm
 
     std::string ErrorReporter::formatPosition(const Position& pos)
     {
-        return "(" + FilenamePool::get(pos.fileId) + " :" + std::to_string(pos.lineNo) + ", " + std::to_string(pos.linePos) + ")";
+        return "(" + StringPool::get(pos.fileId) + ": " + std::to_string(pos.lineNo) + ", " + std::to_string(pos.linePos) + ")";
     }
 
 }

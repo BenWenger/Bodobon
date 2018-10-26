@@ -110,22 +110,22 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="..\src\asmblueprint.cpp" />
     <ClCompile Include="..\src\assembler.cpp" />
     <ClCompile Include="..\src\error.cpp" />
     <ClCompile Include="..\src\expression.cpp" />
-    <ClCompile Include="..\src\filenamepool.cpp" />
+    <ClCompile Include="..\src\asmdefinition.cpp" />
+    <ClCompile Include="..\src\stringpool.cpp" />
     <ClCompile Include="..\src\lexer.cpp" />
     <ClCompile Include="..\src\main.cpp" />
     <ClCompile Include="..\src\symboltable.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\src\asmblueprint.h" />
     <ClInclude Include="..\src\assembler.h" />
     <ClInclude Include="..\src\basetypes.h" />
     <ClInclude Include="..\src\error.h" />
     <ClInclude Include="..\src\expression.h" />
-    <ClInclude Include="..\src\filenamepool.h" />
+    <ClInclude Include="..\src\asmdefinition.h" />
+    <ClInclude Include="..\src\stringpool.h" />
     <ClInclude Include="..\src\lexer.h" />
     <ClInclude Include="..\src\blocktypes.h" />
     <ClInclude Include="..\src\position.h" />

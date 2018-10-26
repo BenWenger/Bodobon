@@ -3,6 +3,8 @@
 #include <luawrap.h>
 #include <iostream>
 #include "assembler.h"
+#include "asmdefinition.h"
+#include "stringpool.h"
 
 using luawrap::Lua;
 using namespace dshfs;
@@ -24,6 +26,17 @@ std::string getPathToLua()
     return path;
 }
 
+std::vector<std::string> getNames(const std::vector<unsigned>& vec)
+{
+    std::vector<std::string> out;
+    out.reserve(vec.size());
+
+    for(auto& i : vec)
+        out.emplace_back( bodoasm::StringPool::get(i) );
+
+    return out;
+}
+
 #include "error.h"
 #include "lexer.h"
 
@@ -38,17 +51,24 @@ int main(int argc, char* argv[])
         try
         {
             using namespace bodoasm;
+            
             ErrorReporter err;
-            Lexer lex(err);
-            lex.startFile("lextest.txt");
-            Lexer::Token tok;
-            do
-            {
-                tok = lex.getNext();
-                auto strsiz = tok.str.length();
-                int foo = 5;
-            } while(tok.type != Lexer::Token::Type::InputEnd);
+            AsmDefinition face(err);
+            face.load("E:/Projects/bodobon/bodoasm/lua/6502.lua","6502.lua");
+
+            Position p{0,0,0};
+            std::string s = "LDA";
+            auto lda = getNames( face.getAddrModeForMnemonic(p, s) );
+            s = "LDA.w";
+            auto ldaw = getNames( face.getAddrModeForMnemonic(p, s) );
+            s = "BPL.w";
+            auto bplw = getNames( face.getAddrModeForMnemonic(p, s) );
+
+            int butt = 5;
+
         }
+        catch(bodoasm::Error&) {}
+        catch(bodoasm::FatalError&) {}
         catch(std::exception& e)
         {
             std::cerr << "Error:  " << e.what() << std::endl;

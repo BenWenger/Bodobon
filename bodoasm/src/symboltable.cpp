@@ -26,88 +26,58 @@ namespace bodoasm
         : err(er)
     {}
 
-    void SymbolTable::addSymbol(const std::string& fullName, const Position& definePos, Expression::Ptr&& expr)
+    void SymbolTable::addSymbol(const std::string& name, const Position& definePos, Expression::Ptr&& expr)
     {
         Symbol sym;
         sym.definePos = definePos;
         sym.expr = std::move(expr);
 
-        auto iter = symbols.insert( {fullName, std::move(sym)} );
+        auto iter = symbols.insert( {name, std::move(sym)} );
         if(!iter.second)
         {
-            err.error(&definePos, fullName + " already defined here: " + err.formatPosition(iter.first->second.definePos));
+            err.error(&definePos, name + " already defined here: " + err.formatPosition(iter.first->second.definePos));
         }
     }
 
-    void SymbolTable::addIncompleteSymbol(const std::string& fullName, const Position& definePos)
+    void SymbolTable::addIncompleteSymbol(const std::string& name, const Position& definePos)
     {
         Symbol sym;
         sym.definePos = definePos;
-        auto iter = symbols.insert( {fullName, std::move(sym)} );
+        auto iter = symbols.insert( {name, std::move(sym)} );
         if(!iter.second)
         {
-            err.error(&definePos, fullName + " already defined here: " + err.formatPosition(iter.first->second.definePos));
+            err.error(&definePos, name + " already defined here: " + err.formatPosition(iter.first->second.definePos));
         }
     }
     
-    void SymbolTable::changeSymbolValue(const std::string& scope, const std::string& name, Expression::Ptr&& expr)
+    void SymbolTable::changeSymbolValue(const std::string& name, Expression::Ptr&& expr)
     {
-        auto i = getEntry(scope, name);
+        auto i = symbols.find(name);
         if(i == symbols.end())
-            err.fatal(nullptr, "Internal error when trying to update symbol value (scope='" + scope + "' name='" + name + "'");
+            err.fatal(nullptr, "Internal error when trying to update symbol value ('" + name + "'");        // TODO will I need to use this function any more?
         i->second.expr = std::move(expr);
     }
 
-    bool SymbolTable::isSymbolDefined(const std::string& scope, const std::string& name)
+    bool SymbolTable::isSymbolDefined(const std::string& name)
     {
-        auto iter = getEntry(scope,name);
+        auto iter = symbols.find(name);
         return iter != symbols.end();
     }
 
-    bool SymbolTable::isSymbolResolved(const std::string& scope, const std::string& name)
+    bool SymbolTable::isSymbolResolved(const std::string& name)
     {
-        auto iter = getEntry(scope,name);
+        auto iter = symbols.find(name);
         if(iter == symbols.end())
             return false;
         return resolveSymbol(iter, false);
     }
     
-    Expression* SymbolTable::get(const std::string& scope, const std::string& name)
+    Expression* SymbolTable::get(const std::string& name)
     {
-        auto iter = getEntry(scope,name);
+        auto iter = symbols.find(name);
         if(iter == symbols.end())       return nullptr;
         resolveSymbol(iter, false);
         return iter->second.expr.get();
-    }
-    
-    auto SymbolTable::getEntry(const std::string& scope, const std::string& name) -> map_t::iterator
-    {
-        // Is the symbol explicitly fully qualified?  (easy mode)
-        if(name.substr(0,1) == "-")
-        {
-            return symbols.find( name.substr(1) );
-        }
-
-        // Otherwise, start at our current scope and move up tiers until we find the symbol
-
-        // for local symbols, the connector is '.', otherwise it's '-'
-        std::string connector;
-        if(name.substr(0,1) != ".")
-            connector = "-";
-
-        auto sc = scope;
-        auto end = symbols.end();
-        auto iter = end;
-        while( true )
-        {
-            iter = symbols.find( sc + name );
-            if(iter != end)     break;              // found it!
-
-            auto pos = sc.rfind('-');
-            if(pos == 0 || pos == sc.npos) break;   // no more scopes to run down!
-            sc = sc.substr(0,pos);
-        }
-        return iter;
     }
     
     bool SymbolTable::resolveSymbol(const map_t::iterator& iter, bool force)

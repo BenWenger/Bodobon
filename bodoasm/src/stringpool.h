@@ -7,14 +7,14 @@
 
 namespace bodoasm
 {
-    class FilenamePool
+    class StringPool
     {
     public:
-        static std::string      get(unsigned fileid);
-        static unsigned         add(const std::string& filename);
+        static std::string      get(unsigned id);
+        static unsigned         add(const std::string& str);
 
     private:
-        ~FilenamePool() = delete;
+        ~StringPool() = delete;
         static std::unordered_map<std::string, unsigned>        nameToId;
         static std::vector<std::string>                         idToName;
     };
