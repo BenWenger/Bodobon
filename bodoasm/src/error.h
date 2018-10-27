@@ -14,8 +14,8 @@ namespace bodoasm
     {
     public:
                             ErrorReporter();
-        void                warning(const Position* pos, const std::string& msg);
-        void                error(const Position* pos, const std::string& msg);
+        virtual void        warning(const Position* pos, const std::string& msg);
+        virtual void        error(const Position* pos, const std::string& msg);
         void                fatal(const Position* pos, const std::string& msg);
         static std::string  formatPosition(const Position& pos);
 

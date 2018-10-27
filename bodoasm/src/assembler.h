@@ -5,6 +5,7 @@
 #include <luawrap.h>
 #include "error.h"
 #include "lexer.h"
+#include "expression.h"
 
 /*
 
@@ -18,6 +19,11 @@ namespace bodoasm
                             Assembler(const std::string& pathToLua);
         bool                doFile(const std::string& path);
         bool                finalizeAndOutput(const std::string& path);
+
+    private:
+        friend class Parser;
+        void                defineLabel(const Position& pos, const std::string& name);
+        void                defineSymbol(const Position& pos, const std::string& name, Expression::Ptr&& expr);
 
     private:
         ErrorReporter       err;

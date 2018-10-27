@@ -25,7 +25,8 @@ namespace bodoasm
         };
         Position                    pos;
 
-        std::string                 str;                    // the operator/string/symbol
+        std::string                 str;                    // the operator/symbol (but not for string literals)
+        std::string                 strVal;                 // the string (for string literals only)
         int_t                       val = 0;                // the integer
         Type                        type = Type::InputEnd;
         bool                        ws_after = true;        // true if there is whitespace after this token

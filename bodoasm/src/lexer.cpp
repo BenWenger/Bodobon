@@ -189,12 +189,41 @@ namespace bodoasm
         tok.pos = cur.pos;
 
         char c = advance();
+        tok.ws_after = onSkippableChar();
+
         switch(c)
         {
-        case '!':   case '@':   case '#':   case '^':   case '&':   case '*':   case '(':   case ')':
-        case '/':   case '[':   case ']':   case '{':   case '}':   case '<':   case '=':   case '>':
-        case ':':   case '?':   case '~':   case '`':   case ',':   case '|':   case '-':   case '+':
-        case '.':   case '$':   case '%':
+        case '!':
+            if(peek() == '=')       { tok.str = "!=";   advance();  }
+            else                    { tok.str = "!";                }
+            break;
+        case '|':
+            if(peek() == '|')       { tok.str = "||";   advance();  }
+            else                    { tok.str = "|";                }
+            break;
+        case '&':
+            if(peek() == '&')       { tok.str = "&&";   advance();  }
+            else                    { tok.str = "&";                }
+            break;
+        case '=':
+            if(peek() == '=')       { tok.str = "==";   advance();  }
+            else                    { tok.str = "=";                }
+            break;
+        case '<':
+            if(peek() == '=')       { tok.str = "<=";   advance();  }
+            else if(peek() == '>')  { tok.str = "<>";   advance();  }
+            else if(peek() == '<')  { tok.str = "<<";   advance();  }
+            else                    { tok.str = "<";                }
+            break;
+        case '>':
+            if(peek() == '=')       { tok.str = ">=";   advance();  }
+            else if(peek() == '>')  { tok.str = ">>";   advance();  }
+            else                    { tok.str = ">";                }
+            break;
+
+        case '@':   case '#':   case '^':   case '*':   case '(':   case ')':   case '/':
+        case '[':   case ']':   case '{':   case '}':   case ':':   case '?':   case '~':
+        case '`':   case ',':   case '-':   case '+':   case '.':   case '$':   case '%':
             tok.str.clear();
             tok.str.push_back(c);
             tok.type = Token::Type::Operator;
@@ -209,12 +238,13 @@ namespace bodoasm
             break;
         }
 
-        tok.ws_after = onSkippableChar();
         return tok;
     }
 
     void Lexer::lexStringLiteral(Token& tok, char closer)
     {
+        tok.str.clear();
+        tok.strVal.clear();
         char c;
         while(true)
         {
@@ -246,18 +276,18 @@ namespace bodoasm
                 }
                 if(escaped)
                 {
-                    tok.str.push_back(c);
+                    tok.strVal.push_back(c);
                     advance();
                 }
             }
             else
-                tok.str.push_back(c);
+                tok.strVal.push_back(c);
         }
 
         // double-quote strings are null terminated
         tok.type = Token::Type::String;
         if(closer == '\"')
-            tok.str.push_back('\0');
+            tok.strVal.push_back('\0');
     }
 
     bool Lexer::isSymbolChar(char c)

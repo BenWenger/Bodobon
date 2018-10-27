@@ -12,16 +12,6 @@ namespace bodoasm
 {
     namespace
     {
-        std::string& makeLower(std::string& s)
-        {
-            for(auto& i : s)
-            {
-                if(i >= 'A' && i <= 'Z')
-                    i += 'a'-'A';
-            }
-            return s;
-        }
-
         AsmDefinition::vec_t& removeDups(AsmDefinition::vec_t& v)
         {
             std::sort( v.begin(), v.end() );
@@ -156,7 +146,7 @@ namespace bodoasm
 
             // Record it!
             if(!modevec.empty())
-                mp.insert( std::make_pair( makeLower(key), std::move(removeDups(modevec)) ) );
+                mp.insert( std::make_pair( toLower(key), std::move(removeDups(modevec)) ) );
             lua_pop(*lua, 1);       // pop the value before continuing the loop
         }
     }
@@ -173,8 +163,7 @@ namespace bodoasm
         // The given mnemonic may or may not have a suffix.
         std::string full;
 
-        full = mnemonic;
-        makeLower(full);
+        full = toLower(mnemonic);
 
         // the easy out is a straight mnemonic with no suffix
         auto mn = mnemonicModes.find(full);

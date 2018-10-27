@@ -108,3 +108,28 @@ Directives
         they are merely lexed and then injected into their invokations with parameters being replaced
         with whatever was passed in
     - no nesting macro definitions!!!!
+    
+    
+    
+    
+========================
+Expression Grammar  (very loose)
+========================
+
+expr =  number
+        symbol
+        
+
+
+        ()                              (parenthesis)
+        [unary operators (see below)]
+        *   /   %
+        +   -
+        <<  >>
+        <   <=  >   >=
+        ==  !=
+        &
+        ^
+        |
+        &&
+        ||

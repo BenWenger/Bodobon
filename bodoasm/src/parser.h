@@ -2,9 +2,9 @@
 #define BODOASM_PARSER_H_INCLUDED
 
 #include <string>
-#include <luawrap.h>
 #include "error.h"
 #include "lexer.h"
+#include "expression.h"
 
 namespace bodoasm
 {
@@ -31,17 +31,17 @@ namespace bodoasm
         bool                skipEnds(bool skipFileEnds = false);
         void                skipRemainderOfCommand();
 
-        void                tokenErr(const Token& t);
-
         Token               next();
         void                unget(const Token& t);
 
+        void                scopeChange(const std::string& newScope);
+
         std::string         curScope;
         unsigned            unnamedLabelCtr = 0;
-
         
         void                parse_directive();
         void                parse_command();
+        Expression::Ptr     parse_expression();
     };
 }
 

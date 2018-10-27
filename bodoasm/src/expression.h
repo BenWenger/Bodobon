@@ -57,6 +57,7 @@ namespace bodoasm
         
         std::string         asString() const;
         int_t               asInteger() const;
+        Position            getPos() const  { return pos;                       }
 
         bool                eval(ErrorReporter& err, SymbolTable& syms, bool force);
         

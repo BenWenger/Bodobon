@@ -23,7 +23,8 @@ namespace bodoasm
 
     Token Token::resolve_bin(ErrorReporter& err) const
     {
-        Token out;
+        Token out(*this);
+        out.str.clear();
         out.type = Type::Integer;
         out.val = 0;
 
@@ -40,7 +41,8 @@ namespace bodoasm
     
     Token Token::resolve_dec(ErrorReporter& err) const
     {
-        Token out;
+        Token out(*this);
+        out.str.clear();
         out.type = Type::Integer;
         out.val = 0;
 
@@ -56,7 +58,8 @@ namespace bodoasm
     
     Token Token::resolve_hex(ErrorReporter& err) const
     {
-        Token out;
+        Token out(*this);
+        out.str.clear();
         out.type = Type::Integer;
         out.val = 0;
 

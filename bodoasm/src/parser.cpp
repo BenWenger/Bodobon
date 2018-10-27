@@ -1,5 +1,7 @@
 
 #include "parser.h"
+#include "assembler.h"
+#include "parser_expression.h"
 
 namespace bodoasm
 {
@@ -80,6 +82,11 @@ namespace bodoasm
     {
         lexer->unget(t);                // TODO macro substitution
     }
+
+    void Parser::scopeChange(const std::string& newScope)
+    {
+        curScope = newScope;
+    }
     
     //////////////////////////////////////////////////////////////
     //////////////////////////////////////////////////////////////
@@ -113,13 +120,12 @@ namespace bodoasm
         {
             if(c.str == ":")
             {
-                // TODO local label def
+                assembler->defineLabel(a.pos, curScope + "." + b.str);
                 return;
             }
             else if(c.str == "=")
             {
-                // TODO make sure this isn't ==
-                // TODO local symbol assign
+                assembler->defineSymbol(a.pos, curScope + "." + b.str, parse_expression());
                 return;
             }
         }
@@ -128,13 +134,15 @@ namespace bodoasm
         {
             if(b.str == ":")
             {
-                // TODO global label def
+                unget(c);
+                assembler->defineLabel(a.pos, a.str);
+                scopeChange(a.str);
                 return;
             }
             else if(b.str == "=")
             {
-                // TODO make sure this isn't ==
-                // TODO global symbol assign
+                unget(c);
+                assembler->defineSymbol(a.pos, a.str, parse_expression());
                 return;
             }
         }
@@ -149,11 +157,34 @@ namespace bodoasm
 
     void Parser::parse_directive()
     {
+        err.fatal(nullptr, "DIRECTIVES UNSUPPORTED");
         // TODO
     }
     
     void Parser::parse_command()
     {
+        err.fatal(nullptr, "COMMANDS UNSUPPORTED");
         // TODO
+    }
+    
+    Expression::Ptr Parser::parse_expression()
+    {
+        std::vector<Token>      tokens;
+        do
+        {
+            tokens.emplace_back(lexer->getNext());
+        } while(!tokens.back().isEnd());
+
+        // keep the end in the lexer, so that if we have an error and skip to the next command, we won't
+        //   skip over anything else
+        lexer->unget( tokens.back() );
+
+        SubParser::Package pkg;
+        pkg.errReport = &err;
+        pkg.tokenList = tokens.data();
+        pkg.tokenListSize = tokens.size();
+
+        Parser_Expression p(pkg, curScope);
+        return p.parse();
     }
 }

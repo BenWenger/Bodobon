@@ -115,9 +115,11 @@
     <ClCompile Include="..\src\expression.cpp" />
     <ClCompile Include="..\src\asmdefinition.cpp" />
     <ClCompile Include="..\src\parser.cpp" />
+    <ClCompile Include="..\src\parser_expression.cpp" />
     <ClCompile Include="..\src\stringpool.cpp" />
     <ClCompile Include="..\src\lexer.cpp" />
     <ClCompile Include="..\src\main.cpp" />
+    <ClCompile Include="..\src\subparser.cpp" />
     <ClCompile Include="..\src\symboltable.cpp" />
     <ClCompile Include="..\src\token.cpp" />
   </ItemGroup>
@@ -128,10 +130,13 @@
     <ClInclude Include="..\src\expression.h" />
     <ClInclude Include="..\src\asmdefinition.h" />
     <ClInclude Include="..\src\parser.h" />
+    <ClInclude Include="..\src\parsersubinstance.h" />
+    <ClInclude Include="..\src\parser_expression.h" />
     <ClInclude Include="..\src\stringpool.h" />
     <ClInclude Include="..\src\lexer.h" />
     <ClInclude Include="..\src\blocktypes.h" />
     <ClInclude Include="..\src\position.h" />
+    <ClInclude Include="..\src\subparser.h" />
     <ClInclude Include="..\src\symboltable.h" />
     <ClInclude Include="..\src\token.h" />
   </ItemGroup>
