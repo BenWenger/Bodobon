@@ -9,6 +9,7 @@
 #include "position.h"
 #include "error.h"
 #include "basetypes.h"
+#include "token.h"
 
 namespace bodoasm
 {
@@ -17,26 +18,6 @@ namespace bodoasm
     class Lexer
     {
     public:
-        struct Token
-        {
-            enum class Type 
-            {
-                Operator,
-                Symbol,             // and also numeric literals
-                String,
-                CmdEnd,             // end of command (end of line or \ symbol)
-                FileEnd,            // end of a single file
-                InputEnd            // end of all input (file fully traversed)
-            };
-            Position                    pos;
-
-            std::string                 str;                    // the operator/string/symbol
-            int_t                       val = 0;                // the integer
-            Type                        type = Type::InputEnd;
-            bool                        ws_after = true;        // true if there is whitespace after this token
-        };
-
-
                     Lexer(ErrorReporter& er);
         Token       getNext();
         void        unget(const Token& t);
@@ -81,7 +62,7 @@ namespace bodoasm
 
 
         void                    lexStringLiteral(Token& tok, char closer);
-        void                    lexSymbol(Token& tok, char c);
+        void                    lexMisc(Token& tok, char c);
 
         static bool             isSymbolChar(char c);
     };

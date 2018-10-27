@@ -30,6 +30,12 @@
     <ClCompile Include="..\src\asmdefinition.cpp">
       <Filter>src</Filter>
     </ClCompile>
+    <ClCompile Include="..\src\parser.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\token.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\src\assembler.h">
@@ -60,6 +66,12 @@
       <Filter>src</Filter>
     </ClInclude>
     <ClInclude Include="..\src\asmdefinition.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\parser.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\token.h">
       <Filter>src</Filter>
     </ClInclude>
   </ItemGroup>

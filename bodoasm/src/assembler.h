@@ -5,7 +5,10 @@
 #include <luawrap.h>
 #include "error.h"
 #include "lexer.h"
-using luawrap::Lua;
+
+/*
+
+*/
 
 namespace bodoasm
 {
@@ -17,7 +20,6 @@ namespace bodoasm
         bool                finalizeAndOutput(const std::string& path);
 
     private:
-        Lua                 lua;
         ErrorReporter       err;
         Lexer               lexer;
     };

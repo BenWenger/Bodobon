@@ -99,9 +99,10 @@ Directives
     - for conditional compilation.  'Expr' must be able to be evaluated on
         first pass.  A value of Zero is false, any other value is true
         
-#macro  name, [args...]
+#macro  name [, args...]
 #endmacro
-    - define a macro with name 'name', invoked with '!name'.
+    - define a macro with name 'name', invoked with a backtick and parens:  '`name()'.
+    - parens are optional if no macros are passed to the macro
     - args can be any number of optional arguments to be passed in
     - macros operate on copy/paste semantics.  IE they are not parsed when first declared, rather
         they are merely lexed and then injected into their invokations with parameters being replaced

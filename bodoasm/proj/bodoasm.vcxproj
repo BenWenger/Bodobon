@@ -114,10 +114,12 @@
     <ClCompile Include="..\src\error.cpp" />
     <ClCompile Include="..\src\expression.cpp" />
     <ClCompile Include="..\src\asmdefinition.cpp" />
+    <ClCompile Include="..\src\parser.cpp" />
     <ClCompile Include="..\src\stringpool.cpp" />
     <ClCompile Include="..\src\lexer.cpp" />
     <ClCompile Include="..\src\main.cpp" />
     <ClCompile Include="..\src\symboltable.cpp" />
+    <ClCompile Include="..\src\token.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\src\assembler.h" />
@@ -125,11 +127,13 @@
     <ClInclude Include="..\src\error.h" />
     <ClInclude Include="..\src\expression.h" />
     <ClInclude Include="..\src\asmdefinition.h" />
+    <ClInclude Include="..\src\parser.h" />
     <ClInclude Include="..\src\stringpool.h" />
     <ClInclude Include="..\src\lexer.h" />
     <ClInclude Include="..\src\blocktypes.h" />
     <ClInclude Include="..\src\position.h" />
     <ClInclude Include="..\src\symboltable.h" />
+    <ClInclude Include="..\src\token.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

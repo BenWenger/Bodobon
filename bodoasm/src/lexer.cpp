@@ -203,7 +203,7 @@ namespace bodoasm
         case '\'':  case '\"':              lexStringLiteral(tok, c);   break;
 
         default:
-            if(isSymbolChar(c))             lexSymbol(tok, c);
+            if(isSymbolChar(c))             lexMisc(tok, c);
             else
                 err.error(&cur.pos, std::string("Unexpected character '") + c + "'");
             break;
@@ -269,9 +269,9 @@ namespace bodoasm
         return false;
     }
 
-    void Lexer::lexSymbol(Token& tok, char c)
+    void Lexer::lexMisc(Token& tok, char c)
     {
-        tok.type = Token::Type::Symbol;
+        tok.type = Token::Type::Misc;
         tok.str.clear();
         tok.str.push_back(c);
         while(isSymbolChar(c = peek()))

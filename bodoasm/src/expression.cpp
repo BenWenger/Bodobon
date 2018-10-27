@@ -97,7 +97,7 @@ namespace bodoasm
         
     int_t Expression::asInteger() const
     {
-        if(!isInteger())    throw std::runtime_error("Internal error:  Expression::asString called when expression is not a string");
+        if(!isInteger())    throw std::runtime_error("Internal error:  Expression::asInteger called when expression is not an integer");
         return valInt;
     }
 

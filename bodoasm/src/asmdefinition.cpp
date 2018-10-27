@@ -330,7 +330,7 @@ namespace bodoasm
         {
             int v = -1;
             if(lua_isinteger(*lua, toppos+i))
-                v = lua_tointeger(*lua, toppos+i);
+                v = static_cast<int>(lua_tointeger(*lua, toppos+i));
 
             if(v < 0 || v > 255)
                 err.error(&pos, "In lang Lua:  'bodoasm_getBinary' must return an array of unsigned integers within the range 0-255");
