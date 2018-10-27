@@ -169,7 +169,7 @@ end
 
 bodoasm_getBinary = function(mnemonic, patterns)
     local mode = getBestMode(patterns)
-    local size = modeSizes[mode];
+    local size = modeSizes[mode]
     local opcode = opcodeLookup[mnemonic .. mode]
     local val = patterns[mode][1]
     

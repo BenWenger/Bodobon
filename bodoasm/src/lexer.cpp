@@ -122,7 +122,7 @@ namespace bodoasm
                     if(includeStack.empty())
                     {
                         cur.clear();
-                        tok.type = Token::Type::CmdEnd;
+                        tok.type = Token::Type::InputEnd;
                     }
                     else
                     {

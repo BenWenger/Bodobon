@@ -38,7 +38,7 @@ std::vector<std::string> getNames(const std::vector<unsigned>& vec)
 }
 
 #include "error.h"
-#include "lexer.h"
+#include "assembler.h"
 
 int main(int argc, char* argv[])
 {
@@ -51,30 +51,22 @@ int main(int argc, char* argv[])
         try
         {
             using namespace bodoasm;
+            Assembler maker( getPathToLua(), "6502" );
+            maker.doFile("test.txt");
             
-            ErrorReporter err;
-            AsmDefinition face(err);
-            face.load("E:/Projects/bodobon/bodoasm/lua/6502.lua","6502.lua");
-
-            Position p{0,0,0};
-            std::string s = "LDA";
-            auto lda = getNames( face.getAddrModeForMnemonic(p, s) );
-            s = "LDA.w";
-            auto ldaw = getNames( face.getAddrModeForMnemonic(p, s) );
-            s = "lda.b";
-            auto ldab = getNames( face.getAddrModeForMnemonic(p, s) );
-
-            int butt = 5;
-
+            char c;
+            std::cin >> c;
+            return 0;
         }
         catch(bodoasm::Error&) {}
         catch(bodoasm::FatalError&) {}
         catch(std::exception& e)
         {
-            std::cerr << "Error:  " << e.what() << std::endl;
+            std::cerr << "Unknown Error:  " << e.what() << std::endl;
         }
     }
 
     char c;
     std::cin >> c;
+    return 1;
 }

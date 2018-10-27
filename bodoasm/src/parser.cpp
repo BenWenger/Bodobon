@@ -52,8 +52,7 @@ namespace bodoasm
                 if(skipFileEnds)        continue;
                 else                    break;
             }
-            else if(t.type == Token::Type::InputEnd)
-                break;
+            break;
         }
         lexer->unget(t);
         return !t.isEnd();
