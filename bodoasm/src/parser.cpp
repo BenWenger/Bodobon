@@ -2,6 +2,8 @@
 #include "parser.h"
 #include "assembler.h"
 #include "parser_expression.h"
+#include "parser_addrmode.h"
+#include "asmdefinition.h"
 
 namespace bodoasm
 {
@@ -154,19 +156,7 @@ namespace bodoasm
         parse_command();
     }
 
-    void Parser::parse_directive()
-    {
-        err.fatal(nullptr, "DIRECTIVES UNSUPPORTED");
-        // TODO
-    }
-    
-    void Parser::parse_command()
-    {
-        err.fatal(nullptr, "COMMANDS UNSUPPORTED");
-        // TODO
-    }
-    
-    Expression::Ptr Parser::parse_expression()
+    SubParser::Package Parser::buildEolPackage()
     {
         std::vector<Token>      tokens;
         do
@@ -183,7 +173,63 @@ namespace bodoasm
         pkg.tokenList = tokens.data();
         pkg.tokenListSize = tokens.size();
 
-        Parser_Expression p(pkg, curScope);
+        return pkg;
+    }
+
+    void Parser::parse_directive()
+    {
+        err.fatal(nullptr, "DIRECTIVES UNSUPPORTED");
+        // TODO
+    }
+    
+    void Parser::parse_command()
+    {
+        // Build the mnemonic
+        Position pos;
+        std::string mnemonic;
+
+        Token t = next();
+        if(t.type == Token::Type::String)       err.error(&t.pos, "Unexpected string literal");
+        pos = t.pos;
+        mnemonic = t.str;
+        while(!t.ws_after)
+        {
+            t = next();
+            if(t.type == Token::Type::String)       err.error(&t.pos, "Unexpected string literal");
+            mnemonic += t.str;
+        }
+
+        // check with the assembly def to see if this mnemonic is valid
+        auto modes = asmDefs->getAddrModeForMnemonic(pos, mnemonic);
+        AddrModeMatchMap        matches;        // what has matched so far
+        SubParser::Package      basePackage = buildEolPackage();
+        while(!modes.empty())
+        {
+            auto md = modes.back();
+            modes.pop_back();
+            // we only want to report errors to the user IF
+            //  - this is the last mode we're attempting
+            //  - AND we haven't found a successful match yet
+            if(matches.empty() && modes.empty())
+                basePackage.errReport = &err;
+            else
+                basePackage.errReport = nullptr;
+            
+            try
+            {
+                Parser_AddrMode p(basePackage, curScope, asmDefs->getPatternForAddrMode(md) );
+                auto match = p.parse();
+                matches.insert( std::make_pair( md, std::move(match) ) );
+            }catch(Error&){}
+        }
+        /*
+        Parser_AddrMode p(buildEolPackage(), curScope);
+        p.parse(patterns);*/
+    }
+    
+    Expression::Ptr Parser::parse_expression()
+    {
+        Parser_Expression p(buildEolPackage(), curScope);
         return p.parse();
     }
 }

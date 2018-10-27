@@ -4,6 +4,7 @@
 #include "basetypes.h"
 #include <vector>
 #include <map>
+#include "expression.h"
 
 // there might be a better way to organize this....
 
@@ -46,7 +47,13 @@ namespace bodoasm
         std::vector<El>     elements;
     };
 
-    typedef std::vector<Expression*>            AddrModeExprs;
+    struct AddrModeExpr
+    {
+        Expression::Ptr         expr;
+        Pattern::El::Type       type;
+    };
+
+    typedef std::vector<AddrModeExpr>           AddrModeExprs;
     typedef std::map<unsigned, AddrModeExprs>   AddrModeMatchMap;
 }
 

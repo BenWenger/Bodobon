@@ -86,6 +86,8 @@ namespace bodoasm
                 {
                 case LUA_TSTRING:
                     pat.elements.emplace_back(lua->toString(-1,false));
+                    if(pat.elements.back().match.empty())           // empty strings are meaningless
+                        err.fatal(nullptr, "In lang Lua:  'AddrModes' patterns cannot have empty strings");
                     break;
                 case LUA_TNUMBER:
                     switch(auto i = lua_tointeger(*lua, -1))
@@ -102,6 +104,14 @@ namespace bodoasm
                     err.fatal(nullptr, "In lang Lua:  'AddrModes' patterns must be either a string or an integer");
                 }
                 lua_pop(*lua,1);        // drop the geti() value
+            }
+
+            // Patterns cannot have back-to-back expressions
+            for(size_t i = 1; i < pat.elements.size(); ++i)
+            {
+                if( pat.elements[i].type   != Pattern::El::Type::Match &&
+                    pat.elements[i-1].type != Pattern::El::Type::Match )
+                    err.fatal(nullptr, "In lang Lua:  'AddrModes' patterns cannot have back-to-back expressions");
             }
 
             // at this point the pattern is complete!
@@ -239,7 +249,7 @@ namespace bodoasm
             lua_createtable(*lua, static_cast<int>(i.second.size()), 0);
             for(std::size_t idx = 0; idx < i.second.size(); ++idx)
             {
-                auto expr = i.second[idx];
+                auto expr = i.second[idx].expr.get();
                 if(expr->isInteger())           lua_pushinteger(*lua, static_cast<lua_Integer>(expr->asInteger()));
                 else if(expr->isString())       lua->pushString(expr->asString());
                 else                            lua_pushnil(*lua);

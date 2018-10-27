@@ -5,6 +5,7 @@
 #include "error.h"
 #include "lexer.h"
 #include "expression.h"
+#include "subparser.h"
 
 namespace bodoasm
 {
@@ -30,6 +31,7 @@ namespace bodoasm
 
         bool                skipEnds(bool skipFileEnds = false);
         void                skipRemainderOfCommand();
+        SubParser::Package  buildEolPackage();
 
         Token               next();
         void                unget(const Token& t);

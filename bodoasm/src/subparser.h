@@ -14,7 +14,7 @@ namespace bodoasm
         {
             ErrorReporter*      errReport;
             const Token*        tokenList;
-            std::size_t         tokenListSize;      // exclusive
+            std::size_t         tokenListSize;
         };
 
         virtual     ~SubParser() {};
@@ -46,11 +46,18 @@ namespace bodoasm
             SubParser* ptr;
         };
 
+
+        std::size_t         getCurrentLexPos() const    { return pos;           }
+        std::size_t         getCurrentLexSize() const   { return tokenListSize; }
+        Package             buildSubPackage(std::size_t start, std::size_t stop);
+        Package             buildForkSubPackage()       { return buildSubPackage(pos, tokenListSize);   }
+        void                stopReportingErrors()       { errReport = nullptr;          }
+
     private:
         friend class RecursionMarker;
         ErrorReporter*      errReport;
         const Token*        tokenList;
-        std::size_t         tokenListMax;           // inclusive
+        std::size_t         tokenListSize;
         std::size_t         pos;
         int                 maxDepth;
         int                 curDepth;

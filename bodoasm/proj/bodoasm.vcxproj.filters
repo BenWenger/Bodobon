@@ -42,6 +42,9 @@
     <ClCompile Include="..\src\subparser.cpp">
       <Filter>src</Filter>
     </ClCompile>
+    <ClCompile Include="..\src\parse_addrmode.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\src\assembler.h">
@@ -87,6 +90,9 @@
       <Filter>src</Filter>
     </ClInclude>
     <ClInclude Include="..\src\subparser.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\parser_addrmode.h">
       <Filter>src</Filter>
     </ClInclude>
   </ItemGroup>

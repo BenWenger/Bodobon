@@ -7,11 +7,14 @@ namespace bodoasm
     SubParser::SubParser(const Package& pkg, int maxReDpth)
         : errReport(pkg.errReport)
         , tokenList(pkg.tokenList)
-        , tokenListMax(pkg.tokenListSize-1)
+        , tokenListSize(pkg.tokenListSize)
         , pos(0)
         , maxDepth(maxReDpth)
         , curDepth(0)
-    {}
+    {
+        if(tokenListSize == 0)
+            throw std::runtime_error("Fatal Internal Error:  SubParser ctor given a zero-length package");
+    }
 
     void SubParser::warning(const Position* p, const std::string& msg)
     {
@@ -29,12 +32,26 @@ namespace bodoasm
 
     Token SubParser::next()
     {
-        return tokenList[ std::min(tokenListMax, pos++) ];
+        return tokenList[ std::min(tokenListSize-1, pos++) ];
     }
 
     void SubParser::back()
     {
         if(pos > 0)
             --pos;
+    }
+    
+    auto SubParser::buildSubPackage(std::size_t start, std::size_t stop) -> Package
+    {
+        Package p;
+        p.errReport = errReport;
+       
+        start = std::min(start, tokenListSize-1);
+        stop  = std::min(stop, tokenListSize);
+
+        p.tokenList = tokenList + start;
+        p.tokenListSize = stop - start;
+        
+        return p;
     }
 }
