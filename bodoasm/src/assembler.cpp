@@ -21,18 +21,22 @@ namespace bodoasm
     
     void Assembler::defineLabel(const Position& pos, const std::string& name)
     {
-        int foo = 5;
-        // TODO
+        // TODO symbols.addSymbol(name, pos, Expression::buildInt(pos, pc) );
     }
 
     void Assembler::defineSymbol(const Position& pos, const std::string& name, Expression::Ptr&& expr)
     {
-        int foo = 5;
-        // TODO
+        expr->eval(err, symbols, false);
+        symbols.addSymbol(name, pos, std::move(expr));
     }
 
     void Assembler::addInstruction(const Position& pos, AddrModeMatchMap&& matches)
     {
         int foo = 4;
+    }
+
+    
+    void Assembler::directive_org(int_t addr, int_t offset, int_t size, int fill)
+    {
     }
 }

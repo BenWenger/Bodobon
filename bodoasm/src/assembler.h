@@ -21,6 +21,7 @@ namespace bodoasm
 
     private:
         friend class Parser;
+        void                directive_org(int_t addr, int_t offset, int_t size, int fill);
         void                defineLabel(const Position& pos, const std::string& name);
         void                defineSymbol(const Position& pos, const std::string& name, Expression::Ptr&& expr);
         void                addInstruction(const Position& pos, AddrModeMatchMap&& matches);
@@ -30,6 +31,24 @@ namespace bodoasm
         Lexer               lexer;
         SymbolTable         symbols;
         AsmDefinition       asmDef;
+        
+        struct OrgBlock
+        {
+            int_t               orgAddr;
+            int_t               fileOffset;
+            int_t               sizeCap;
+            int                 fillVal;
+            std::vector<u8>     dat;
+        };
+
+        struct UnfinishedCmd
+        {
+            unsigned            orgBlockId;
+            unsigned            size;
+            //  TODO more here
+        };
+
+        std::vector<OrgBlock>   orgBlocks;
     };
 }
 

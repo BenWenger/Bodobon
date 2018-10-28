@@ -4,6 +4,7 @@
 #include "parser_expression.h"
 #include "parser_addrmode.h"
 #include "asmdefinition.h"
+#include "directivespecs.h"
 
 namespace bodoasm
 {
@@ -174,12 +175,6 @@ namespace bodoasm
 
         return pkg;
     }
-
-    void Parser::parse_directive()
-    {
-        err.fatal(nullptr, "DIRECTIVES UNSUPPORTED");
-        // TODO
-    }
     
     void Parser::parse_command()
     {
@@ -241,5 +236,27 @@ namespace bodoasm
         }
 
         return out;
+    }
+
+    void Parser::parse_directive()
+    {
+        Token t = lexer->getNext();
+        if(t.type != Token::Type::Misc)         err.error(&t.pos, "Expected directive name to follow '#' symbol");
+        auto name = toLower(t.str);
+
+        auto iter = directiveSpecs.find(name);
+        if(iter == directiveSpecs.end())        err.error(&t.pos, "'" + name + "' is an unrecognized directive");
+
+        const auto& paramtypes = iter->second;
+        directiveParams_t   params;
+
+        while(params.size() < paramtypes.size())
+        {
+            t = lexer->getNext();
+            lexer->unget(t);
+            if(t.isEnd())               break;
+
+            ///   TODO finish this
+        }
     }
 }

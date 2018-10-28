@@ -174,11 +174,11 @@ bodoasm_getBinary = function(mnemonic, patterns)
     local val = patterns[mode][1]
     
     -- TODO error if opcode is nill?
+    -- TODO allow negative numbers for immediate?  Or should that go in getBestMode?
     
     if mode == "rl" then
         -- TODO need to get the PC to calculate the relative address
         return opcode, 0
-    -- TODO allow negative numbers for immediate?  Or should that go in getBestMode?
     elseif size == 3 then
         return opcode, val & 0xFF, (val >> 8) & 0xFF
     elseif size == 2 then

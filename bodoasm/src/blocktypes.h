@@ -12,21 +12,6 @@ namespace bodoasm
 {
     class Expression;
 
-    struct OrgBlock
-    {
-        int_t               orgAddr;
-        int_t               fileOffset;
-        std::vector<u8>     dat;
-    };
-
-    struct UnfinishedCmd
-    {
-        unsigned            orgBlockId;
-        unsigned            size;
-        //  TODO more here
-    };
-
-
     struct Pattern
     {
         struct El

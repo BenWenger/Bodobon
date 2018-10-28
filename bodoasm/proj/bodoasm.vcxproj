@@ -111,6 +111,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="..\src\assembler.cpp" />
+    <ClCompile Include="..\src\directivespecs.cpp" />
     <ClCompile Include="..\src\error.cpp" />
     <ClCompile Include="..\src\expression.cpp" />
     <ClCompile Include="..\src\asmdefinition.cpp" />
@@ -127,6 +128,7 @@
   <ItemGroup>
     <ClInclude Include="..\src\assembler.h" />
     <ClInclude Include="..\src\basetypes.h" />
+    <ClInclude Include="..\src\directivespecs.h" />
     <ClInclude Include="..\src\error.h" />
     <ClInclude Include="..\src\expression.h" />
     <ClInclude Include="..\src\asmdefinition.h" />
