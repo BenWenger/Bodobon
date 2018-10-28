@@ -30,4 +30,9 @@ namespace bodoasm
         int foo = 5;
         // TODO
     }
+
+    void Assembler::addInstruction(const Position& pos, AddrModeMatchMap&& matches)
+    {
+        int foo = 4;
+    }
 }

@@ -2,6 +2,7 @@
 #define BODOASM_SUB_PARSER_H_INCLUDED
 
 #include <string>
+#include <vector>
 #include "error.h"
 #include "token.h"
 

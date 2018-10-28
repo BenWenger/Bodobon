@@ -23,6 +23,7 @@ namespace bodoasm
         friend class Parser;
         void                defineLabel(const Position& pos, const std::string& name);
         void                defineSymbol(const Position& pos, const std::string& name, Expression::Ptr&& expr);
+        void                addInstruction(const Position& pos, AddrModeMatchMap&& matches);
 
     private:
         ErrorReporter       err;

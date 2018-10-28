@@ -156,22 +156,21 @@ namespace bodoasm
         parse_command();
     }
 
-    SubParser::Package Parser::buildEolPackage()
+    SubParser::Package Parser::buildEolPackage(std::vector<Token>& owner)
     {
-        std::vector<Token>      tokens;
         do
         {
-            tokens.emplace_back(lexer->getNext());
-        } while(!tokens.back().isEnd());
+            owner.emplace_back(lexer->getNext());
+        } while(!owner.back().isEnd());
 
         // keep the end in the lexer, so that if we have an error and skip to the next command, we won't
         //   skip over anything else
-        lexer->unget( tokens.back() );
-
+        lexer->unget( owner.back() );
+        
         SubParser::Package pkg;
         pkg.errReport = &err;
-        pkg.tokenList = tokens.data();
-        pkg.tokenListSize = tokens.size();
+        pkg.tokenList = owner.data();
+        pkg.tokenListSize = owner.size();
 
         return pkg;
     }
@@ -202,7 +201,8 @@ namespace bodoasm
         // check with the assembly def to see if this mnemonic is valid
         auto modes = asmDefs->getAddrModeForMnemonic(pos, mnemonic);
         AddrModeMatchMap        matches;        // what has matched so far
-        SubParser::Package      basePackage = buildEolPackage();
+        std::vector<Token>      tokenBuffer;
+        SubParser::Package      basePackage = buildEolPackage(tokenBuffer);
         while(!modes.empty())
         {
             auto md = modes.back();
@@ -220,16 +220,17 @@ namespace bodoasm
                 Parser_AddrMode p(basePackage, curScope, asmDefs->getPatternForAddrMode(md) );
                 auto match = p.parse();
                 matches.insert( std::make_pair( md, std::move(match) ) );
-            }catch(Error&){}
+            }catch(Error&) {}
         }
-        /*
-        Parser_AddrMode p(buildEolPackage(), curScope);
-        p.parse(patterns);*/
+
+        if(!matches.empty())
+            assembler->addInstruction(pos, std::move(matches));
     }
     
     Expression::Ptr Parser::parse_expression()
     {
-        Parser_Expression p(buildEolPackage(), curScope);
+        std::vector<Token>  rawTokens;
+        Parser_Expression p(buildEolPackage(rawTokens), curScope);
         auto out = p.parse();
         
         auto t = next();

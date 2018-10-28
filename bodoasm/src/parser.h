@@ -31,7 +31,7 @@ namespace bodoasm
 
         bool                skipEnds(bool skipFileEnds = false);
         void                skipRemainderOfCommand();
-        SubParser::Package  buildEolPackage();
+        SubParser::Package  buildEolPackage(std::vector<Token>& owner);
 
         Token               next();
         void                unget(const Token& t);

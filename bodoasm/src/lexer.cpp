@@ -189,7 +189,6 @@ namespace bodoasm
         tok.pos = cur.pos;
 
         char c = advance();
-        tok.ws_after = onSkippableChar();
 
         switch(c)
         {
@@ -237,7 +236,8 @@ namespace bodoasm
                 err.error(&cur.pos, std::string("Unexpected character '") + c + "'");
             break;
         }
-
+        
+        tok.ws_after = onSkippableChar();
         return tok;
     }
 
