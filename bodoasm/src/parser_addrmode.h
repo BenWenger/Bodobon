@@ -36,7 +36,7 @@ namespace bodoasm
         void                doExpressionParse(std::size_t start, std::size_t stop, PatEl::Type type);
         void                tryForkToPatternMatch(std::size_t exprStart, std::size_t exprStop, PatEl::Type type);
 
-        void                addSuccess(AddrModeExprs&& result);
+        void                addSuccess();
 
         void                done();
 

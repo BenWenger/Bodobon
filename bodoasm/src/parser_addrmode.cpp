@@ -68,13 +68,13 @@ namespace bodoasm
         else                    throw Error();
     }
     
-    void Parser_AddrMode::addSuccess(AddrModeExprs&& result)
+    void Parser_AddrMode::addSuccess()
     {
         if(successful)
             throw AmbiguiousError();
 
         successful = true;
-        successfulOutput = std::move(result);
+        successfulOutput = std::move(output);
     }
 
     AddrModeExprs Parser_AddrMode::parse()
@@ -112,7 +112,7 @@ namespace bodoasm
                 doExpr();
             ++patPos;
         }
-        addSuccess(std::move(output));
+        addSuccess();
         done();
     }
     
@@ -193,7 +193,8 @@ namespace bodoasm
         }
         catch(Success& s)
         {
-            addSuccess(std::move(s));
+            output.insert( output.end(), s.begin(), s.end() );      // append 's' to our output
+            addSuccess();
         }
         catch(Error&)
         {}
