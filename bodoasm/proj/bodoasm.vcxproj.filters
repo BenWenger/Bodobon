@@ -42,10 +42,10 @@
     <ClCompile Include="..\src\subparser.cpp">
       <Filter>src</Filter>
     </ClCompile>
-    <ClCompile Include="..\src\parse_addrmode.cpp">
+    <ClCompile Include="..\src\directivespecs.cpp">
       <Filter>src</Filter>
     </ClCompile>
-    <ClCompile Include="..\src\directivespecs.cpp">
+    <ClCompile Include="..\src\parser_addrmode.cpp">
       <Filter>src</Filter>
     </ClCompile>
   </ItemGroup>

@@ -11,31 +11,30 @@
 namespace bodoasm
 {
     class Expression;
-
-    struct Pattern
+    
+    //  Pattern elements
+    struct PatEl
     {
-        struct El
+        enum class Type
         {
-            enum class Type
-            {
-                Match,          // this element is a pattern that needs to be matched
-                String,         // this element is an expression that must resolve to a string
-                Integer         // this element is an expression that must resolve to an integer
-            };
-            Type            type;
-            std::string     match;  // that pattern to match if type==Match
-
-
-            El(Type t) : type(t) {}
-            El(const std::string& m) : type(Type::Match), match(m) {}
+            Match,          // this element is a pattern that needs to be matched
+            String,         // this element is an expression that must resolve to a string
+            Integer         // this element is an expression that must resolve to an integer
         };
-        std::vector<El>     elements;
+        Type            type;
+        std::string     match;  // that pattern to match if type==Match
+
+
+        PatEl(Type t) : type(t) {}
+        PatEl(const std::string& m) : type(Type::Match), match(m) {}
     };
+
+    typedef std::vector<PatEl>      Pattern;
 
     struct AddrModeExpr
     {
-        Expression::Ptr         expr;
-        Pattern::El::Type       type;
+        Expression::Ptr expr;
+        PatEl::Type     type;
     };
 
     typedef std::vector<AddrModeExpr>           AddrModeExprs;

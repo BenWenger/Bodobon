@@ -13,16 +13,33 @@ namespace bodoasm
     class Parser_AddrMode : public SubParser
     {
     public:
-                            Parser_AddrMode(const Package& pkg, const std::string& scope, const Pattern* pattern);
+                            Parser_AddrMode(const Package& pkg, const std::string& scope, const Pattern& pattern);
         AddrModeExprs       parse();
 
     private:
-        std::string         curScope;
-        std::size_t         patPos = 0;     // position in the pattern
-        const Pattern*      pattern;
+                            Parser_AddrMode(const Parser_AddrMode& rhs) = default;
+        Parser_AddrMode*    root;           // the "top level" parser to track recursion depth (can't use 'this')
 
+        void                doParse();
         void                doMatch();
-        AddrModeExpr        doExpr();
+        void                doExpr();
+
+        std::string         curScope;
+        const Pattern&      pattern;
+        std::size_t         patPos;             // position in the pattern
+        
+        AddrModeExprs       successfulOutput;
+        bool                successful;         // output was successful
+
+        AddrModeExprs       output;             // output so far
+
+        void                doExpressionParse(std::size_t start, std::size_t stop, PatEl::Type type);
+        void                tryForkToPatternMatch(std::size_t exprStart, std::size_t exprStop, PatEl::Type type);
+
+        void                addSuccess(AddrModeExprs&& result);
+
+        void                done();
+
     };
 }
 

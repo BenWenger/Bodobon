@@ -32,12 +32,16 @@ namespace bodoasm
 
     Token SubParser::next()
     {
-        return tokenList[ std::min(tokenListSize-1, pos++) ];
-    }
-
-    void SubParser::skip(std::size_t count)
-    {
-        pos += count;
+        Token out;
+        if(pos >= tokenListSize)
+        {
+            out = tokenList[ tokenListSize-1 ];
+            out.type = Token::Type::CmdEnd;
+        }
+        else
+            out = tokenList[pos];
+        ++pos;
+        return out;
     }
 
     void SubParser::back()

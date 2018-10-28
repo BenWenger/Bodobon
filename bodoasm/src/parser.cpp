@@ -212,7 +212,7 @@ namespace bodoasm
             
             try
             {
-                Parser_AddrMode p(basePackage, curScope, asmDefs->getPatternForAddrMode(md) );
+                Parser_AddrMode p(basePackage, curScope, *asmDefs->getPatternForAddrMode(md) );
                 auto match = p.parse();
                 matches.insert( std::make_pair( md, std::move(match) ) );
             }catch(Error&) {}
@@ -240,6 +240,7 @@ namespace bodoasm
 
     void Parser::parse_directive()
     {
+        return;
         Token t = lexer->getNext();
         if(t.type != Token::Type::Misc)         err.error(&t.pos, "Expected directive name to follow '#' symbol");
         auto name = toLower(t.str);

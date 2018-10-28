@@ -10,6 +10,12 @@ namespace bodoasm
     typedef std::int_fast64_t       int_t;
 
     // This doesn't really belong here, but I didn't want to make a separate header for it, so whatever
+    inline char toLower(char i)
+    {
+        if(i >= 'A' && i <= 'Z')
+            return i + 'a' - 'A';
+        return i;
+    }
     
     inline std::string toLower(const std::string& in)
     {
@@ -17,10 +23,7 @@ namespace bodoasm
         out.reserve(in.size());
 
         for(auto& i : in)
-        {
-            if(i >= 'A' && i <= 'Z')        out.push_back( i + 'a' - 'A' );
-            else                            out.push_back( i );
-        }
+            out.push_back(toLower(i));
         return out;
     }
 }

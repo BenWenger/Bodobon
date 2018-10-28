@@ -117,7 +117,7 @@
     <ClCompile Include="..\src\asmdefinition.cpp" />
     <ClCompile Include="..\src\parser.cpp" />
     <ClCompile Include="..\src\parser_expression.cpp" />
-    <ClCompile Include="..\src\parse_addrmode.cpp" />
+    <ClCompile Include="..\src\parser_addrmode.cpp" />
     <ClCompile Include="..\src\stringpool.cpp" />
     <ClCompile Include="..\src\lexer.cpp" />
     <ClCompile Include="..\src\main.cpp" />

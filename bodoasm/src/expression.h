@@ -15,7 +15,7 @@ namespace bodoasm
     class Expression
     {
     public:
-        typedef std::unique_ptr<Expression>     Ptr;
+        typedef std::shared_ptr<Expression>     Ptr;
         enum class UnOp 
         {
             Defined,        // ?defined
@@ -61,11 +61,11 @@ namespace bodoasm
 
         bool                eval(ErrorReporter& err, SymbolTable& syms, bool force);
         
-        inline static Ptr   buildInt(const Position& pos, int_t val)                                            { return std::unique_ptr<Expression>( new Expression(pos, val) );                               }
-        inline static Ptr   buildStr(const Position& pos, const std::string& str)                               { return std::unique_ptr<Expression>( new Expression(pos, str, Type::String) );                 }
-        inline static Ptr   buildSymbol(const Position& pos, const std::string& name)                           { return std::unique_ptr<Expression>( new Expression(pos, name, Type::Symbol) );                }
-        inline static Ptr   buildOp(const Position& pos, UnOp op, Ptr&& v)                                      { return std::unique_ptr<Expression>( new Expression(pos, op, std::move(v)) );                  }
-        inline static Ptr   buildOp(const Position& pos, BinOp op, Ptr&& a, Ptr&& b)                            { return std::unique_ptr<Expression>( new Expression(pos, op, std::move(a), std::move(b)) );    }
+        inline static Ptr   buildInt(const Position& pos, int_t val)                    { return Ptr( new Expression(pos, val) );                               }
+        inline static Ptr   buildStr(const Position& pos, const std::string& str)       { return Ptr( new Expression(pos, str, Type::String) );                 }
+        inline static Ptr   buildSymbol(const Position& pos, const std::string& name)   { return Ptr( new Expression(pos, name, Type::Symbol) );                }
+        inline static Ptr   buildOp(const Position& pos, UnOp op, Ptr&& v)              { return Ptr( new Expression(pos, op, std::move(v)) );                  }
+        inline static Ptr   buildOp(const Position& pos, BinOp op, Ptr&& a, Ptr&& b)    { return Ptr( new Expression(pos, op, std::move(a), std::move(b)) );    }
 
     private:
         enum class Type

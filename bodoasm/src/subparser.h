@@ -18,7 +18,7 @@ namespace bodoasm
             std::size_t         tokenListSize;
         };
 
-        virtual     ~SubParser() {};
+        virtual         ~SubParser() {};
 
         virtual void    warning(const Position* p, const std::string& msg) override;
         virtual void    error(const Position* p, const std::string& msg) override;
@@ -28,7 +28,6 @@ namespace bodoasm
 
         Token       next();
         void        back();
-        void        skip(std::size_t count);
 
         class       RecursionMarker
         {
@@ -52,7 +51,6 @@ namespace bodoasm
         std::size_t         getCurrentLexPos() const    { return pos;           }
         std::size_t         getCurrentLexSize() const   { return tokenListSize; }
         Package             buildSubPackage(std::size_t start, std::size_t stop);
-        Package             buildForkSubPackage()       { return buildSubPackage(pos, tokenListSize);   }
         void                stopReportingErrors()       { errReport = nullptr;          }
 
     private:

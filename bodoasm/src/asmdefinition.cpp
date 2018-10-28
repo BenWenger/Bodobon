@@ -82,18 +82,18 @@ namespace bodoasm
             bool loop = true;
             while(loop)
             {
-                switch(lua_geti( *lua, -1, static_cast<lua_Integer>( pat.elements.size() + 1 ) ))
+                switch(lua_geti( *lua, -1, static_cast<lua_Integer>( pat.size() + 1 ) ))
                 {
                 case LUA_TSTRING:
-                    pat.elements.emplace_back(lua->toString(-1,false));
-                    if(pat.elements.back().match.empty())           // empty strings are meaningless
+                    pat.emplace_back(lua->toString(-1,false));
+                    if(pat.back().match.empty())                // empty strings are meaningless
                         err.fatal(nullptr, "In lang Lua:  'AddrModes' patterns cannot have empty strings");
                     break;
                 case LUA_TNUMBER:
                     switch(auto i = lua_tointeger(*lua, -1))
                     {
-                    case 0:     pat.elements.emplace_back(Pattern::El::Type::String);       break;
-                    case 1:     pat.elements.emplace_back(Pattern::El::Type::Integer);      break;
+                    case 0:     pat.emplace_back(PatEl::Type::String);       break;
+                    case 1:     pat.emplace_back(PatEl::Type::Integer);      break;
                     default:    err.fatal(nullptr, "In lang Lua:  'AddrModes' integer code " + std::to_string(i) + " is invalid");
                     }
                     break;
@@ -107,10 +107,10 @@ namespace bodoasm
             }
 
             // Patterns cannot have back-to-back expressions
-            for(size_t i = 1; i < pat.elements.size(); ++i)
+            for(size_t i = 1; i < pat.size(); ++i)
             {
-                if( pat.elements[i].type   != Pattern::El::Type::Match &&
-                    pat.elements[i-1].type != Pattern::El::Type::Match )
+                if( pat[i].type   != PatEl::Type::Match &&
+                    pat[i-1].type != PatEl::Type::Match )
                     err.fatal(nullptr, "In lang Lua:  'AddrModes' patterns cannot have back-to-back expressions");
             }
 
