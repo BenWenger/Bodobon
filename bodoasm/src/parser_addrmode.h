@@ -22,23 +22,7 @@ namespace bodoasm
         const Pattern*      pattern;
 
         void                doMatch();
-        void                doExpr();
-
-        struct ExprRange
-        {
-            Pattern::El::Type   type;
-            std::size_t         start;
-            std::size_t         stop;
-        };
-        std::vector<ExprRange>  exprRanges;
-
-        struct Fork
-        {
-            Package                 pkg;
-            std::size_t             patPos;
-            std::vector<ExprRange>  exprRanges;
-        };
-        std::vector<Fork>       forks;
+        AddrModeExpr        doExpr();
     };
 }
 

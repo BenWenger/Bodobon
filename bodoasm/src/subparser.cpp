@@ -35,6 +35,11 @@ namespace bodoasm
         return tokenList[ std::min(tokenListSize-1, pos++) ];
     }
 
+    void SubParser::skip(std::size_t count)
+    {
+        pos += count;
+    }
+
     void SubParser::back()
     {
         if(pos > 0)

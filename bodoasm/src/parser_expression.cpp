@@ -8,15 +8,10 @@ namespace bodoasm
         , curScope(scope)
     {}
     
-    Expression::Ptr Parser_Expression::parse()
+    Expression::Ptr Parser_Expression::parse(std::size_t* count)
     {
         auto out = top_exp();
-        auto t = next();
-        if(!t.isEnd())
-        {
-            if(t.type == Token::Type::String)   error(&t.pos, "Unexpected string literal");
-            else                                error(&t.pos, "Unexpected token '" + t.str + "'");
-        }
+        if(count)       *count = getCurrentLexPos();
         return out;
     }
 

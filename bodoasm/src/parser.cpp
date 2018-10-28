@@ -230,6 +230,15 @@ namespace bodoasm
     Expression::Ptr Parser::parse_expression()
     {
         Parser_Expression p(buildEolPackage(), curScope);
-        return p.parse();
+        auto out = p.parse();
+        
+        auto t = next();
+        if(!t.isEnd())
+        {
+            if(t.type == Token::Type::String)   err.error(&t.pos, "Unexpected string literal");
+            else                                err.error(&t.pos, "Unexpected token '" + t.str + "'");
+        }
+
+        return out;
     }
 }

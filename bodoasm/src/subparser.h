@@ -27,6 +27,7 @@ namespace bodoasm
 
         Token       next();
         void        back();
+        void        skip(std::size_t count);
 
         class       RecursionMarker
         {
