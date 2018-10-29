@@ -47,7 +47,7 @@ namespace bodoasm
         Token t;
         while(true)
         {
-            t = lexer->getNext();
+            t = next();
             if(t.type == Token::Type::CmdEnd)
                 continue;
             else if(t.type == Token::Type::FileEnd)
@@ -57,7 +57,7 @@ namespace bodoasm
             }
             break;
         }
-        lexer->unget(t);
+        unget(t);
         return !t.isEnd();
     }
 
@@ -68,7 +68,7 @@ namespace bodoasm
         {
             try
             {
-                t = lexer->getNext();
+                t = next();
                 if(t.isEnd())
                     return;
             } catch (Error&) {}
@@ -161,12 +161,12 @@ namespace bodoasm
     {
         do
         {
-            owner.emplace_back(lexer->getNext());
+            owner.emplace_back(next());
         } while(!owner.back().isEnd());
 
         // keep the end in the lexer, so that if we have an error and skip to the next command, we won't
         //   skip over anything else
-        lexer->unget( owner.back() );
+        unget( owner.back() );
         
         SubParser::Package pkg;
         pkg.errReport = &err;
@@ -232,23 +232,23 @@ namespace bodoasm
     void Parser::parse_directive()
     {
         return;
-        Token t = lexer->getNext();
+        Token t = next();
         if(t.type != Token::Type::Misc)         err.error(&t.pos, "Expected directive name to follow '#' symbol");
         auto name = toLower(t.str);
 
         auto iter = directiveSpecs.find(name);
         if(iter == directiveSpecs.end())        err.error(&t.pos, "'" + name + "' is an unrecognized directive");
 
-        const auto& paramtypes = iter->second;
+        const auto& paramTypes = iter->second;
         directiveParams_t   params;
 
-        while(params.size() < paramtypes.size())
-        {
-            t = lexer->getNext();
-            lexer->unget(t);
-            if(t.isEnd())               break;
+        std::vector<Token>      tokens;
 
-            ///   TODO finish this
+        // peek ahead to see if there are any params
+        t = next();
+        unget(t);
+        if(!t.isEnd())
+        {
         }
     }
 }

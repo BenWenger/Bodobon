@@ -38,5 +38,6 @@ namespace bodoasm
     
     void Assembler::directive_org(int_t addr, int_t offset, int_t size, int fill)
     {
+        int bar = 10;
     }
 }

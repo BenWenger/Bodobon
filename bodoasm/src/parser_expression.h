@@ -12,7 +12,7 @@ namespace bodoasm
     {
     public:
         Parser_Expression(const Package& pkg, const std::string& scope);
-        Expression::Ptr                 parse(std::size_t* count = nullptr);
+        Expression::Ptr                 parse();
 
     private:
         typedef Expression::Ptr         Exp;

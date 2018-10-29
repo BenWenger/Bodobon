@@ -8,10 +8,10 @@ namespace bodoasm
         , curScope(scope)
     {}
     
-    Expression::Ptr Parser_Expression::parse(std::size_t* count)
+    Expression::Ptr Parser_Expression::parse(/*std::size_t* count*/)
     {
         auto out = top_exp();
-        if(count)       *count = getCurrentLexPos();
+        //if(count)       *count = getCurrentLexPos();
         
         auto t = next();
         if(!t.isEnd())
@@ -262,6 +262,10 @@ namespace bodoasm
             else
                 error(&t.pos, "Internal Error:  Token::resolve did not produce an integer or symbol");
         }
+        else if(t.isEnd())
+            error(&t.pos, "Unexpected end of expression");
+        else
+            error(&t.pos, "Unexpected token '" + t.str + "'");
 
         return exp;
     }

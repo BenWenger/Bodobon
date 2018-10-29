@@ -22,6 +22,27 @@ namespace bodoasm
         int_t           valInt;
         std::string     valStr;
         Type            type;
+
+        static bool isTypeOptional(Type t)
+        {
+            switch(t)
+            {
+            case Type::OptInteger:
+            case Type::OptString:
+                return true;
+            }
+            return false;
+        }
+
+        static Type realType(Type t)
+        {
+            switch(t)
+            {
+            case Type::OptInteger:      return Type::Integer;
+            case Type::OptString:       return Type::String;
+            }
+            return t;
+        }
     };
 
     typedef std::unordered_map<std::string, std::vector<DirectiveParam::Type>>      directiveSpec_t;
