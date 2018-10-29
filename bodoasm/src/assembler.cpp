@@ -35,9 +35,8 @@ namespace bodoasm
         int foo = 4;
     }
 
-    
-    void Assembler::directive_org(int_t addr, int_t offset, int_t size, int fill)
+    void Assembler::doDirective(const directiveParams_t& params)
     {
-        int bar = 10;
+        int bar = 4;
     }
 }

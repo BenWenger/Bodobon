@@ -1,4 +1,9 @@
-; #org $8000, 0
+;#org $8000, 0
+;#org 1, 2, 3
+#org 1, 2, 3, 4 * 10
+;#org 1, 2, 3, 4, 5
+;#include "hi" + "there"
+;#include 6
 
 ; Label:
 

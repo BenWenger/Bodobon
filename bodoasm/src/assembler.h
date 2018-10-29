@@ -8,6 +8,7 @@
 #include "expression.h"
 #include "symboltable.h"
 #include "asmdefinition.h"
+#include "directivespecs.h"
 
 
 namespace bodoasm
@@ -21,10 +22,11 @@ namespace bodoasm
 
     private:
         friend class Parser;
-        void                directive_org(int_t addr, int_t offset, int_t size, int fill);
+
         void                defineLabel(const Position& pos, const std::string& name);
         void                defineSymbol(const Position& pos, const std::string& name, Expression::Ptr&& expr);
         void                addInstruction(const Position& pos, AddrModeMatchMap&& matches);
+        void                doDirective(const directiveParams_t& params);
 
     private:
         ErrorReporter       err;

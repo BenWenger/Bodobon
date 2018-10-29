@@ -4,7 +4,6 @@
 #include "parser_expression.h"
 #include "parser_addrmode.h"
 #include "asmdefinition.h"
-#include "directivespecs.h"
 
 namespace bodoasm
 {
@@ -227,28 +226,5 @@ namespace bodoasm
         std::vector<Token>  rawTokens;
         Parser_Expression p(buildEolPackage(rawTokens), curScope);
         return p.parse();
-    }
-
-    void Parser::parse_directive()
-    {
-        return;
-        Token t = next();
-        if(t.type != Token::Type::Misc)         err.error(&t.pos, "Expected directive name to follow '#' symbol");
-        auto name = toLower(t.str);
-
-        auto iter = directiveSpecs.find(name);
-        if(iter == directiveSpecs.end())        err.error(&t.pos, "'" + name + "' is an unrecognized directive");
-
-        const auto& paramTypes = iter->second;
-        directiveParams_t   params;
-
-        std::vector<Token>      tokens;
-
-        // peek ahead to see if there are any params
-        t = next();
-        unget(t);
-        if(!t.isEnd())
-        {
-        }
     }
 }

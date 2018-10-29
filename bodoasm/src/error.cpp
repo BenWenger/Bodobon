@@ -44,7 +44,7 @@ namespace bodoasm
 
     std::string ErrorReporter::formatPosition(const Position& pos)
     {
-        return "(" + StringPool::toStr(pos.fileId) + ": " + std::to_string(pos.lineNo) + ", " + std::to_string(pos.linePos) + ")";
+        return "(" + StringPool::toStr(pos.fileId) + ": " + std::to_string(pos.lineNo) + ", " + std::to_string(pos.linePos+1) + ")";
     }
 
 }

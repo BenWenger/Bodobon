@@ -7,11 +7,13 @@ namespace bodoasm
     {
         directiveSpec_t buildDirectiveSpecs()
         {
+            typedef DirectiveParam          p;
             typedef DirectiveParam::Type    t;
             directiveSpec_t out;
             
-            out["org"]    = { t::Integer, t::Integer, t::OptInteger, t::OptInteger };
-            out["rebase"] = { t::Integer };
+            out["org"]    = { t::Integer,     t::Integer,        t::OptInteger,         t::OptInteger   };
+            out["rebase"] = { t::Integer                                                                };
+            out["byte"]   = { t::IntOrString, t::OptIntOrString, p::loopBack(1)                         };
 
             return out;
         }

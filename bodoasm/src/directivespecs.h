@@ -11,17 +11,28 @@ namespace bodoasm
 {
     struct DirectiveParam
     {
-        enum class Type
+        enum Type
         {
             Integer,
             String,
+            IntOrString,
+
             OptInteger,
-            OptString
+            OptString,
+            OptIntOrString,
+
+            End,
+            LoopBack                // must be last
         };
 
         int_t           valInt;
         std::string     valStr;
         Type            type;
+
+        static Type loopBack(int count)
+        {
+            return static_cast<Type>( static_cast<int>(Type::LoopBack) + 1 );
+        }
 
         static bool isTypeOptional(Type t)
         {
@@ -29,6 +40,7 @@ namespace bodoasm
             {
             case Type::OptInteger:
             case Type::OptString:
+            case Type::OptIntOrString:
                 return true;
             }
             return false;
@@ -40,6 +52,7 @@ namespace bodoasm
             {
             case Type::OptInteger:      return Type::Integer;
             case Type::OptString:       return Type::String;
+            case Type::OptIntOrString:  return Type::IntOrString;
             }
             return t;
         }
