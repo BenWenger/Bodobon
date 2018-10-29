@@ -35,7 +35,7 @@ namespace bodoasm
         int foo = 4;
     }
 
-    void Assembler::doDirective(const directiveParams_t& params)
+    void Assembler::doDirective(const std::string& name, const directiveParams_t& params)
     {
         int bar = 4;
     }

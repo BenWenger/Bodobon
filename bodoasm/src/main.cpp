@@ -56,6 +56,7 @@ int main(int argc, char* argv[])
             
             char c;
             std::cin >> c;
+            
             return 0;
         }
         catch(bodoasm::Error&) {}

@@ -26,7 +26,7 @@ namespace bodoasm
         void                defineLabel(const Position& pos, const std::string& name);
         void                defineSymbol(const Position& pos, const std::string& name, Expression::Ptr&& expr);
         void                addInstruction(const Position& pos, AddrModeMatchMap&& matches);
-        void                doDirective(const directiveParams_t& params);
+        void                doDirective(const std::string& name, const directiveParams_t& params);
 
     private:
         ErrorReporter       err;

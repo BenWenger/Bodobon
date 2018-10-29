@@ -168,6 +168,6 @@ namespace bodoasm
         }
 
         // Otherwise, all is well
-        assembler->doDirective(params);
+        assembler->doDirective(name, params);
     }
 }

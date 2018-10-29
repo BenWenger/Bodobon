@@ -41,6 +41,7 @@ namespace bodoasm
             case Type::OptInteger:
             case Type::OptString:
             case Type::OptIntOrString:
+            case Type::End:
                 return true;
             }
             return false;
