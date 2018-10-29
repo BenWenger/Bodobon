@@ -12,6 +12,14 @@ namespace bodoasm
     {
         auto out = top_exp();
         if(count)       *count = getCurrentLexPos();
+        
+        auto t = next();
+        if(!t.isEnd())
+        {
+            if(t.type == Token::Type::String)   error(&t.pos, "Unexpected string literal");
+            else                                error(&t.pos, "Unexpected token '" + t.str + "'");
+        }
+
         return out;
     }
 

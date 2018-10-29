@@ -169,8 +169,8 @@ namespace bodoasm
             if(t.str.empty())                   done();
             if(toFind == toLower(t.str.front()))         // possible match!
             {
-                auto exprStopToken = getCurrentLexPos();
                 back();     // unget the pattern match
+                auto exprStopToken = getCurrentLexPos();
                 tryForkToPatternMatch(exprStartToken, exprStopToken, pattern[patPos].type);
                 next();     // toss pattern match and continue
             }
@@ -189,6 +189,7 @@ namespace bodoasm
         try
         {
             doExpressionParse(exprStart, exprStop, type);
+            forked.patPos++;
             forked.doParse();
         }
         catch(Success& s)

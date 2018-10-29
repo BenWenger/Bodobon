@@ -35,7 +35,7 @@ namespace bodoasm
         Token out;
         if(pos >= tokenListSize)
         {
-            out = tokenList[ tokenListSize-1 ];
+            out.pos = tokenList[ tokenListSize-1 ].pos;
             out.type = Token::Type::CmdEnd;
         }
         else

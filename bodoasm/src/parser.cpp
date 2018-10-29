@@ -226,16 +226,7 @@ namespace bodoasm
     {
         std::vector<Token>  rawTokens;
         Parser_Expression p(buildEolPackage(rawTokens), curScope);
-        auto out = p.parse();
-        
-        auto t = next();
-        if(!t.isEnd())
-        {
-            if(t.type == Token::Type::String)   err.error(&t.pos, "Unexpected string literal");
-            else                                err.error(&t.pos, "Unexpected token '" + t.str + "'");
-        }
-
-        return out;
+        return p.parse();
     }
 
     void Parser::parse_directive()
