@@ -29,6 +29,18 @@ namespace bodoasm
         void                doDirective(const std::string& name, const directiveParams_t& params);
 
     private:
+        typedef void (Assembler::*dirFunc_t)(const directiveParams_t&);
+        typedef std::unordered_map<std::string, dirFunc_t> dirTable_t;
+        static bool         dirTableBuilt;
+        static dirTable_t   dirTable;
+        static void         buildDirTable();
+
+        void                directive_Org       (const directiveParams_t& params);
+        void                directive_Include   (const directiveParams_t& params);
+        void                directive_Rebase    (const directiveParams_t& params);
+        void                directive_Byte      (const directiveParams_t& params);
+
+    private:
         ErrorReporter       err;
         Lexer               lexer;
         SymbolTable         symbols;

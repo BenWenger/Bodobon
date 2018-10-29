@@ -15,7 +15,6 @@ namespace bodoasm
             out["include"]= { t::String                                                                 };
             out["rebase"] = { t::Integer                                                                };
             out["byte"]   = { t::IntOrString, t::OptIntOrString, p::loopBack(1)                         };
-            out["dumb"]   = { t::Integer, t::String, t::Integer };
 
             return out;
         }

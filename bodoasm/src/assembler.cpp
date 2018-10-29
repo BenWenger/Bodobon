@@ -5,11 +5,27 @@
 
 namespace bodoasm
 {
+    bool Assembler::dirTableBuilt = false;
+    Assembler::dirTable_t Assembler::dirTable;
+
+    void Assembler::buildDirTable()
+    {
+        if(!dirTableBuilt)
+        {
+            dirTableBuilt = true;
+            dirTable["org"]         = &Assembler::directive_Org;
+            dirTable["include"]     = &Assembler::directive_Include;
+            dirTable["rebase"]      = &Assembler::directive_Rebase;
+            dirTable["byte"]        = &Assembler::directive_Byte;
+        }
+    }
+
     Assembler::Assembler(const std::string& pathToLua, const std::string& asmmode)
         : lexer(err)
         , symbols(err)
         , asmDef(err)
     {
+        buildDirTable();
         asmDef.load(pathToLua + asmmode + ".lua", (asmmode + ".lua").c_str() );
     }
     
@@ -37,6 +53,33 @@ namespace bodoasm
 
     void Assembler::doDirective(const std::string& name, const directiveParams_t& params)
     {
-        int bar = 4;
+        auto i = dirTable.find(name);
+        if(i == dirTable.end())
+            err.fatal(nullptr, "Internal error:  directive name '" + name + "' is not found in Assembler's directive table");
+        (this->*(i->second))(params);
+    }
+
+    void Assembler::directive_Byte(const directiveParams_t& params)
+    {
+        // TODO
+        int foo = 4;
+    }
+
+    void Assembler::directive_Org(const directiveParams_t& params)
+    {
+        // TODO
+        int foo = 4;
+    }
+
+    void Assembler::directive_Include(const directiveParams_t& params)
+    {
+        // TODO
+        int foo = 4;
+    }
+
+    void Assembler::directive_Rebase(const directiveParams_t& params)
+    {
+        // TODO
+        int foo = 4;
     }
 }

@@ -2,9 +2,10 @@
 #org $8000, 0
 #org 1, 2, 3
 #org 1, 2, 3, 4 * 10
-#org 1, 2, 3, 4, 5
+;#org 1, 2, 3, 4, 5
 #include 'hi' + 'there'
-#include 6
+;#include 6
+#byte 1, 3, 'str'
 
 ; Label:
 
