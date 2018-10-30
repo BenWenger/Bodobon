@@ -42,10 +42,15 @@ namespace bodoasm
         lua = std::make_unique<Lua>();
         LuaStackSaver stk(*lua);
 
+        // Create the 'bodoasm' global table and populate it
+        //   with callbacks
+        lua_newtable(*lua);
+        for(auto& i : funcSuppliers)
+            i(*lua);
+        lua_setglobal(*lua, "bodoasm");
+
         lua->loadFile(path, debugname);
         lua->callFunction(0,0);
-
-        // TODO add bodo callbacks here
 
         auto x = lua_getglobal(*lua, "bodoasm_init");
         if(lua_type(*lua, -1) != LUA_TFUNCTION)

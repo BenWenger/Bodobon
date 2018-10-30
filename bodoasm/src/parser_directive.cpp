@@ -89,6 +89,7 @@ namespace bodoasm
         Token t = next();
         if(t.type != Token::Type::Misc)         err.error(&t.pos, "Expected directive name to follow '#' symbol");
         auto name = toLower(t.str);
+        auto directivePos = t.pos;
 
         auto iter = directiveSpecs.find(name);
         if(iter == directiveSpecs.end())        err.error(&t.pos, "'" + name + "' is an unrecognized directive");
@@ -168,6 +169,6 @@ namespace bodoasm
         }
 
         // Otherwise, all is well
-        assembler->doDirective(name, params);
+        assembler->doDirective(directivePos, name, params);
     }
 }

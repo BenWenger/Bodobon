@@ -21,13 +21,13 @@ namespace bodoasm
     class AsmDefinition
     {
     public:
-
-        typedef std::vector<unsigned>       vec_t;
+        typedef std::function<void(luawrap::Lua&)>  funcSupplier_t;
+        typedef std::vector<unsigned>               vec_t;
 
                         AsmDefinition(ErrorReporter& er);
                         ~AsmDefinition();
-        void            load(const std::string& path, const char* debugname = nullptr
-        );
+        void            addFuncSupplier(funcSupplier_t func)            { funcSuppliers.emplace_back(func);  }
+        void            load(const std::string& path, const char* debugname = nullptr);
 
         vec_t           getAddrModeForMnemonic(const Position& pos, std::string& mnemonic);
         const Pattern*  getPatternForAddrMode(unsigned addrmode);
@@ -42,6 +42,8 @@ namespace bodoasm
         std::map<unsigned, Pattern>             addrModePatterns;   // patterns associated with addr modes
         std::unordered_map<std::string, vec_t>  mnemonicModes;      // addr modes associated with mnemonics
         std::unordered_map<std::string, vec_t>  suffixModes;        // addr modes associated with suffixes
+
+        std::vector<funcSupplier_t>             funcSuppliers;
 
         void            clear();
         void            loadAddrModes();
