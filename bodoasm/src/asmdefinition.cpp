@@ -313,7 +313,7 @@ namespace bodoasm
 
     int AsmDefinition::generateBinary(const Position& pos, const std::string& mnemonic, const AddrModeMatchMap& patterns, std::vector<u8>& bin, int insertoffset, int requiredsize)
     {
-        auto toppos = lua_gettop(*lua);
+        auto toppos = lua_gettop(*lua)+1;       // I really hate Lua's 1 based indexing
 
         LuaStackSaver stk(*lua);
         if(lua_getglobal(*lua, "bodoasm_getBinary") != LUA_TFUNCTION)

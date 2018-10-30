@@ -1,17 +1,23 @@
 
 #org $8000, 0
-#org 1, 2, 3
-#org 1, 2, 3, 4 * 10
-;#org 1, 2, 3, 4, 5
-#include 'hi' + 'there'
-;#include 6
-#byte 1, 3, 'str'
 
-; Label:
+Barf = ($100 + $10) / $10 * 3
 
-; .expr = (5 + %110) * $15
-
-LDA (123),Y
-LDA (((.expr * 10)), X)
-JMP (123)
-JMP 123
+SomeLabel:
+    LDA #$06
+    STA $2000 + 5
+    LDA ($10),Y
+    STA ($20,X)
+    LDX Barf
+    LDX.w Barf
+    BEQ SomeLabel
+    JMP SomeLabel
+    JMP Future
+    NOP
+    
+Future:
+    ASL A
+    ASL a
+    ASL a
+    ASL
+    ASL A

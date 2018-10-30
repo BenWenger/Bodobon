@@ -25,7 +25,7 @@ namespace bodoasm
 
         void                defineLabel(const Position& pos, const std::string& name);
         void                defineSymbol(const Position& pos, const std::string& name, Expression::Ptr&& expr);
-        void                addInstruction(const Position& pos, AddrModeMatchMap&& matches);
+        void                doInstruction(const Position& pos, const std::string& mnemonic, AddrModeMatchMap&& matches);
         void                doDirective(const Position& pos, const std::string& name, const directiveParams_t& params);
 
     private:
@@ -64,10 +64,11 @@ namespace bodoasm
             unsigned            size;
             //  TODO more here
         };
-        
+        bool                    resolveAndTypeMatch(AddrModeMatchMap& matches, bool force);
+        int                     getBinaryForInstruction(AddrModeMatchMap& matches, OrgBlock& blk, int insertPos);
 
-        void                addLuaFuncs(luawrap::Lua& lua);
-        int                 lua_getPC(luawrap::Lua& lua);
+        void                    addLuaFuncs(luawrap::Lua& lua);
+        int                     lua_getPC(luawrap::Lua& lua);
 
         void                    clearCurOrgBlock();
         std::vector<OrgBlock>   orgBlocks;

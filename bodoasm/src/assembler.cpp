@@ -7,6 +7,26 @@ using luawrap::Lua;
 
 namespace bodoasm
 {
+    namespace
+    {
+        const char* const getPatternElTypeName(PatEl::Type t)
+        {
+            switch(t)
+            {
+            case PatEl::Type::Integer:       return "Integer";
+            case PatEl::Type::String:        return "String";
+            }
+            return "<Internal error:  Unknown type>";
+        }
+
+        const char* const getExprTypeName(const Expression& e)
+        {
+            if(e.isInteger())               return "Integer";
+            if(e.isString())                return "String";
+            return "<Unresolved>";
+        }
+    }
+
     bool Assembler::dirTableBuilt = false;
     Assembler::dirTable_t Assembler::dirTable;
 
@@ -42,6 +62,7 @@ namespace bodoasm
     {
         lexer.startFile(path);
         Parser::parse(this, &lexer, &asmDef, &symbols, err);
+        int foo = 5;
     }
 
     void Assembler::addLuaFuncs(Lua& lua)
@@ -80,10 +101,68 @@ namespace bodoasm
         symbols.addSymbol(name, pos, std::move(expr));
     }
 
-    void Assembler::addInstruction(const Position& pos, AddrModeMatchMap&& matches)
+    void Assembler::doInstruction(const Position& pos, const std::string& mnemonic, AddrModeMatchMap&& matches)
     {
         if(!PCEstablished)      err.error(&pos, "Cannot output instructions until PC has been established.  Please #org first");
-        // TODO
+
+        if(resolveAndTypeMatch(matches, false))
+        {
+            int adj = asmDef.generateBinary(pos, mnemonic, matches, curOrgBlock.dat);
+            curPC += adj;
+            unbasedPC += adj;
+        }
+        else
+        {
+            int adj = asmDef.guessInstructionSize(pos, mnemonic, matches);
+
+            // TODO -- add 'matches' to some kind of list of incomplete patches.
+
+            for(int i = 0; i < adj; ++i)
+                curOrgBlock.dat.push_back(0);
+            curPC += adj;
+            unbasedPC += adj;
+        }
+    }
+
+    bool Assembler::resolveAndTypeMatch(AddrModeMatchMap& matches, bool force)
+    {
+        bool allResolved = true;
+        auto mtch = matches.begin();
+        while(mtch != matches.end())
+        {
+            bool typeOk = true;
+            for(auto& i : mtch->second)
+            {
+                if(i.expr->eval(err, symbols, force))
+                {
+                    bool bad = i.expr->isInteger() && (i.type != PatEl::Type::Integer);
+                    bad = bad || (i.expr->isString() && (i.type != PatEl::Type::String));
+
+                    if(bad)
+                    {
+                        // We need to report an error IFF this is the only remaining match
+                        if(matches.size() == 1)
+                        {
+                            err.error(&i.expr->getPos(), std::string("Type mismatch. Instruction was expecting ") + getPatternElTypeName(i.type)
+                                      + " but expression resolves to " + getExprTypeName(*i.expr) );
+                        }
+                        else
+                        {
+                            // otherwise, break out and indicate our type was bad, so this match can be removed from the list
+                            typeOk = false;
+                            break;
+                        }
+                    }
+                }
+                else
+                    allResolved = false;
+            }
+
+            // if the type was bad, remove this element from the matches.  Otherwise, just move to the next one
+            if(typeOk)      ++mtch;
+            else            mtch = matches.erase(mtch);
+        }
+        return allResolved;
     }
 
     void Assembler::doDirective(const Position& pos, const std::string& name, const directiveParams_t& params)
@@ -97,6 +176,7 @@ namespace bodoasm
     void Assembler::directive_Byte(const Position& pos, const directiveParams_t& params)
     {
         if(!PCEstablished)      err.error(&pos, "Cannot output #byte values until PC has been established.  Please #org first");
+
         // TODO
     }
 

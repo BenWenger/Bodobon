@@ -218,7 +218,7 @@ namespace bodoasm
         }
 
         if(!matches.empty())
-            assembler->addInstruction(pos, std::move(matches));
+            assembler->doInstruction(pos, mnemonic, std::move(matches));
     }
     
     Expression::Ptr Parser::parse_expression()
