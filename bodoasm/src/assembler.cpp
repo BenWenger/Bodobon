@@ -2,6 +2,7 @@
 #include <iomanip>
 #include "assembler.h"
 #include "parser.h"
+#include "stringpool.h"
 
 using luawrap::Lua;
 
@@ -48,10 +49,7 @@ namespace bodoasm
         , symbols(err)
         , asmDef(err)
     {
-        PCEstablished = false;
-        curPC = 0;
-        unbasedPC = 0;
-        clearCurOrgBlock();
+        clearCurOrg();
 
         buildDirTable();
         asmDef.addFuncSupplier( std::bind(&Assembler::addLuaFuncs, this, std::placeholders::_1) );
@@ -60,9 +58,14 @@ namespace bodoasm
     
     void Assembler::doFile(const std::string& path)
     {
+        clearCurOrg();
+
         lexer.startFile(path);
         Parser::parse(this, &lexer, &asmDef, &symbols, err);
-        int foo = 5;
+        if(err.getErrCount() > 0)       return;
+
+        orgBlocks.emplace_back( std::move(curOrgBlock) );
+        resolveFutures();
     }
 
     void Assembler::addLuaFuncs(Lua& lua)
@@ -78,8 +81,11 @@ namespace bodoasm
         return 1;
     }
 
-    void Assembler::clearCurOrgBlock()
+    void Assembler::clearCurOrg()
     {
+        PCEstablished = false;
+        curPC = 0;
+        unbasedPC = 0;
         curOrgBlock.orgAddr = 0;
         curOrgBlock.fileOffset = 0;
         curOrgBlock.sizeCap = 0;
@@ -115,7 +121,14 @@ namespace bodoasm
         {
             int adj = asmDef.guessInstructionSize(pos, mnemonic, matches);
 
-            // TODO -- add 'matches' to some kind of list of incomplete patches.
+            Future fut;
+            fut.mnemonic =          StringPool::toInt(mnemonic);
+            fut.pos =               pos;
+            fut.binaryPos =         static_cast<int>(curOrgBlock.dat.size());
+            fut.matches =           std::move(matches);
+            fut.promisedSize =      adj;
+            fut.pcAtTime =          curPC;
+            curOrgBlock.futures.emplace_back(std::move(fut));
 
             for(int i = 0; i < adj; ++i)
                 curOrgBlock.dat.push_back(0);
@@ -173,72 +186,16 @@ namespace bodoasm
         (this->*(i->second))(pos, params);
     }
 
-    void Assembler::directive_Byte(const Position& pos, const directiveParams_t& params)
+    void Assembler::resolveFutures()
     {
-        if(!PCEstablished)      err.error(&pos, "Cannot output #byte values until PC has been established.  Please #org first");
-
-        // TODO
-    }
-
-    void Assembler::directive_Org(const Position& pos, const directiveParams_t& params)
-    {
-        if(rebasing)                    err.warning(&pos, "#org reached while currently in a #rebase section.  #rebase section will be closed");
-        if(params[1].valInt < 0)        err.error(&pos, "#org cannot accept an offset lower than zero");
-        if(params.size() >= 4)
+        for(auto& blk : orgBlocks)
         {
-            if(params[3].valInt < 0 || params[3].valInt > 0xFF)
-                err.error(&pos, "#org fill byte must be within the range 0-255");
+            for(auto future : blk.futures)
+            {
+                curPC = future.pcAtTime;
+                resolveAndTypeMatch(future.matches, true);
+                asmDef.generateBinary(future.pos, StringPool::toStr(future.mnemonic), future.matches, blk.dat, future.binaryPos, future.promisedSize);
+            }
         }
-
-        // Stash our current org block
-        if(curOrgBlock.dat.size())
-        {
-            orgBlocks.emplace_back( std::move( curOrgBlock ) );
-            clearCurOrgBlock();
-        }
-
-        // Start a new one
-        curOrgBlock.orgAddr = params[0].valInt;
-        curOrgBlock.fileOffset = params[1].valInt;
-        if(params.size() >= 3)
-        {
-            curOrgBlock.hasSize = true;
-            curOrgBlock.sizeCap = params[2].valInt;
-            if(curOrgBlock.sizeCap < 0)
-                curOrgBlock.sizeCap = curOrgBlock.fileOffset - curOrgBlock.sizeCap;
-        }
-        if(params.size() >= 4)
-        {
-            curOrgBlock.hasFill = true;
-            curOrgBlock.fillVal = static_cast<int>(params[3].valInt);
-        }
-        
-        PCEstablished = true;
-        curPC = curOrgBlock.orgAddr;
-        unbasedPC = curPC;
-        rebasing = false;
-    }
-
-    void Assembler::directive_Include(const Position& pos, const directiveParams_t& params)
-    {
-        // TODO
-        int foo = 4;
-    }
-    
-    void Assembler::directive_Endbase(const Position& pos, const directiveParams_t& params)
-    {
-        if(!rebasing)               err.error(&pos, "#endbase reached when not in a #rebase section");
-        curPC = unbasedPC;
-        rebasing = false;
-    }
-
-    void Assembler::directive_Rebase(const Position& pos, const directiveParams_t& params)
-    {
-        if(!PCEstablished)          err.error(&pos, "PC has not been established. Cannot do a #rebase without a preceeding #org");
-        if(rebasing)                err.error(&pos, "#rebase sections cannot be nested.  Please close existing #rebase with #endbase");
-
-        unbasedPC = curPC;
-        curPC = params[0].valInt;
-        rebasing = true;
     }
 }

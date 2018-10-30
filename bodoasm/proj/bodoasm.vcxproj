@@ -111,6 +111,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="..\src\assembler.cpp" />
+    <ClCompile Include="..\src\assembler_directives.cpp" />
     <ClCompile Include="..\src\directivespecs.cpp" />
     <ClCompile Include="..\src\error.cpp" />
     <ClCompile Include="..\src\expression.cpp" />

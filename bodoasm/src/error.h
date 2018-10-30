@@ -19,6 +19,8 @@ namespace bodoasm
         void                fatal(const Position* pos, const std::string& msg);
         static std::string  formatPosition(const Position& pos);
 
+        unsigned            getErrCount() const { return errCount; }
+
 
     private:
         unsigned            wrnCount;

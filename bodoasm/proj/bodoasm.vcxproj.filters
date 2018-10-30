@@ -51,6 +51,9 @@
     <ClCompile Include="..\src\parser_directive.cpp">
       <Filter>src</Filter>
     </ClCompile>
+    <ClCompile Include="..\src\assembler_directives.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\src\assembler.h">

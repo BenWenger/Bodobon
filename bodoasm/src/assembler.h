@@ -46,6 +46,16 @@ namespace bodoasm
         Lexer               lexer;
         SymbolTable         symbols;
         AsmDefinition       asmDef;
+
+        struct Future
+        {
+            Position            pos;
+            int                 binaryPos;
+            unsigned            mnemonic;
+            AddrModeMatchMap    matches;
+            int                 promisedSize;
+            int_t               pcAtTime;
+        };
         
         struct OrgBlock
         {
@@ -56,21 +66,15 @@ namespace bodoasm
             bool                hasSize;
             bool                hasFill;
             std::vector<u8>     dat;
-        };
-
-        struct UnfinishedCmd
-        {
-            unsigned            orgBlockId;
-            unsigned            size;
-            //  TODO more here
+            std::vector<Future> futures;
         };
         bool                    resolveAndTypeMatch(AddrModeMatchMap& matches, bool force);
-        int                     getBinaryForInstruction(AddrModeMatchMap& matches, OrgBlock& blk, int insertPos);
+        void                    resolveFutures();
 
         void                    addLuaFuncs(luawrap::Lua& lua);
         int                     lua_getPC(luawrap::Lua& lua);
 
-        void                    clearCurOrgBlock();
+        void                    clearCurOrg();
         std::vector<OrgBlock>   orgBlocks;
         OrgBlock                curOrgBlock;
         int_t                   curPC;

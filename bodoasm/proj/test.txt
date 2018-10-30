@@ -11,6 +11,7 @@ SomeLabel:
     LDX Barf
     LDX.w Barf
     BEQ SomeLabel
+    BEQ Future
     JMP SomeLabel
     JMP Future
     NOP

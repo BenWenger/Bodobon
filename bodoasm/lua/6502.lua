@@ -177,8 +177,13 @@ bodoasm_getBinary = function(mnemonic, patterns)
     -- TODO allow negative numbers for immediate?  Or should that go in getBestMode?
     
     if mode == "rl" then
-        -- TODO need to get the PC to calculate the relative address
-        return opcode, 0
+        local pc = bodoasm.getPC()
+        local out = val - (pc + 2)
+        if out < -128 or out > 127 then
+            error("Relative branch out of range")
+        end
+        out = (out + 128) ~ 0x80
+        return opcode, out
     elseif size == 3 then
         return opcode, val & 0xFF, (val >> 8) & 0xFF
     elseif size == 2 then
