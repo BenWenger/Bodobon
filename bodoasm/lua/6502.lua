@@ -42,7 +42,7 @@ addrModeTable = { [0]=
 --[[Cx]] "im","ix","--","--", "zp","zp","zp","--",   "ip","im","ip","--", "ab","ab","ab","--",  --[[Cx]]
 --[[Dx]] "rl","iy","--","--", "--","zx","zx","--",   "ip","ay","--","--", "--","ax","ax","--",  --[[Dx]]
 --[[Ex]] "im","ix","--","--", "zp","zp","zp","--",   "ip","im","ip","--", "ab","ab","ab","--",  --[[Ex]]
---[[Fx]] "rl","iy","--","--", "--","zx","zx","--",   "ip","ay","--","--", "--","ax","ax","--",  --[[Fx]]
+--[[Fx]] "rl","iy","--","--", "--","zx","zx","--",   "ip","ay","--","--", "--","ax","ax","--"   --[[Fx]]
 --        x0   x1   x2   x3    x4   x5   x6   x7      x8   x9   xA   xB    xC   xD   xE   xF
 }
 
@@ -175,6 +175,7 @@ bodoasm_getBinary = function(mnemonic, patterns)
     
     -- TODO error if opcode is nill?
     -- TODO allow negative numbers for immediate?  Or should that go in getBestMode?
+    -- TODO error for out of range values
     
     if mode == "rl" then
         local pc = bodoasm.getPC()
