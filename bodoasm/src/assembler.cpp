@@ -1,8 +1,12 @@
 
+#include <algorithm>
 #include <iomanip>
 #include "assembler.h"
 #include "parser.h"
 #include "stringpool.h"
+
+#include <ctime>        // TODO remove these
+#include <cstdlib>
 
 using luawrap::Lua;
 
@@ -28,21 +32,6 @@ namespace bodoasm
         }
     }
 
-    bool Assembler::dirTableBuilt = false;
-    Assembler::dirTable_t Assembler::dirTable;
-
-    void Assembler::buildDirTable()
-    {
-        if(!dirTableBuilt)
-        {
-            dirTableBuilt = true;
-            dirTable["org"]         = &Assembler::directive_Org;
-            dirTable["include"]     = &Assembler::directive_Include;
-            dirTable["rebase"]      = &Assembler::directive_Rebase;
-            dirTable["endbase"]     = &Assembler::directive_Endbase;
-            dirTable["byte"]        = &Assembler::directive_Byte;
-        }
-    }
 
     Assembler::Assembler(const std::string& pathToLua, const std::string& asmmode)
         : lexer(err)
@@ -65,7 +54,6 @@ namespace bodoasm
         if(err.getErrCount() > 0)       return;
 
         orgBlocks.emplace_back( std::move(curOrgBlock) );
-        resolveFutures();
     }
 
     void Assembler::addLuaFuncs(Lua& lua)
@@ -197,5 +185,41 @@ namespace bodoasm
                 asmDef.generateBinary(future.pos, StringPool::toStr(future.mnemonic), future.matches, blk.dat, future.binaryPos, future.promisedSize);
             }
         }
+    }
+
+    void Assembler::checkOrgConflicts()
+    {
+        // To make this easier, sort out org blocks
+        struct
+        {
+            bool operator () (const OrgBlock& a, const OrgBlock& b)
+            {
+                return a.fileOffset < b.fileOffset;
+            }
+        } sorter;
+        
+        std::sort(orgBlocks.begin(), orgBlocks.end(), sorter);
+        int foo = 3;
+    }
+
+    bool Assembler::finalizeAndOutput(dshfs::File::Ptr file)
+    {
+        try
+        {
+            OrgBlock blk = {0};
+            srand((unsigned)time(nullptr));
+            for(int i = 0; i < 20; ++i)
+            {
+                blk.fileOffset = rand() % 1000;
+                orgBlocks.push_back(blk);
+            }
+      //      resolveFutures();
+            checkOrgConflicts();
+        }
+        catch(...)
+        {
+            return false;
+        }
+        return true;
     }
 }

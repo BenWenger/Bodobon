@@ -52,7 +52,9 @@ int main(int argc, char* argv[])
         {
             using namespace bodoasm;
             Assembler maker( getPathToLua(), "6502" );
-            maker.doFile("test.txt");
+           // maker.doFile("test.txt");
+
+            maker.finalizeAndOutput(nullptr);
             
             char c;
             std::cin >> c;

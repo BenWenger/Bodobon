@@ -2,6 +2,22 @@
 
 namespace bodoasm
 {
+    bool Assembler::dirTableBuilt = false;
+    Assembler::dirTable_t Assembler::dirTable;
+
+    void Assembler::buildDirTable()
+    {
+        if(!dirTableBuilt)
+        {
+            dirTableBuilt = true;
+            dirTable["org"]         = &Assembler::directive_Org;
+            dirTable["include"]     = &Assembler::directive_Include;
+            dirTable["rebase"]      = &Assembler::directive_Rebase;
+            dirTable["endbase"]     = &Assembler::directive_Endbase;
+            dirTable["byte"]        = &Assembler::directive_Byte;
+        }
+    }
+
     void Assembler::directive_Byte(const Position& pos, const directiveParams_t& params)
     {
         if(!PCEstablished)      err.error(&pos, "Cannot output #byte values until PC has been established.  Please #org first");

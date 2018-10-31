@@ -3,6 +3,7 @@
 
 #include <string>
 #include <luawrap.h>
+#include <dshfs.h>
 #include "error.h"
 #include "lexer.h"
 #include "expression.h"
@@ -18,7 +19,7 @@ namespace bodoasm
     public:
                             Assembler(const std::string& pathToLua, const std::string& asmmode);
         void                doFile(const std::string& path);
-        bool                finalizeAndOutput(const std::string& path);
+        bool                finalizeAndOutput(dshfs::File::Ptr file);
 
     private:
         friend class Parser;
@@ -70,6 +71,7 @@ namespace bodoasm
         };
         bool                    resolveAndTypeMatch(AddrModeMatchMap& matches, bool force);
         void                    resolveFutures();
+        void                    checkOrgConflicts();
 
         void                    addLuaFuncs(luawrap::Lua& lua);
         int                     lua_getPC(luawrap::Lua& lua);
