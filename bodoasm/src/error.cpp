@@ -21,9 +21,22 @@ namespace bodoasm
     
     void ErrorReporter::error(const Position* pos, const std::string& msg)
     {
-        ++errCount;
         output("Error", pos, msg);
+        incError();
         throw Error();
+    }
+
+    void ErrorReporter::softError(const Position* pos, const std::string& msg)
+    {
+        output("Error", pos, msg);
+        incError();
+    }
+
+    inline void ErrorReporter::incError()
+    {
+        ++errCount;
+        if(errCount >= 100)
+            fatal(nullptr, "Error count exceeded 100, halting assembly");
     }
 
     void ErrorReporter::fatal(const Position* pos, const std::string& msg)
@@ -36,10 +49,10 @@ namespace bodoasm
     void ErrorReporter::output(const char* prefix, const Position* pos, const std::string& msg)
     {
         auto& out = std::cout;
-        out << prefix << ": " << msg;
+        out << prefix << ": ";
         if(pos)
-            out << "  " << formatPosition(*pos);
-        out << '\n';
+            out << formatPosition(*pos) << " ";
+        out << msg << '\n';
     }
 
     std::string ErrorReporter::formatPosition(const Position& pos)

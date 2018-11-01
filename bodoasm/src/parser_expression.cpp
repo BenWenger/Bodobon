@@ -8,10 +8,10 @@ namespace bodoasm
         , curScope(scope)
     {}
     
-    Expression::Ptr Parser_Expression::parse(/*std::size_t* count*/)
+    Expression::Ptr Parser_Expression::parse(std::size_t* count)
     {
         auto out = top_exp();
-        //if(count)       *count = getCurrentLexPos();
+        if(count)       *count = getCurrentLexPos();
         
         auto t = next();
         if(!t.isEnd())

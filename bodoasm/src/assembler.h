@@ -18,8 +18,13 @@ namespace bodoasm
     {
     public:
                             Assembler(const std::string& pathToLua, const std::string& asmmode);
-        void                doFile(const std::string& path);
-        bool                finalizeAndOutput(dshfs::File::Ptr file);
+        void                assembleFile(const std::string& path);
+        void                finalize();
+        bool                okToProceed();
+        void                output(dshfs::File::Ptr& file);
+        
+        unsigned            getErrCount() const         { return err.getErrCount();         }
+        unsigned            getWarnCount() const        { return err.getWarningCount();     }
 
     private:
         friend class Parser;
@@ -60,6 +65,7 @@ namespace bodoasm
         
         struct OrgBlock
         {
+            Position            definePos;
             int_t               orgAddr;
             int_t               fileOffset;
             int_t               sizeCap;

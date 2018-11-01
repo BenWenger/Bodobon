@@ -273,7 +273,12 @@ namespace bodoasm
         lua->pushString(mnemonic);
         pushPatterns(patterns);
 
-        lua->callFunction(2, 2);
+        try
+        {
+            lua->callFunction(2, 2);
+        } catch(std::exception& e) {
+            err.error(&pos, e.what());
+        }
 
         if(!lua_isinteger(*lua, -2))
             err.error(&pos, "In lang Lua:  'bodo_guessSize' first return value must be an integer");
@@ -320,8 +325,14 @@ namespace bodoasm
             err.error(&pos, "In lang Lua:  global function 'bodoasm_getBinary' must be defined");
         lua->pushString(mnemonic);
         pushPatterns(patterns);
-
-        int numvals = lua->callFunction(2,-1);
+        
+        int numvals;
+        try
+        {
+            numvals = lua->callFunction(2, -1);
+        } catch(std::exception& e) {
+            err.error(&pos, e.what());
+        }
 
         if(numvals <= 0)
             err.error(&pos, "In lang Lua:  'bodoasm_getBinary' must return a series of bytes to output");

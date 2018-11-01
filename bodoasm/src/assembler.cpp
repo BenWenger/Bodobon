@@ -32,7 +32,6 @@ namespace bodoasm
         }
     }
 
-
     Assembler::Assembler(const std::string& pathToLua, const std::string& asmmode)
         : lexer(err)
         , symbols(err)
@@ -45,7 +44,7 @@ namespace bodoasm
         asmDef.load(pathToLua + asmmode + ".lua", (asmmode + ".lua").c_str() );
     }
     
-    void Assembler::doFile(const std::string& path)
+    void Assembler::assembleFile(const std::string& path)
     {
         clearCurOrg();
 
@@ -189,37 +188,60 @@ namespace bodoasm
 
     void Assembler::checkOrgConflicts()
     {
-        // To make this easier, sort out org blocks
-        struct
+        // Check for size constraints, also pad out where necessary
+        for(auto& i : orgBlocks)
         {
+            if(i.hasSize && i.dat.size() > i.sizeCap)
+                err.softError(&i.definePos, "Org block has exceeded it's allowed size");
+            if(i.hasFill && i.dat.size() < i.sizeCap)
+                i.dat.resize(static_cast<std::size_t>(i.sizeCap), static_cast<u8>(i.fillVal));
+        }
+
+        // To make this easier, sort out org blocks
+        struct {
             bool operator () (const OrgBlock& a, const OrgBlock& b)
             {
                 return a.fileOffset < b.fileOffset;
             }
         } sorter;
-        
         std::sort(orgBlocks.begin(), orgBlocks.end(), sorter);
-        int foo = 3;
+
+        int_t hi = 0;
+        for(std::size_t i = 1; i < orgBlocks.size(); ++i)
+        {
+            const auto& prev = orgBlocks[i-1];
+            const auto& now = orgBlocks[i];
+            hi = std::max(hi, prev.fileOffset + prev.dat.size());
+            if(hi > now.fileOffset)
+                err.softError(&prev.definePos, "Org block overlaps another org block defined here: " + ErrorReporter::formatPosition(now.definePos));
+        }
+
     }
 
-    bool Assembler::finalizeAndOutput(dshfs::File::Ptr file)
+    void Assembler::finalize()
     {
         try
         {
-            OrgBlock blk = {0};
-            srand((unsigned)time(nullptr));
-            for(int i = 0; i < 20; ++i)
-            {
-                blk.fileOffset = rand() % 1000;
-                orgBlocks.push_back(blk);
-            }
-      //      resolveFutures();
+            resolveFutures();
             checkOrgConflicts();
         }
         catch(...)
         {
-            return false;
         }
-        return true;
+    }
+
+    void Assembler::output(dshfs::File::Ptr& file)
+    {
+        for(auto& blk : orgBlocks)
+        {
+            file->seek( blk.fileOffset );
+            file->write( blk.dat.data(), blk.dat.size() );
+        }
+    }
+    
+    bool Assembler::okToProceed()
+    {
+        // TODO option for treating warnings as errors
+        return err.getErrCount() == 0;
     }
 }

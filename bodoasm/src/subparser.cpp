@@ -43,6 +43,11 @@ namespace bodoasm
         ++pos;
         return out;
     }
+    
+    void SubParser::advance(std::size_t count)
+    {
+        pos += count;
+    }
 
     void SubParser::back()
     {

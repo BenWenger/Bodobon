@@ -112,6 +112,13 @@ namespace bodoasm
                 doExpr();
             ++patPos;
         }
+        // end of command must immediately follow
+        auto t = next();
+        back();
+        if(!t.isEnd())
+            done();
+        
+        // Otherwise, we're golden
         addSuccess();
         done();
     }
@@ -141,7 +148,8 @@ namespace bodoasm
         //   is part of the expression!  Easy!
         if(patPos >= pattern.size()-1)
         {
-            doExpressionParse(getCurrentLexPos(), getCurrentLexSize(), pattern[patPos].type);
+            auto adv = doExpressionParse(getCurrentLexPos(), getCurrentLexSize(), pattern[patPos].type);
+            advance(adv);
             return;
         }
 
@@ -201,7 +209,7 @@ namespace bodoasm
         {}
     }
 
-    void Parser_AddrMode::doExpressionParse(std::size_t start, std::size_t stop, PatEl::Type type)
+    std::size_t Parser_AddrMode::doExpressionParse(std::size_t start, std::size_t stop, PatEl::Type type)
     {
         auto pkg = buildSubPackage(start, stop);
         pkg.errReport = nullptr;
@@ -209,9 +217,11 @@ namespace bodoasm
         AddrModeExpr res;
         res.type = type;
 
+        std::size_t ret = 0;
         Parser_Expression p(pkg, curScope);
-        res.expr = p.parse();
+        res.expr = p.parse(&ret);
 
         output.emplace_back( std::move(res) );
+        return ret;
     }
 }

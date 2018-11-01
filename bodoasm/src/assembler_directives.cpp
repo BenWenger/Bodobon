@@ -43,6 +43,7 @@ namespace bodoasm
         }
 
         // Start a new one
+        curOrgBlock.definePos = pos;
         curOrgBlock.orgAddr = params[0].valInt;
         curOrgBlock.fileOffset = params[1].valInt;
         if(params.size() >= 3)

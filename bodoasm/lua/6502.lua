@@ -15,7 +15,7 @@ mnemonicTable = { [0]=
 --         x0    x1    x2    x3     x4    x5    x6    x7       x8    x9    xA    xB     xC    xD    xE    xF
 --[[8x]] "---","sta","---","---", "sty","sta","stx","---",   "dey","---","txa","---", "sty","sta","stx","---",  --[[8x]]
 --[[9x]] "bcc","sta","---","---", "sty","sta","stx","---",   "tya","sta","txs","---", "---","sta","---","---",  --[[9x]]
---[[Ax]] "ldy","lda","ldx","---", "ldy","lda","ldx","---",   "tay","lda","tas","---", "ldy","lda","ldx","---",  --[[Ax]]
+--[[Ax]] "ldy","lda","ldx","---", "ldy","lda","ldx","---",   "tay","lda","tax","---", "ldy","lda","ldx","---",  --[[Ax]]
 --[[Bx]] "bcs","lda","---","---", "ldy","lda","ldx","---",   "clv","lda","tsx","---", "ldy","lda","ldx","---",  --[[Bx]]
 --[[Cx]] "cpy","cmp","---","---", "cpy","cmp","dec","---",   "iny","cmp","dex","---", "cpy","cmp","dec","---",  --[[Cx]]
 --[[Dx]] "bne","cmp","---","---", "---","cmp","dec","---",   "cld","cmp","---","---", "---","cmp","dec","---",  --[[Dx]]
@@ -173,9 +173,9 @@ bodoasm_getBinary = function(mnemonic, patterns)
     local opcode = opcodeLookup[mnemonic .. mode]
     local val = patterns[mode][1]
     
-    -- TODO error if opcode is nill?
-    -- TODO allow negative numbers for immediate?  Or should that go in getBestMode?
-    -- TODO error for out of range values
+    if mode == "im" and val < 0 then
+        val = val + 256
+    end
     
     if mode == "rl" then
         local pc = bodoasm.getPC()
@@ -186,8 +186,14 @@ bodoasm_getBinary = function(mnemonic, patterns)
         out = (out + 128) ~ 0x80
         return opcode, out
     elseif size == 3 then
+        if val < 0 or val > 0xFFFF then
+            error("value out of range")
+        end
         return opcode, val & 0xFF, (val >> 8) & 0xFF
     elseif size == 2 then
+        if val < 0 or val > 0xFF then
+            error("value out of range")
+        end
         return opcode, val & 0xFF
     end
     

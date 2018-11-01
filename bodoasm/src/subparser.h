@@ -27,6 +27,7 @@ namespace bodoasm
                     SubParser(const Package& pkg, int maxRecursiveDepth);
 
         Token       next();
+        void        advance(std::size_t count);
         void        back();
 
         class       RecursionMarker

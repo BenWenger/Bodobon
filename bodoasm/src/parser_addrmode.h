@@ -33,7 +33,7 @@ namespace bodoasm
 
         AddrModeExprs       output;             // output so far
 
-        void                doExpressionParse(std::size_t start, std::size_t stop, PatEl::Type type);
+        std::size_t         doExpressionParse(std::size_t start, std::size_t stop, PatEl::Type type);
         void                tryForkToPatternMatch(std::size_t exprStart, std::size_t exprStop, PatEl::Type type);
 
         void                addSuccess();
