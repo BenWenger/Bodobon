@@ -53,7 +53,7 @@ namespace bodoasm
         typedef AddrModeExprs       Success;
     }
 
-    Parser_AddrMode::Parser_AddrMode(const Package& pkg, const std::string& scope, const Pattern& pat)
+    Parser_AddrMode::Parser_AddrMode(const Package& pkg, const Scope& scope, const Pattern& pat)
         : SubParser(pkg, 100)
         , curScope(scope)
         , pattern(pat)

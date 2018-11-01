@@ -6,6 +6,7 @@
 #include "lexer.h"
 #include "expression.h"
 #include "subparser.h"
+#include "blocktypes.h"
 
 namespace bodoasm
 {
@@ -37,9 +38,7 @@ namespace bodoasm
         Token               next();
         void                unget(const Token& t);
 
-        void                scopeChange(const std::string& newScope);
-
-        std::string         curScope;
+        Scope               curScope;
         unsigned            unnamedLabelCtr = 0;
         
         void                parse_directive();

@@ -13,7 +13,7 @@ namespace bodoasm
     class Parser_AddrMode : public SubParser
     {
     public:
-                            Parser_AddrMode(const Package& pkg, const std::string& scope, const Pattern& pattern);
+                            Parser_AddrMode(const Package& pkg, const Scope& scope, const Pattern& pattern);
         AddrModeExprs       parse();
 
     private:
@@ -24,7 +24,7 @@ namespace bodoasm
         void                doMatch();
         void                doExpr();
 
-        std::string         curScope;
+        const Scope&        curScope;
         const Pattern&      pattern;
         std::size_t         patPos;             // position in the pattern
         

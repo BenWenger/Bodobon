@@ -3,7 +3,7 @@
 
 namespace bodoasm
 {
-    Parser_Expression::Parser_Expression(const Package& pkg, const std::string& scope)
+    Parser_Expression::Parser_Expression(const Package& pkg, const Scope& scope)
         : SubParser(pkg, 20)
         , curScope(scope)
     {}
@@ -200,6 +200,7 @@ namespace bodoasm
         //  - numeric literal
         //  - string literal
         //  - symbol name
+        //  - nameless label
         auto t = next();
         if(t.str == "(")        // parenthetical statement
         {
@@ -209,6 +210,32 @@ namespace bodoasm
             if(t.str != ")")
                 error(&t.pos,"Missing expected closing parenthesis");
         }
+        else if(t.str == ":")   // possible nameless label reference
+        {
+            if(t.ws_after)
+                error(&t.pos, "Stray colon. Expected reference to nameless label (needs to be followed by + or -)");
+            auto defPos = t.pos;
+
+            t = next();
+            int offset = 0;
+            int adj = 0;
+            if(t.str == "+")        { offset = 0;  adj = 1;         }
+            else if(t.str == "-")   { offset = -1; adj = -1;        }
+            else                    error(&t.pos, "Unexpected token after colon. Expected + or -");
+
+            auto adjstr = t.str;
+            while(!t.ws_after)
+            {
+                t = next();
+                if(t.str != adjstr)
+                {
+                    back();
+                    break;
+                }
+                offset += adj;
+            }
+            exp = Expression::buildSymbol(defPos, curScope.getNamelessName(offset));
+        }
         else if(t.str == ".")   // possible local symbol name
         {
             auto sym = next().resolve(*this);
@@ -216,7 +243,7 @@ namespace bodoasm
                 error(&t.pos, "Unexpected character '.'");
 
             // it IS a local symbol name!
-            exp = Expression::buildSymbol(t.pos, curScope + "." + sym.str);
+            exp = Expression::buildSymbol(t.pos, curScope.topLabel + "." + sym.str);
         }
         else if(t.str == "%")   // binary literal
         {

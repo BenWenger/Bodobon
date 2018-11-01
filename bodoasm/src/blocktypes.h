@@ -39,6 +39,17 @@ namespace bodoasm
 
     typedef std::vector<AddrModeExpr>           AddrModeExprs;
     typedef std::map<unsigned, AddrModeExprs>   AddrModeMatchMap;
+
+    struct Scope
+    {
+        std::string     topLabel;
+        unsigned        nextUnnamed = 0;
+
+        std::string     getNamelessName(int adj = 0) const
+        {
+            return topLabel + ".#nmls_" + std::to_string(nextUnnamed + adj);
+        }
+    };
 }
 
 #endif

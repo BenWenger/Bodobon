@@ -5,13 +5,14 @@
 #include "error.h"
 #include "expression.h"
 #include "subparser.h"
+#include "blocktypes.h"
 
 namespace bodoasm
 {
     class Parser_Expression : public SubParser
     {
     public:
-        Parser_Expression(const Package& pkg, const std::string& scope);
+        Parser_Expression(const Package& pkg, const Scope& scope);
         Expression::Ptr                 parse(std::size_t* count = nullptr);
 
     private:
@@ -35,7 +36,7 @@ namespace bodoasm
         void        makeBinOp(Expression::BinOp op, Exp& lhs, Exp&& rhs);
         Exp         makeUnOp(Expression::UnOp op, const Position& pos, Exp&& in);
 
-        std::string         curScope;
+        const Scope&        curScope;
     };
 }
 

@@ -83,11 +83,6 @@ namespace bodoasm
     {
         lexer->unget(t);                // TODO macro substitution
     }
-
-    void Parser::scopeChange(const std::string& newScope)
-    {
-        curScope = newScope;
-    }
     
     //////////////////////////////////////////////////////////////
     //////////////////////////////////////////////////////////////
@@ -109,7 +104,8 @@ namespace bodoasm
         }
         if(a.str == ":")                // nameless label?
         {
-            // TODO nameless label
+            assembler->defineLabel( a.pos, curScope.getNamelessName() );
+            curScope.nextUnnamed++;
             return;
         }
         
@@ -121,23 +117,23 @@ namespace bodoasm
         {
             if(c.str == ":")
             {
-                assembler->defineLabel(a.pos, curScope + "." + b.str);
+                assembler->defineLabel(a.pos, curScope.topLabel + "." + b.str);
                 return;
             }
             else if(c.str == "=")
             {
-                assembler->defineSymbol(a.pos, curScope + "." + b.str, parse_expression());
+                assembler->defineSymbol(a.pos, curScope.topLabel + "." + b.str, parse_expression());
                 return;
             }
         }
         // global symbol?
         else if(a.isPossibleSymbol())
         {
-            if(b.str == ":")
+            if(!a.ws_after && b.str == ":")
             {
                 unget(c);
                 assembler->defineLabel(a.pos, a.str);
-                scopeChange(a.str);
+                curScope.topLabel = a.str;
                 return;
             }
             else if(b.str == "=")

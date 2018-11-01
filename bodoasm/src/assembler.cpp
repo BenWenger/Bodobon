@@ -126,6 +126,7 @@ namespace bodoasm
 
     bool Assembler::resolveAndTypeMatch(AddrModeMatchMap& matches, bool force)
     {
+        // TODO, this halts after just one error.  Change this to print multiple errors
         bool allResolved = true;
         auto mtch = matches.begin();
         while(mtch != matches.end())
