@@ -107,5 +107,8 @@
     <ClInclude Include="..\src\directivespecs.h">
       <Filter>src</Filter>
     </ClInclude>
+    <ClInclude Include="..\src\macro.h">
+      <Filter>src</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

@@ -50,6 +50,15 @@ namespace bodoasm
             return topLabel + ".#nmls_" + std::to_string(nextUnnamed + adj);
         }
     };
+
+
+    struct Token;
+    struct Macro
+    {
+        Position                    definePos;
+        std::vector<std::string>    paramNames;
+        std::vector<Token>          tokens;
+    };
 }
 
 #endif

@@ -119,6 +119,7 @@ namespace bodoasm
                 tok.type = Token::Type::CmdEnd;
                 if(!getNextLine())                  // EOF reached.  If we have an include stack, go back on it
                 {
+                    tok.str = "<End of File>";
                     if(includeStack.empty())
                     {
                         cur.clear();
@@ -243,7 +244,7 @@ namespace bodoasm
 
     void Lexer::lexStringLiteral(Token& tok, char closer)
     {
-        tok.str.clear();
+        tok.str = "<string literal>";
         tok.strVal.clear();
         char c;
         while(true)

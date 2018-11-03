@@ -1,6 +1,7 @@
 #ifndef BODOASM_PARSER_H_INCLUDED
 #define BODOASM_PARSER_H_INCLUDED
 
+#include <unordered_map>
 #include <string>
 #include "error.h"
 #include "lexer.h"
@@ -44,6 +45,15 @@ namespace bodoasm
         void                parse_directive();
         void                parse_command();
         Expression::Ptr     parse_expression();
+
+        typedef std::vector<Token>                              tokenList_t;
+        typedef std::unordered_map<std::string, tokenList_t>    subMap_t;
+        std::vector<subMap_t>                   subs;               // token substitutions (ie:  macro arguments)
+        std::vector<std::string>                macroScopeStack;    // empty when not expanding any macros
+        std::unordered_map<std::string, Macro>  definedMacros;
+        
+        void                startMacroDef(const Position& pos);
+        void                getStartMacroParamList(Macro& macro);
     };
 }
 

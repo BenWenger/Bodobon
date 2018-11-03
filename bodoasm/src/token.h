@@ -43,6 +43,17 @@ namespace bodoasm
             return false;
         }
 
+        bool isEoF() const
+        {
+            switch(type)
+            {
+            case Type::FileEnd:
+            case Type::InputEnd:
+                return true;
+            }
+            return false;
+        }
+
         bool isPossibleSymbol() const
         {
             if(type == Type::Symbol)            return true;

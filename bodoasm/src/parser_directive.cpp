@@ -91,6 +91,15 @@ namespace bodoasm
         auto name = toLower(t.str);
         auto directivePos = t.pos;
 
+        // special case for #macro and #endmacro ... the parser handles these
+        if(t.str == "macro")
+        {
+            startMacroDef(directivePos);
+            return;
+        }
+        else if(t.str == "endmacro")
+            err.error(&t.pos, "#endmacro directive reached outside of macro definition");
+
         auto iter = directiveSpecs.find(name);
         if(iter == directiveSpecs.end())        err.error(&t.pos, "'" + name + "' is an unrecognized directive");
 
@@ -171,4 +180,5 @@ namespace bodoasm
         // Otherwise, all is well
         assembler->doDirective(directivePos, name, params);
     }
+
 }

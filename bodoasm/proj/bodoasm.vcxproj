@@ -134,6 +134,7 @@
     <ClInclude Include="..\src\error.h" />
     <ClInclude Include="..\src\expression.h" />
     <ClInclude Include="..\src\asmdefinition.h" />
+    <ClInclude Include="..\src\macro.h" />
     <ClInclude Include="..\src\parser.h" />
     <ClInclude Include="..\src\parsersubinstance.h" />
     <ClInclude Include="..\src\parser_addrmode.h" />

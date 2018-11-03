@@ -52,7 +52,14 @@ namespace bodoasm
         out << prefix << ": ";
         if(pos)
             out << formatPosition(*pos) << " ";
-        out << msg << '\n';
+        out << msg << "\n";
+        if(pos)
+        {
+            for(auto i = pos->callStack.get(); i; i = i->callStack.get())
+            {
+                out << "    Called from here: " << formatPosition(*i) << '\n';
+            }
+        }
     }
 
     std::string ErrorReporter::formatPosition(const Position& pos)
