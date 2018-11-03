@@ -1,9 +1,9 @@
 #ifndef BODOASM_EXPRESSION_H_INCLUDED
 #define BODOASM_EXPRESSION_H_INCLUDED
 
-#include "basetypes.h"
-#include "lexer.h"          // for Token
-#include "position.h"
+#include <memory>
+#include "types/basetypes.h"
+#include "types/token.h"
 
 // there might be a better way to organize this....
 

@@ -2,11 +2,8 @@
 #include <algorithm>
 #include <iomanip>
 #include "assembler.h"
-#include "parser.h"
-#include "stringpool.h"
-
-#include <ctime>        // TODO remove these
-#include <cstdlib>
+#include "parser/parser.h"
+#include "types/stringpool.h"
 
 using luawrap::Lua;
 

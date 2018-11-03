@@ -6,10 +6,10 @@
 #include <vector>
 #include <memory>
 #include <dshfs.h>
-#include "position.h"
-#include "error.h"
-#include "basetypes.h"
-#include "token.h"
+#include "types/position.h"
+#include "error/error.h"
+#include "types/basetypes.h"
+#include "types/token.h"
 
 namespace bodoasm
 {

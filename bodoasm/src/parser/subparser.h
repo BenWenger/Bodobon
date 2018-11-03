@@ -3,8 +3,8 @@
 
 #include <string>
 #include <vector>
-#include "error.h"
-#include "token.h"
+#include "error/error.h"
+#include "types/token.h"
 
 namespace bodoasm
 {

@@ -4,111 +4,138 @@
     <Filter Include="src">
       <UniqueIdentifier>{cd8bb71d-edee-43dd-bc17-6d7634a64dab}</UniqueIdentifier>
     </Filter>
+    <Filter Include="src\lexer">
+      <UniqueIdentifier>{e0aeb2b5-1dc6-4d24-8d6b-b5cc482ae9eb}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\error">
+      <UniqueIdentifier>{ab883466-99d7-4fd5-891d-f0e333a99b44}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\parser">
+      <UniqueIdentifier>{8a242b26-6b56-46ff-b77f-6b086e49a5a1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\directives">
+      <UniqueIdentifier>{1b8a0958-0a91-4665-ac15-ebc08897aba9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\asmdefs">
+      <UniqueIdentifier>{cc273894-915d-48c0-bd8f-023a4431a535}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\types">
+      <UniqueIdentifier>{4e1b8723-eecd-4919-acaa-019a306387ba}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\symbols">
+      <UniqueIdentifier>{0862b195-304b-4d8a-a054-68c1472505e3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\expression">
+      <UniqueIdentifier>{c1f917c7-3199-4fef-af67-73593c00aa02}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\assembler">
+      <UniqueIdentifier>{d40618f6-ef8c-4ebe-bcdb-dcd1c4a2a786}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\src\main.cpp">
       <Filter>src</Filter>
     </ClCompile>
-    <ClCompile Include="..\src\assembler.cpp">
-      <Filter>src</Filter>
+    <ClCompile Include="..\src\lexer\lexer.cpp">
+      <Filter>src\lexer</Filter>
     </ClCompile>
-    <ClCompile Include="..\src\lexer.cpp">
-      <Filter>src</Filter>
+    <ClCompile Include="..\src\error\error.cpp">
+      <Filter>src\error</Filter>
     </ClCompile>
-    <ClCompile Include="..\src\error.cpp">
-      <Filter>src</Filter>
+    <ClCompile Include="..\src\directives\directivespecs.cpp">
+      <Filter>src\directives</Filter>
     </ClCompile>
-    <ClCompile Include="..\src\expression.cpp">
-      <Filter>src</Filter>
+    <ClCompile Include="..\src\asmdefs\asmdefinition.cpp">
+      <Filter>src\asmdefs</Filter>
     </ClCompile>
-    <ClCompile Include="..\src\symboltable.cpp">
-      <Filter>src</Filter>
+    <ClCompile Include="..\src\expression\expression.cpp">
+      <Filter>src\expression</Filter>
     </ClCompile>
-    <ClCompile Include="..\src\stringpool.cpp">
-      <Filter>src</Filter>
+    <ClCompile Include="..\src\assembler\assembler.cpp">
+      <Filter>src\assembler</Filter>
     </ClCompile>
-    <ClCompile Include="..\src\asmdefinition.cpp">
-      <Filter>src</Filter>
+    <ClCompile Include="..\src\assembler\assembler_directives.cpp">
+      <Filter>src\assembler</Filter>
     </ClCompile>
-    <ClCompile Include="..\src\parser.cpp">
-      <Filter>src</Filter>
+    <ClCompile Include="..\src\symbols\symboltable.cpp">
+      <Filter>src\symbols</Filter>
     </ClCompile>
-    <ClCompile Include="..\src\token.cpp">
-      <Filter>src</Filter>
+    <ClCompile Include="..\src\types\stringpool.cpp">
+      <Filter>src\types</Filter>
     </ClCompile>
-    <ClCompile Include="..\src\parser_expression.cpp">
-      <Filter>src</Filter>
+    <ClCompile Include="..\src\types\token.cpp">
+      <Filter>src\types</Filter>
     </ClCompile>
-    <ClCompile Include="..\src\subparser.cpp">
-      <Filter>src</Filter>
+    <ClCompile Include="..\src\parser\parser.cpp">
+      <Filter>src\parser</Filter>
     </ClCompile>
-    <ClCompile Include="..\src\directivespecs.cpp">
-      <Filter>src</Filter>
+    <ClCompile Include="..\src\parser\parser_addrmode.cpp">
+      <Filter>src\parser</Filter>
     </ClCompile>
-    <ClCompile Include="..\src\parser_addrmode.cpp">
-      <Filter>src</Filter>
+    <ClCompile Include="..\src\parser\parser_directive.cpp">
+      <Filter>src\parser</Filter>
     </ClCompile>
-    <ClCompile Include="..\src\parser_directive.cpp">
-      <Filter>src</Filter>
+    <ClCompile Include="..\src\parser\parser_expression.cpp">
+      <Filter>src\parser</Filter>
     </ClCompile>
-    <ClCompile Include="..\src\assembler_directives.cpp">
-      <Filter>src</Filter>
+    <ClCompile Include="..\src\parser\parser_macros.cpp">
+      <Filter>src\parser</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\parser\subparser.cpp">
+      <Filter>src\parser</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\src\assembler.h">
-      <Filter>src</Filter>
+    <ClInclude Include="..\src\lexer\lexer.h">
+      <Filter>src\lexer</Filter>
     </ClInclude>
-    <ClInclude Include="..\src\lexer.h">
-      <Filter>src</Filter>
+    <ClInclude Include="..\src\error\error.h">
+      <Filter>src\error</Filter>
     </ClInclude>
-    <ClInclude Include="..\src\position.h">
-      <Filter>src</Filter>
+    <ClInclude Include="..\src\directives\directivespecs.h">
+      <Filter>src\directives</Filter>
     </ClInclude>
-    <ClInclude Include="..\src\error.h">
-      <Filter>src</Filter>
+    <ClInclude Include="..\src\asmdefs\asmdefinition.h">
+      <Filter>src\asmdefs</Filter>
     </ClInclude>
-    <ClInclude Include="..\src\basetypes.h">
-      <Filter>src</Filter>
+    <ClInclude Include="..\src\expression\expression.h">
+      <Filter>src\expression</Filter>
     </ClInclude>
-    <ClInclude Include="..\src\blocktypes.h">
-      <Filter>src</Filter>
+    <ClInclude Include="..\src\assembler\assembler.h">
+      <Filter>src\assembler</Filter>
     </ClInclude>
-    <ClInclude Include="..\src\expression.h">
-      <Filter>src</Filter>
+    <ClInclude Include="..\src\symbols\symboltable.h">
+      <Filter>src\symbols</Filter>
     </ClInclude>
-    <ClInclude Include="..\src\symboltable.h">
-      <Filter>src</Filter>
+    <ClInclude Include="..\src\types\basetypes.h">
+      <Filter>src\types</Filter>
     </ClInclude>
-    <ClInclude Include="..\src\stringpool.h">
-      <Filter>src</Filter>
+    <ClInclude Include="..\src\types\blocktypes.h">
+      <Filter>src\types</Filter>
     </ClInclude>
-    <ClInclude Include="..\src\asmdefinition.h">
-      <Filter>src</Filter>
+    <ClInclude Include="..\src\types\position.h">
+      <Filter>src\types</Filter>
     </ClInclude>
-    <ClInclude Include="..\src\parser.h">
-      <Filter>src</Filter>
+    <ClInclude Include="..\src\types\stringpool.h">
+      <Filter>src\types</Filter>
     </ClInclude>
-    <ClInclude Include="..\src\token.h">
-      <Filter>src</Filter>
+    <ClInclude Include="..\src\types\token.h">
+      <Filter>src\types</Filter>
     </ClInclude>
-    <ClInclude Include="..\src\parsersubinstance.h">
-      <Filter>src</Filter>
+    <ClInclude Include="..\src\parser\parser.h">
+      <Filter>src\parser</Filter>
     </ClInclude>
-    <ClInclude Include="..\src\parser_expression.h">
-      <Filter>src</Filter>
+    <ClInclude Include="..\src\parser\parser_addrmode.h">
+      <Filter>src\parser</Filter>
     </ClInclude>
-    <ClInclude Include="..\src\subparser.h">
-      <Filter>src</Filter>
+    <ClInclude Include="..\src\parser\parser_expression.h">
+      <Filter>src\parser</Filter>
     </ClInclude>
-    <ClInclude Include="..\src\parser_addrmode.h">
-      <Filter>src</Filter>
+    <ClInclude Include="..\src\parser\parsersubinstance.h">
+      <Filter>src\parser</Filter>
     </ClInclude>
-    <ClInclude Include="..\src\directivespecs.h">
-      <Filter>src</Filter>
-    </ClInclude>
-    <ClInclude Include="..\src\macro.h">
-      <Filter>src</Filter>
+    <ClInclude Include="..\src\parser\subparser.h">
+      <Filter>src\parser</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

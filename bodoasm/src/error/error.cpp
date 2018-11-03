@@ -2,7 +2,7 @@
 #include <iostream>
 #include <string>
 #include "error.h"
-#include "stringpool.h"
+#include "types/stringpool.h"
 
 namespace bodoasm
 {

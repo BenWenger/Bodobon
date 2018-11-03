@@ -2,7 +2,7 @@
 #include <dshfs.h>
 #include <luawrap.h>
 #include <iostream>
-#include "assembler.h"
+#include "assembler/assembler.h"
 
 std::string getPathToLua()
 {

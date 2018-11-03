@@ -6,8 +6,8 @@
 #include <map>
 #include <unordered_map>
 #include <set>
-#include "blocktypes.h"
-#include "position.h"
+#include "types/blocktypes.h"
+#include "types/position.h"
 
 namespace luawrap
 {

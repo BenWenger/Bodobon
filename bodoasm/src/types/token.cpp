@@ -1,6 +1,6 @@
 
 #include "token.h"
-#include "error.h"
+#include "error/error.h"
 
 namespace bodoasm
 {

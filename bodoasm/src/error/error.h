@@ -3,7 +3,7 @@
 
 #include <stdexcept>
 #include <string>
-#include "position.h"
+#include "types/position.h"
 
 namespace bodoasm
 {

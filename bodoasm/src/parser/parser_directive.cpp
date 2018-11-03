@@ -1,8 +1,8 @@
 
 #include "parser.h"
-#include "directivespecs.h"
+#include "directives/directivespecs.h"
 #include "parser_expression.h"
-#include "assembler.h"
+#include "assembler/assembler.h"
 
 namespace bodoasm
 {

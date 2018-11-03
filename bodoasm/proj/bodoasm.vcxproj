@@ -68,7 +68,18 @@
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
-  <PropertyGroup />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <IncludePath>$(SolutionDir)..\src;$(IncludePath)</IncludePath>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <IncludePath>$(SolutionDir)..\src;$(IncludePath)</IncludePath>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <IncludePath>$(SolutionDir)..\src;$(IncludePath)</IncludePath>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <IncludePath>$(SolutionDir)..\src;$(IncludePath)</IncludePath>
+  </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
@@ -110,42 +121,42 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="..\src\assembler.cpp" />
-    <ClCompile Include="..\src\assembler_directives.cpp" />
-    <ClCompile Include="..\src\directivespecs.cpp" />
-    <ClCompile Include="..\src\error.cpp" />
-    <ClCompile Include="..\src\expression.cpp" />
-    <ClCompile Include="..\src\asmdefinition.cpp" />
-    <ClCompile Include="..\src\parser.cpp" />
-    <ClCompile Include="..\src\parser_directive.cpp" />
-    <ClCompile Include="..\src\parser_expression.cpp" />
-    <ClCompile Include="..\src\parser_addrmode.cpp" />
-    <ClCompile Include="..\src\stringpool.cpp" />
-    <ClCompile Include="..\src\lexer.cpp" />
+    <ClCompile Include="..\src\asmdefs\asmdefinition.cpp" />
+    <ClCompile Include="..\src\assembler\assembler.cpp" />
+    <ClCompile Include="..\src\assembler\assembler_directives.cpp" />
+    <ClCompile Include="..\src\directives\directivespecs.cpp" />
+    <ClCompile Include="..\src\error\error.cpp" />
+    <ClCompile Include="..\src\expression\expression.cpp" />
+    <ClCompile Include="..\src\lexer\lexer.cpp" />
     <ClCompile Include="..\src\main.cpp" />
-    <ClCompile Include="..\src\subparser.cpp" />
-    <ClCompile Include="..\src\symboltable.cpp" />
-    <ClCompile Include="..\src\token.cpp" />
+    <ClCompile Include="..\src\parser\parser.cpp" />
+    <ClCompile Include="..\src\parser\parser_addrmode.cpp" />
+    <ClCompile Include="..\src\parser\parser_directive.cpp" />
+    <ClCompile Include="..\src\parser\parser_expression.cpp" />
+    <ClCompile Include="..\src\parser\parser_macros.cpp" />
+    <ClCompile Include="..\src\parser\subparser.cpp" />
+    <ClCompile Include="..\src\symbols\symboltable.cpp" />
+    <ClCompile Include="..\src\types\stringpool.cpp" />
+    <ClCompile Include="..\src\types\token.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\src\assembler.h" />
-    <ClInclude Include="..\src\basetypes.h" />
-    <ClInclude Include="..\src\directivespecs.h" />
-    <ClInclude Include="..\src\error.h" />
-    <ClInclude Include="..\src\expression.h" />
-    <ClInclude Include="..\src\asmdefinition.h" />
-    <ClInclude Include="..\src\macro.h" />
-    <ClInclude Include="..\src\parser.h" />
-    <ClInclude Include="..\src\parsersubinstance.h" />
-    <ClInclude Include="..\src\parser_addrmode.h" />
-    <ClInclude Include="..\src\parser_expression.h" />
-    <ClInclude Include="..\src\stringpool.h" />
-    <ClInclude Include="..\src\lexer.h" />
-    <ClInclude Include="..\src\blocktypes.h" />
-    <ClInclude Include="..\src\position.h" />
-    <ClInclude Include="..\src\subparser.h" />
-    <ClInclude Include="..\src\symboltable.h" />
-    <ClInclude Include="..\src\token.h" />
+    <ClInclude Include="..\src\asmdefs\asmdefinition.h" />
+    <ClInclude Include="..\src\assembler\assembler.h" />
+    <ClInclude Include="..\src\directives\directivespecs.h" />
+    <ClInclude Include="..\src\error\error.h" />
+    <ClInclude Include="..\src\expression\expression.h" />
+    <ClInclude Include="..\src\lexer\lexer.h" />
+    <ClInclude Include="..\src\parser\parser.h" />
+    <ClInclude Include="..\src\parser\parsersubinstance.h" />
+    <ClInclude Include="..\src\parser\parser_addrmode.h" />
+    <ClInclude Include="..\src\parser\parser_expression.h" />
+    <ClInclude Include="..\src\parser\subparser.h" />
+    <ClInclude Include="..\src\symbols\symboltable.h" />
+    <ClInclude Include="..\src\types\basetypes.h" />
+    <ClInclude Include="..\src\types\blocktypes.h" />
+    <ClInclude Include="..\src\types\position.h" />
+    <ClInclude Include="..\src\types\stringpool.h" />
+    <ClInclude Include="..\src\types\token.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

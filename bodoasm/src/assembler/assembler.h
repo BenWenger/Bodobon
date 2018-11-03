@@ -4,12 +4,12 @@
 #include <string>
 #include <luawrap.h>
 #include <dshfs.h>
-#include "error.h"
-#include "lexer.h"
-#include "expression.h"
-#include "symboltable.h"
-#include "asmdefinition.h"
-#include "directivespecs.h"
+#include "error/error.h"
+#include "lexer/lexer.h"
+#include "expression/expression.h"
+#include "symbols/symboltable.h"
+#include "asmdefs/asmdefinition.h"
+#include "directives/directivespecs.h"
 
 
 namespace bodoasm

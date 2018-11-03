@@ -2,10 +2,10 @@
 #define BODOASM_PARSER_EXPRESSION_H_INCLUDED
 
 #include <string>
-#include "error.h"
-#include "expression.h"
+#include "error/error.h"
+#include "expression/expression.h"
 #include "subparser.h"
-#include "blocktypes.h"
+#include "types/blocktypes.h"
 
 namespace bodoasm
 {

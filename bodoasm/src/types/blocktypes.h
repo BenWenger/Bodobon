@@ -4,14 +4,12 @@
 #include "basetypes.h"
 #include <vector>
 #include <map>
-#include "expression.h"
+#include "expression/expression.h"
 
 // there might be a better way to organize this....
 
 namespace bodoasm
-{
-    class Expression;
-    
+{    
     //  Pattern elements
     struct PatEl
     {

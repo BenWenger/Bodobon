@@ -1,9 +1,9 @@
 
 #include "parser.h"
-#include "assembler.h"
+#include "assembler/assembler.h"
 #include "parser_expression.h"
 #include "parser_addrmode.h"
-#include "asmdefinition.h"
+#include "asmdefs/asmdefinition.h"
 
 namespace bodoasm
 {

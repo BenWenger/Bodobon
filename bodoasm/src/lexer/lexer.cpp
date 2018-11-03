@@ -1,7 +1,7 @@
 
 #include "lexer.h"
-#include "error.h"
-#include "stringpool.h"
+#include "error/error.h"
+#include "types/stringpool.h"
 
 namespace bodoasm
 {

@@ -16,7 +16,7 @@
     NOP
     NOP
     NOP
-ScrewMeUp:
+;ScrewMeUp:
 :
     BEQ :-
     BEQ :--

@@ -5,7 +5,7 @@
 #include <string>
 #include <unordered_map>
 #include <vector>
-#include "basetypes.h"
+#include "types/basetypes.h"
 
 namespace bodoasm
 {

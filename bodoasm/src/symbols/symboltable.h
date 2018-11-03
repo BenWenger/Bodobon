@@ -3,9 +3,9 @@
 
 #include <string>
 #include <unordered_map>
-#include "expression.h"
-#include "position.h"
-#include "error.h"
+#include "expression/expression.h"
+#include "types/position.h"
+#include "error/error.h"
 
 namespace bodoasm
 {

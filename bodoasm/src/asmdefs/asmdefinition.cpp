@@ -2,9 +2,9 @@
 #include <luawrap.h>
 #include <algorithm>
 #include "asmdefinition.h"
-#include "stringpool.h"
-#include "error.h"
-#include "expression.h"
+#include "types/stringpool.h"
+#include "error/error.h"
+#include "expression/expression.h"
 
 using namespace luawrap;
 

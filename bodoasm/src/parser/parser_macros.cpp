@@ -1,15 +1,11 @@
 
 #include "parser.h"
-#include "blocktypes.h"
+#include "types/blocktypes.h"
 
 namespace bodoasm
 {
     void Parser::getStartMacroParamList(Macro& macro)
     {
-        // we've alredy reached the open parens.  So start pulling names until we reach the
-        //   closed parens
-        Token t;
-
         // sort of special case for no parameters
         skipEnds();
         Token t = next();
@@ -45,11 +41,11 @@ namespace bodoasm
         {
             auto t = next();
             if(t.isEnd())       err.error(&name.pos, "Unexpected end of command");
-            if(!t.isPossibleSymbol)
+            if(!t.isPossibleSymbol())
             {
                 unget(t);
                 unget(name);
-                err.error(&name.pos, "'." + name.str + "' is not a valie macro name");
+                err.error(&name.pos, "'." + name.str + "' is not a valid macro name");
             }
             name.str = curScope.topLabel + "." + name.str;
         }

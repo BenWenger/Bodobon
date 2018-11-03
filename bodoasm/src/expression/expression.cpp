@@ -1,6 +1,6 @@
 
 #include "expression.h"
-#include "symboltable.h"
+#include "symbols/symboltable.h"
 
 namespace bodoasm
 {
