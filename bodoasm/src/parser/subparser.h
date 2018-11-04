@@ -5,9 +5,13 @@
 #include <vector>
 #include "error/error.h"
 #include "types/token.h"
+#include "lexer/tokensource.h"
 
 namespace bodoasm
 {
+    // this could be derived from TokenSource, but that doesn't make much sense
+    //   maybe instead of having the package here, I should have a separate class
+    //   to hold that package and let subparsers use it.  More refactoring for later.
     class SubParser : public ErrorReporter
     {
     public:
@@ -25,10 +29,10 @@ namespace bodoasm
 
     protected:
                     SubParser(const Package& pkg, int maxRecursiveDepth);
-
-        Token       next();
-        void        advance(std::size_t count);
-        void        back();
+                    
+        void            advance(std::size_t count);
+        Token           next();
+        void            back();
 
         class       RecursionMarker
         {

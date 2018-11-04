@@ -3,47 +3,6 @@
 #include "parser_expression.h"
 #include <algorithm>
 
-/*
-
-DONT PAY ANY ATTENTION TO THIS TEXT.  I WROTE IT BEFORE IRONING EVERYTHING OUT.  IT IS WRONG
-
-
- *      Pattern Matching is a pain in the butt
- *
- *      The way this works is effectively a brute-force approach to try and find how to split these
- *  tokens so they match the pattern supplied by the Lua.
- *
- *      The goal is to match the pattern strings FIRST, with 'ExpressionGap's indicating parts of
- *  the input tokens that should be the expressions.  Then, once the full pattern is matched, go
- *  back and make sure those gaps are valid expressions.  If they are, you found your match.
- *
- *      Matching the pattern strings is the hard part, though.  Because a pattern could potentially be
- *  matched multiple ways, but only one of them valid.  Take this pattern from the SPC700:
- *      { 1, "+", "x" }
- *
- *  This pattern would match the below inputs:
- *      foo + X
- *      foo + 5 + X
- *      foo + X + 5 + X     ; only if the coder is sadistic and made a variable named X
- *
- *      How can our parser know which +s are part of the expression?  And which are part of the pattern
- *  match?  The answer is, it can't, so it needs to try all of them.
- *
- *  For example, let's use that middle input:
- *      { 1, "+", "x" }             ; the pattern
- *      foo + 5 + X                 ; the input
- *      foo + 5                     ; the desired expression (output)
- * 
- *      The parser will examine the pattern, and see that the first entry is an expression.
- *  It will not parse the expression immediately, but instead will look at the next entry in the pattern
- *  (the "+"), and will just skip over tokens until it finds that "+".  We will assume that all tokens
- *  being skipped belong to the expression.
- *
- *      Once it finds the 
- *
- *
- */
-
 namespace bodoasm
 {
     namespace

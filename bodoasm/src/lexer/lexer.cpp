@@ -10,11 +10,6 @@ namespace bodoasm
         : err(er)
     {}
 
-    void Lexer::unget(const Token& t)
-    {
-        cur.ungotten.push_back(t);
-    }
-
     void Lexer::startFile(const std::string& filename)
     {
         auto file = std::make_unique<dshfs::FileStream>( filename );
@@ -25,8 +20,8 @@ namespace bodoasm
         cur.pos.fileId = StringPool::toInt(filename);
         cur.file = std::move(file);
 
-        cur.ungotten.clear();
         includeStack.clear();
+        clearTokenBuffer();
     }
     
     void Lexer::startInclude(const std::string& filename, const Position* errpos)
@@ -171,19 +166,10 @@ namespace bodoasm
         return true;
     }
     
-    auto Lexer::getNext() -> Token
+    Token Lexer::fetchToken()
     {
         Token tok;
         
-        // if anything is ungotten, return that
-        if(!cur.ungotten.empty())
-        {
-            tok = cur.ungotten.back();
-            cur.ungotten.pop_back();
-            return tok;
-        }
-
-
         if(!skipToNextToken(tok))
             return tok;
 

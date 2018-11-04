@@ -10,7 +10,7 @@ namespace bodoasm
         skipEnds();
         Token t = next();
         if(t.str == ")")            return;
-        unget(t);
+        back();
 
         while(true)
         {
@@ -43,15 +43,15 @@ namespace bodoasm
             if(t.isEnd())       err.error(&name.pos, "Unexpected end of command");
             if(!t.isPossibleSymbol())
             {
-                unget(t);
-                unget(name);
+                back();     // t
+                back();     // name
                 err.error(&name.pos, "'." + name.str + "' is not a valid macro name");
             }
             name.str = curScope.topLabel + "." + name.str;
         }
         else if(!name.isPossibleSymbol())
         {
-            unget(name);
+            back();     // name
             err.error(&name.pos, "'" + name.str + "' is not a valid macro name");
         }
 
@@ -86,7 +86,7 @@ namespace bodoasm
                 auto str = toLower(t.str);
                 if(str == "macro")      err.error(&t.pos, "Cannot nest macro definitions");
                 if(str == "endmacro")   break;
-                unget(tmp);
+                back();     // tmp
             }
             macro.tokens.push_back( t );
         }

@@ -10,21 +10,20 @@
 #include "error/error.h"
 #include "types/basetypes.h"
 #include "types/token.h"
+#include "tokensource.h"
 
 namespace bodoasm
 {
-    class ErrorReporter;
-
-    class Lexer
+    class Lexer : public BufferedTokenSource
     {
     public:
-                    Lexer(ErrorReporter& er);
-        Token       getNext();
-        void        unget(const Token& t);
+                        Lexer(ErrorReporter& er);
         
-        void        startFile(const std::string& filename);
-        void        startInclude(const std::string& filename, const Position* errpos);
+        void            startFile(const std::string& filename);
+        void            startInclude(const std::string& filename, const Position* errpos);
 
+    protected:
+        virtual Token   fetchToken() override;
 
     private:
         typedef std::unique_ptr<dshfs::FileStream>  file_t;
@@ -33,7 +32,6 @@ namespace bodoasm
             Position            pos;
             std::string         text;
             file_t              file;
-            std::vector<Token>  ungotten;
 
             void clear()
             {
@@ -41,7 +39,6 @@ namespace bodoasm
                 pos.lineNo = 0;
                 pos.linePos = 0;
                 text.clear();
-                ungotten.clear();
                 file.reset();
             }
         };

@@ -146,6 +146,7 @@
     <ClInclude Include="..\src\error\error.h" />
     <ClInclude Include="..\src\expression\expression.h" />
     <ClInclude Include="..\src\lexer\lexer.h" />
+    <ClInclude Include="..\src\lexer\tokensource.h" />
     <ClInclude Include="..\src\parser\parser.h" />
     <ClInclude Include="..\src\parser\parsersubinstance.h" />
     <ClInclude Include="..\src\parser\parser_addrmode.h" />

@@ -37,7 +37,7 @@ namespace bodoasm
         SubParser::Package  buildDirectiveParamPackage(std::vector<Token>& owner);
 
         Token               next();
-        void                unget(const Token& t);
+        void                back();
 
         Scope               curScope;
         unsigned            unnamedLabelCtr = 0;

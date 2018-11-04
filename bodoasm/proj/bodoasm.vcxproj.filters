@@ -137,5 +137,8 @@
     <ClInclude Include="..\src\parser\subparser.h">
       <Filter>src\parser</Filter>
     </ClInclude>
+    <ClInclude Include="..\src\lexer\tokensource.h">
+      <Filter>src\lexer</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

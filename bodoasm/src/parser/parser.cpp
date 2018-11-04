@@ -56,7 +56,7 @@ namespace bodoasm
             }
             break;
         }
-        unget(t);
+        back();
         return !t.isEnd();
     }
 
@@ -76,12 +76,12 @@ namespace bodoasm
 
     Token Parser::next()
     {
-        return lexer->getNext();        // TODO replace this with macro substitution
+        return lexer->next();       // TODO replace this with macro substitution
     }
 
-    void Parser::unget(const Token& t)
+    void Parser::back()
     {
-        lexer->unget(t);                // TODO macro substitution
+        lexer->back();              // TODO macro substitution
     }
     
     //////////////////////////////////////////////////////////////
@@ -131,14 +131,14 @@ namespace bodoasm
         {
             if(!a.ws_after && b.str == ":")
             {
-                unget(c);
+                back();     // drop 'c'
                 assembler->defineLabel(a.pos, a.str);
                 curScope.topLabel = a.str;
                 return;
             }
             else if(b.str == "=")
             {
-                unget(c);
+                back();     // drop 'c'
                 assembler->defineSymbol(a.pos, a.str, parse_expression());
                 return;
             }
@@ -146,9 +146,7 @@ namespace bodoasm
 
         // if we reach here, it wasn't a label/assign/directive
         //   it must be an actual command that needs pattern matching with the Lua
-        unget(c);
-        unget(b);
-        unget(a);
+        back(); back(); back();     // drop c, b, and a
         parse_command();
     }
 
@@ -161,7 +159,7 @@ namespace bodoasm
 
         // keep the end in the lexer, so that if we have an error and skip to the next command, we won't
         //   skip over anything else
-        unget( owner.back() );
+        back();
         
         SubParser::Package pkg;
         pkg.errReport = &err;
