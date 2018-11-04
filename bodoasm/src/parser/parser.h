@@ -8,6 +8,7 @@
 #include "expression/expression.h"
 #include "subparser.h"
 #include "types/blocktypes.h"
+#include "lexer/tokensource.h"
 
 namespace bodoasm
 {
@@ -15,7 +16,7 @@ namespace bodoasm
     class AsmDefinition;
     class SymbolTable;
 
-    class Parser
+    class Parser : private TokenSource
     {
     public:
         static void         parse(Assembler* asmblr, Lexer* lex, AsmDefinition* def, SymbolTable* syms, ErrorReporter& er);

@@ -4,6 +4,7 @@
 #include "parser_expression.h"
 #include "parser_addrmode.h"
 #include "asmdefs/asmdefinition.h"
+#include "symbolparse.h"
 
 namespace bodoasm
 {
@@ -95,58 +96,42 @@ namespace bodoasm
         //   - a command                    <mnemonic> <addrmode>
         // any number of label definitions can come first, and we can treat each of them as individual commands
 
-        auto a = next();
+        // check for a symbol name first
+        auto sym = SymbolParse::parseDec(*this, curScope.topLabel);
+        if(sym.type != SymbolParse::Type::None)
+        {
+            auto t = next();
+            if(t.str == ":")            // label definition
+            {
+                assembler->defineLabel(sym.pos, sym.name);
+                return;
+            }
+            else if(t.str == "=")       // symbol assignment
+            {
+                assembler->defineSymbol(sym.pos, sym.name, parse_expression());
+                return;
+            }
+            else                                                // neither
+                TokenSource::back( sym.tokensConsumed + 1 );    // unget 't' and all the tokens fetched for the symbol
+        }
 
-        if(a.str == "#")                // directive?
+        auto t = next();
+
+        if(t.str == "#")                // directive?
         {
             parse_directive();
             return;
         }
-        if(a.str == ":")                // nameless label?
+        if(t.str == ":")                // nameless label?
         {
-            assembler->defineLabel( a.pos, curScope.getNamelessName() );
+            assembler->defineLabel( t.pos, curScope.getNamelessName() );
             curScope.nextUnnamed++;
             return;
-        }
-        
-        auto b = next();
-        auto c = next();
-
-        // local symbol?
-        if(a.str == "." && !a.ws_after && b.isPossibleSymbol())
-        {
-            if(c.str == ":")
-            {
-                assembler->defineLabel(a.pos, curScope.topLabel + "." + b.str);
-                return;
-            }
-            else if(c.str == "=")
-            {
-                assembler->defineSymbol(a.pos, curScope.topLabel + "." + b.str, parse_expression());
-                return;
-            }
-        }
-        // global symbol?
-        else if(a.isPossibleSymbol())
-        {
-            if(!a.ws_after && b.str == ":")
-            {
-                back();     // drop 'c'
-                assembler->defineLabel(a.pos, a.str);
-                curScope.topLabel = a.str;
-                return;
-            }
-            else if(b.str == "=")
-            {
-                back();     // drop 'c'
-                assembler->defineSymbol(a.pos, a.str, parse_expression());
-                return;
-            }
         }
 
         // if we reach here, it wasn't a label/assign/directive
         //   it must be an actual command that needs pattern matching with the Lua
-        back(); back(); back();     // drop c, b, and a
+        back();     // drop 't'
         parse_command();
     }
 

@@ -12,7 +12,7 @@ namespace bodoasm
     // this is derived from TokenSource, but that doesn't make much sense.
     //   Maybe instead of having the package here, I should have a separate class
     //   to hold that package and let subparsers use it.  More refactoring for later.
-    class SubParser : public ErrorReporter, public TokenSource
+    class SubParser : public ErrorReporter, protected TokenSource
     {
     public:
         struct Package
@@ -26,13 +26,12 @@ namespace bodoasm
 
         virtual void    warning(const Position* p, const std::string& msg) override;
         virtual void    error(const Position* p, const std::string& msg) override;
-        
-        virtual Token   next() override;
-        virtual void    back() override;
 
     protected:
                     SubParser(const Package& pkg, int maxRecursiveDepth);
                     
+        virtual Token   next() override;
+        virtual void    back() override;
         void            advance(std::size_t count);
 
         class       RecursionMarker
