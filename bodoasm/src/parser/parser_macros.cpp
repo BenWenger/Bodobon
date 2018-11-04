@@ -1,6 +1,8 @@
 
 #include "parser.h"
 #include "types/blocktypes.h"
+#include "symbolparse.h"
+#include "symbols/symboltable.h"
 
 namespace bodoasm
 {
@@ -34,26 +36,9 @@ namespace bodoasm
     void Parser::startMacroDef(const Position& pos)
     {
         // First is the macro name
-        Token name = next();
-        if(name.isEnd())        err.error(&name.pos, "Unexpected end of command");
-        // could be local
-        if(name.str == "." && !name.ws_after)
-        {
-            auto t = next();
-            if(t.isEnd())       err.error(&name.pos, "Unexpected end of command");
-            if(!t.isPossibleSymbol())
-            {
-                back();     // t
-                back();     // name
-                err.error(&name.pos, "'." + name.str + "' is not a valid macro name");
-            }
-            name.str = curScope.topLabel + "." + name.str;
-        }
-        else if(!name.isPossibleSymbol())
-        {
-            back();     // name
-            err.error(&name.pos, "'" + name.str + "' is not a valid macro name");
-        }
+        auto name = SymbolParse::parseDec(*this, curScope.topLabel);
+        if(!name)
+            err.error(&name.pos, "#macro directive first parameter must be the symbol name");
 
         Macro macro;
         macro.definePos = pos;
@@ -90,6 +75,8 @@ namespace bodoasm
             }
             macro.tokens.push_back( t );
         }
+
+        symbols->addMacro(name.name, std::move(macro));
     }
 
 }

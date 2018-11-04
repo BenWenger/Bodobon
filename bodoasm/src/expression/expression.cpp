@@ -241,7 +241,7 @@ namespace bodoasm
     
     bool Expression::eval_symbol(ErrorReporter& err, SymbolTable& syms, bool force)
     {
-        auto expr = syms.get(valStr);
+        auto expr = syms.getSymbol(valStr);
         if(expr && expr->isResolved())
         {
             type = expr->type;

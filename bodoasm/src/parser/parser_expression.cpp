@@ -205,7 +205,7 @@ namespace bodoasm
 
         // Symbol names are easy (hand that off to the SymbolParse class)
         auto symbol = SymbolParse::parseRef(*this, curScope.topLabel);
-        if(symbol.type != SymbolParse::Type::None)
+        if(symbol)
             return Expression::buildSymbol(symbol.pos, symbol.name);
 
 

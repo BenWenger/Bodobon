@@ -53,7 +53,7 @@ namespace bodoasm
         return resolveSymbol(iter, false);
     }
     
-    Expression* SymbolTable::get(const std::string& name)
+    Expression* SymbolTable::getSymbol(const std::string& name)
     {
         auto iter = symbols.find(name);
         if(iter == symbols.end())       return nullptr;
@@ -81,5 +81,22 @@ namespace bodoasm
         {
             resolveSymbol(i, true);
         }
+    }
+
+    ///////////////////////////////////////////////////////
+    
+    void SymbolTable::addMacro(const std::string& name, Macro&& mac)
+    {
+        auto pos = mac.definePos;
+        auto result = macros.insert( {name, std::make_unique<Macro>( std::move(mac) ) } );
+        if(!result.second)
+            err.error(&pos, "Macro name '" + name + "' was already defined here: " + ErrorReporter::formatPosition(pos));
+    }
+
+    const Macro* SymbolTable::getMacro(const std::string& name)
+    {
+        auto pos = macros.find(name);
+        if(pos == macros.end())     return nullptr;
+        return pos->second.get();
     }
 }

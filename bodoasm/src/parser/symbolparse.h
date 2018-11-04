@@ -19,6 +19,9 @@ namespace bodoasm
 
         static SymbolParse      parseDec(TokenSource& src, const std::string& topPrefix);
         static SymbolParse      parseRef(TokenSource& src, const std::string& topPrefix);
+
+        operator bool () const      { return type != Type::None;        }
+        bool operator ! () const    { return type == Type::None;        }
     };
 }
 

@@ -12,6 +12,7 @@ namespace bodoasm
 
         SymbolParse out;
         auto t = src.next();
+        out.pos = t.pos;
         // local?
         if(t.str == "." && !t.ws_after)
         {
@@ -21,7 +22,6 @@ namespace bodoasm
                 out.name = topPrefix + "." + name.str;
                 out.type = Type::Local;
                 out.ws_after = name.ws_after;
-                out.pos = t.pos;
                 out.tokensConsumed = 2;
             }
             else
@@ -32,7 +32,6 @@ namespace bodoasm
             out.name = t.str;
             out.type = Type::Top;
             out.ws_after = t.ws_after;
-            out.pos = t.pos;
             out.tokensConsumed = 1;
         }
         else

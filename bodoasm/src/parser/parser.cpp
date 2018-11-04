@@ -98,7 +98,7 @@ namespace bodoasm
 
         // check for a symbol name first
         auto sym = SymbolParse::parseDec(*this, curScope.topLabel);
-        if(sym.type != SymbolParse::Type::None)
+        if(sym)
         {
             auto t = next();
             if(t.str == ":")            // label definition
