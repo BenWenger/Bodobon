@@ -12,6 +12,10 @@ namespace bodoasm
         virtual             ~TokenSource() = default;
         virtual Token       next() = 0;
         virtual void        back() = 0;
+        virtual void        back(int count)
+        {
+            for(int i = 0; i < count; ++i)      back();
+        }
     };
 
 

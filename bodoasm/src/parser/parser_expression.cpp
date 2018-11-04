@@ -1,5 +1,6 @@
 
 #include "parser_expression.h"
+#include "symbolparse.h"
 
 namespace bodoasm
 {
@@ -201,6 +202,13 @@ namespace bodoasm
         //  - string literal
         //  - symbol name
         //  - nameless label
+
+        // Symbol names are easy (hand that off to the SymbolParse class)
+        auto symbol = SymbolParse::parseRef(*this, curScope.topLabel);
+        if(symbol.type != SymbolParse::Type::None)
+            return Expression::buildSymbol(symbol.pos, symbol.name);
+
+
         auto t = next();
         if(t.str == "(")        // parenthetical statement
         {
@@ -236,15 +244,6 @@ namespace bodoasm
             }
             exp = Expression::buildSymbol(defPos, curScope.getNamelessName(offset));
         }
-        else if(t.str == ".")   // possible local symbol name
-        {
-            auto sym = next().resolve(*this);
-            if(sym.type != Token::Type::Symbol)
-                error(&t.pos, "Unexpected character '.'");
-
-            // it IS a local symbol name!
-            exp = Expression::buildSymbol(t.pos, curScope.topLabel + "." + sym.str);
-        }
         else if(t.str == "%")   // binary literal
         {
             if(t.ws_after)  error(&t.pos, "Unexpected character '%'");
@@ -263,31 +262,13 @@ namespace bodoasm
         {
             exp = Expression::buildStr(t.pos, t.strVal);
         }
-        else if(t.type == Token::Type::Misc)    // global symbol name, fully qualified symbol name, or decimal numeric literal
+        else if(t.type == Token::Type::Misc)    // possible decimal numeric literal
         {
             t = t.resolve(*this);
             if(t.type == Token::Type::Integer)
                 exp = Expression::buildInt( t.pos, t.val );
-            else if(t.type == Token::Type::Symbol)
-            {
-                // global symbol name or fully qualified name
-                auto dot = next();
-                if(!t.ws_after && dot.str == ".")   // looks like a fully qualified name
-                {
-                    auto lcl = next().resolve(*this);
-                    if(!dot.ws_after && lcl.type == Token::Type::Symbol)    // IS a fully qualified name!
-                        exp = Expression::buildSymbol(t.pos, t.str + "." + lcl.str);
-                    else
-                        error(&lcl.pos, "Expected local symbol name to follow '.'");
-                }
-                else                                // Not a fully qualified name, just a global symbol
-                {
-                    back();     // unget the dot
-                    exp = Expression::buildSymbol(t.pos, t.str);
-                }
-            }
             else
-                error(&t.pos, "Internal Error:  Token::resolve did not produce an integer or symbol");
+                error(&t.pos, "Internal Error in Parser_Expression::raw() :  Token::resolve did not produce an integer");
         }
         else if(t.isEnd())
             error(&t.pos, "Unexpected end of expression");

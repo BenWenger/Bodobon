@@ -39,25 +39,6 @@ namespace bodoasm
         }
     }
 
-    void SymbolTable::addIncompleteSymbol(const std::string& name, const Position& definePos)
-    {
-        Symbol sym;
-        sym.definePos = definePos;
-        auto iter = symbols.insert( {name, std::move(sym)} );
-        if(!iter.second)
-        {
-            err.error(&definePos, name + " already defined here: " + err.formatPosition(iter.first->second.definePos));
-        }
-    }
-    
-    void SymbolTable::changeSymbolValue(const std::string& name, Expression::Ptr&& expr)
-    {
-        auto i = symbols.find(name);
-        if(i == symbols.end())
-            err.fatal(nullptr, "Internal error when trying to update symbol value ('" + name + "'");        // TODO will I need to use this function any more?
-        i->second.expr = std::move(expr);
-    }
-
     bool SymbolTable::isSymbolDefined(const std::string& name)
     {
         auto iter = symbols.find(name);

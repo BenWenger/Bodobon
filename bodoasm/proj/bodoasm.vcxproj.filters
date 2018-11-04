@@ -84,6 +84,9 @@
     <ClCompile Include="..\src\parser\subparser.cpp">
       <Filter>src\parser</Filter>
     </ClCompile>
+    <ClCompile Include="..\src\parser\symbolparse.cpp">
+      <Filter>src\parser</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\src\lexer\lexer.h">
@@ -139,6 +142,9 @@
     </ClInclude>
     <ClInclude Include="..\src\lexer\tokensource.h">
       <Filter>src\lexer</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\parser\symbolparse.h">
+      <Filter>src\parser</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

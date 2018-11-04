@@ -1,6 +1,7 @@
 
 #include "expression.h"
 #include "symbols/symboltable.h"
+#include "types/blocktypes.h"
 
 namespace bodoasm
 {
@@ -253,7 +254,10 @@ namespace bodoasm
             if(syms.isSymbolDefined(valStr))
                 err.error(&pos, "Unable to resolve symbol '" + valStr + "'");
             else
-                err.error(&pos, "'" + valStr + "' is undefined");
+            {
+                if(Scope::isNamelessName(valStr))       err.error(&pos, "Nameless label reference is out of bounds");
+                else                                    err.error(&pos, "'" + valStr + "' is undefined");
+            }
         }
         return false;
     }

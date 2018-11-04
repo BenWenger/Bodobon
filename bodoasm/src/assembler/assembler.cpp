@@ -123,7 +123,6 @@ namespace bodoasm
 
     bool Assembler::resolveAndTypeMatch(AddrModeMatchMap& matches, bool force)
     {
-        // TODO, this halts after just one error.  Change this to print multiple errors
         bool allResolved = true;
         auto mtch = matches.begin();
         while(mtch != matches.end())
@@ -177,9 +176,14 @@ namespace bodoasm
         {
             for(auto future : blk.futures)
             {
-                curPC = future.pcAtTime;
-                resolveAndTypeMatch(future.matches, true);
-                asmDef.generateBinary(future.pos, StringPool::toStr(future.mnemonic), future.matches, blk.dat, future.binaryPos, future.promisedSize);
+                try
+                {
+                    curPC = future.pcAtTime;
+                    resolveAndTypeMatch(future.matches, true);
+                    asmDef.generateBinary(future.pos, StringPool::toStr(future.mnemonic), future.matches, blk.dat, future.binaryPos, future.promisedSize);
+                }
+                catch(Error&)
+                {}
             }
         }
     }

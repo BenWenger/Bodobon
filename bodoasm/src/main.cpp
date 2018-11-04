@@ -40,6 +40,12 @@ int main(int argc, char* argv[])
 
             bool ok = prog.okToProceed();
             std::cout << "Assembly " << (ok ? "completed successfully" : "failed") << ".  " << prog.getErrCount() << " Error(s), " << prog.getWarnCount() << " Warning(s)" << std::endl;
+
+            if(!prog.okToProceed())
+            {
+                char c;
+                std::cin >> c;      // TODO this is just for convenience when debugging.  Remove this code
+            }
             
             return prog.okToProceed() ? 0 : 1;
         }

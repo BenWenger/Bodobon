@@ -15,9 +15,6 @@ namespace bodoasm
                             SymbolTable(ErrorReporter& er);
         void                addSymbol(const std::string& name, const Position& definePos, Expression::Ptr&& expr);
         bool                isSymbolDefined(const std::string& name);
-        
-        void                addIncompleteSymbol(const std::string& name, const Position& definePos);
-        void                changeSymbolValue(const std::string& name, Expression::Ptr&& expr);
 
         bool                isSymbolResolved(const std::string& name);
         Expression*         get(const std::string& name);

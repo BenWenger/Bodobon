@@ -47,6 +47,11 @@ namespace bodoasm
         {
             return topLabel + ".#nmls_" + std::to_string(nextUnnamed + adj);
         }
+
+        static bool     isNamelessName(const std::string& name)
+        {
+            return name.find(".#nmls_") != std::string::npos;
+        }
     };
 
 
