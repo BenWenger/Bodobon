@@ -75,14 +75,17 @@ namespace bodoasm
         }
     }
 
-    Token Parser::next()
+    Token Parser::fetchToken()
     {
-        return lexer->next();       // TODO replace this with macro substitution
-    }
+        Token out;
+        if(macroStack.empty())
+            out = lexer->next();
+        else
+            out = fetchMacroToken();
 
-    void Parser::back()
-    {
-        lexer->back();              // TODO macro substitution
+        if(out.str == "`")
+            out = invokeMacro(out);
+        return out;
     }
     
     //////////////////////////////////////////////////////////////

@@ -76,7 +76,96 @@ namespace bodoasm
             macro.tokens.push_back( t );
         }
 
+        // drop the first and last CmdEnd tokens for reasons
+        if(!macro.tokens.empty() && (macro.tokens.back().type == Token::Type::CmdEnd))
+            macro.tokens.pop_back();
+        if(!macro.tokens.empty() && (macro.tokens.front().type == Token::Type::CmdEnd))
+            macro.tokens.erase( macro.tokens.begin() );
+
         symbols->addMacro(name.name, std::move(macro));
+    }
+
+    Token Parser::invokeMacro(const Token& backtick)
+    {
+        if(macroStack.size() > 30)          // number is arbitrary
+            err.error(&backtick.pos, "Maximum macro expansion depth exceeded.  Do you have a circular dependency?");
+
+        auto macName = SymbolParse::parseRef(*this, curScope.topLabel);
+        if(!macName)        err.error(&macName.pos, "Expected macro name to follow backtick operator");
+        auto macro = symbols->getMacro(macName.name);
+        if(!macro)          err.error(&macName.pos, "'" + macName.name + "' is not a defined macro name");
+
+        auto mpb =              std::make_unique<MacroPlayback>();
+        mpb->mac =              macro;
+        mpb->tokenPos =         0;
+        mpb->invokePos =        std::make_shared<Position>(backtick.pos);
+        mpb->outputtingArg =    false;
+
+        std::vector<std::vector<Token>>     fullArgList;
+        // Does the invocation have an argument list?
+        auto t = next();
+        if(t.str == "(")
+        {
+            std::vector<Token>      args;
+            t = next();
+            if(t.str != ")")
+            {
+                // non-empty argument list
+                back();
+                bool keepLooping = true;
+                while(keepLooping)
+                {
+                    t = next();
+                    if(t.isEoF())       err.error(&t.pos, "Unexpected EOF reached inside macro argument list");
+                    if(t.str == "/" && !t.ws_after)
+                    {
+                        // special escapes?!?!
+                        auto esc = next();
+                        if(esc.str == "," || esc.str == ")")
+                        {
+                            esc.pos = t.pos;
+                            args.emplace_back(std::move(esc));
+                        }
+                        back();
+                    }
+                    else if(t.str == "," || t.str == ")")
+                    {
+                        if(args.empty())    err.error(&t.pos, "Unexpected '" + t.str + "' in macro argument list.  Macro arguments cannot be empty");
+                        fullArgList.emplace_back(std::move(args));
+                        args.clear();
+                        if(t.str == ")")
+                            keepLooping = false;
+                    }
+                    else
+                        args.emplace_back( std::move(t) );
+                }
+            }
+        }
+        else /* if(t.str != "(") */
+            back();
+
+        // At this point, fullArgList has all the arg tokens
+        if(fullArgList.size() != macro->paramNames.size())
+            err.error(&backtick.pos, "'" + macName.name + "' macro invoked with " + std::to_string(fullArgList.size()) + " parameters, but was expecting "
+                                         + std::to_string(macro->paramNames.size()) );
+        
+        // move the arg list to the mpb, arranged by param name
+        for(std::size_t i = 0; i < fullArgList.size(); ++i)
+        {
+            const std::string& name = macro->paramNames[i];
+            mpb->arguments.insert( { name, std::move(fullArgList[i]) } );
+        }
+        macroStack.emplace_back( std::move(mpb) );
+
+        // Then return the first thing from the macro.
+        return fetchMacroToken();
+    }
+    
+    
+    Token Parser::fetchMacroToken()
+    {
+        // TODO do this
+        return Token();
     }
 
 }

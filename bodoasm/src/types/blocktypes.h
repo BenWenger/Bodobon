@@ -41,7 +41,7 @@ namespace bodoasm
     struct Scope
     {
         std::string     topLabel;
-        unsigned        nextUnnamed = 0;
+        int             nextUnnamed = 0;
 
         std::string     getNamelessName(int adj = 0) const
         {

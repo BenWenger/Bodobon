@@ -16,7 +16,7 @@ namespace bodoasm
     class AsmDefinition;
     class SymbolTable;
 
-    class Parser : private TokenSource
+    class Parser : private BufferedTokenSource
     {
     public:
         static void         parse(Assembler* asmblr, Lexer* lex, AsmDefinition* def, SymbolTable* syms, ErrorReporter& er);
@@ -36,25 +36,45 @@ namespace bodoasm
         void                skipRemainderOfCommand();
         SubParser::Package  buildEolPackage(std::vector<Token>& owner);
         SubParser::Package  buildDirectiveParamPackage(std::vector<Token>& owner);
-
-        Token               next();
-        void                back();
+        
+        virtual Token       fetchToken() override;
 
         Scope               curScope;
-        unsigned            unnamedLabelCtr = 0;
         
         void                parse_directive();
         void                parse_command();
         Expression::Ptr     parse_expression();
-
-        typedef std::vector<Token>                              tokenList_t;
-        typedef std::unordered_map<std::string, tokenList_t>    subMap_t;
-        std::vector<subMap_t>                   subs;               // token substitutions (ie:  macro arguments)
-        std::vector<std::string>                macroScopeStack;    // empty when not expanding any macros
-        std::unordered_map<std::string, Macro>  definedMacros;
         
+
         void                startMacroDef(const Position& pos);
         void                getStartMacroParamList(Macro& macro);
+
+        Token               fetchMacroToken();
+        Token               invokeMacro(const Token& backtick);
+
+        struct MacroPlayback
+        {
+            typedef std::unique_ptr<MacroPlayback>      Ptr;
+
+            Position::Ptr       invokePos;
+            const Macro*        mac;
+            std::size_t         tokenPos;       // index of next token to be fetched from mac's token list
+
+            typedef std::unordered_map<std::string, std::vector<Token>>     args_t;
+            typedef args_t::const_iterator                                  argIter_t;
+            bool                outputtingArg;  // true if currently expanding one of the arguments, rather than the macro itself
+            args_t              arguments;
+            argIter_t           argIter;        // if outputtingArg is true, this is the next arg to be output
+            argIter_t           argIterEnd;     // this is where arg outputting ends
+
+            // I'm holding onto iterators, so these objects cannot be moved or copied
+            MacroPlayback() = default;
+            MacroPlayback(const MacroPlayback&) = delete;
+            MacroPlayback& operator = (const MacroPlayback&) = delete;
+            MacroPlayback(MacroPlayback&&) = delete;
+            MacroPlayback& operator = (MacroPlayback&&) = delete;
+        };
+        std::vector<MacroPlayback::Ptr>                 macroStack;
     };
 }
 
