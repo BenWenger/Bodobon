@@ -51,8 +51,8 @@ namespace bodoasm
         };
 
 
-        std::size_t         getCurrentLexPos() const    { return pos;           }
-        std::size_t         getCurrentLexSize() const   { return tokenListSize; }
+        std::size_t         getCurrentLexPos() const    { return pos - getUngottenCount();  }
+        std::size_t         getCurrentLexSize() const   { return tokenListSize;             }
         Package             buildSubPackage(std::size_t start, std::size_t stop);
         void                stopReportingErrors()       { errReport = nullptr;          }
 

@@ -39,7 +39,8 @@ namespace bodoasm
             out.type = Token::Type::CmdEnd;
         }
         else
-            out = tokenList[pos++];
+            out = tokenList[pos];
+        ++pos;
         return out;
     }
     

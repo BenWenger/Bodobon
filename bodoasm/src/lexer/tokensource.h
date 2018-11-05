@@ -23,6 +23,9 @@ namespace bodoasm
             ungotten.push_back(t);
         }
 
+    protected:
+        std::size_t             getUngottenCount() const { return ungotten.size();      }
+
     private:
         std::vector<Token>      ungotten;
         virtual Token           fetchToken() = 0;
