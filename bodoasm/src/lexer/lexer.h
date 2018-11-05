@@ -14,7 +14,7 @@
 
 namespace bodoasm
 {
-    class Lexer : public BufferedTokenSource
+    class Lexer : public TokenSource
     {
     public:
                         Lexer(ErrorReporter& er);
@@ -22,7 +22,7 @@ namespace bodoasm
         void            startFile(const std::string& filename);
         void            startInclude(const std::string& filename, const Position* errpos);
 
-    protected:
+    private:
         virtual Token   fetchToken() override;
 
     private:

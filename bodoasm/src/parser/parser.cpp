@@ -57,7 +57,7 @@ namespace bodoasm
             }
             break;
         }
-        back();
+        unget(t);
         return !t.isEnd();
     }
 
@@ -115,7 +115,10 @@ namespace bodoasm
                 return;
             }
             else                                                // neither
-                TokenSource::back( sym.tokensConsumed + 1 );    // unget 't' and all the tokens fetched for the symbol
+            {                                                   // unget 't' and all tokens fetched or the symbol
+                unget(t);
+                sym.unget(*this);
+            }
         }
 
         auto t = next();
@@ -134,7 +137,7 @@ namespace bodoasm
 
         // if we reach here, it wasn't a label/assign/directive
         //   it must be an actual command that needs pattern matching with the Lua
-        back();     // drop 't'
+        unget(t);
         parse_command();
     }
 
@@ -147,7 +150,7 @@ namespace bodoasm
 
         // keep the end in the lexer, so that if we have an error and skip to the next command, we won't
         //   skip over anything else
-        back();
+        unget( owner.back() );
         
         SubParser::Package pkg;
         pkg.errReport = &err;

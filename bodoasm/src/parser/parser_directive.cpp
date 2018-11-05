@@ -68,7 +68,7 @@ namespace bodoasm
                 err.error(&t.pos, "Unexpected character ','");
             if(t.isEnd() || t.str == ",")
             {
-                back(); // t
+                unget(t);
                 t.type = Token::Type::CmdEnd;
                 owner.push_back(t);
                 break;
@@ -166,14 +166,14 @@ namespace bodoasm
                         break;
                 }
             }
-            back();     // t
+            unget(t);
         }
 
         // Now that we have all the inputs, make sure nothing but optionals are omitted
         if( !DirectiveParam::isTypeOptional(paramTypes.peek()) )
         {
             t = next();
-            back();     // t
+            unget(t);
             err.error(&t.pos, "Not enough parameters given to directive '" + name + "'");
         }
 

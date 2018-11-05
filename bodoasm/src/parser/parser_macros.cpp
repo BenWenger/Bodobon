@@ -12,7 +12,7 @@ namespace bodoasm
         skipEnds();
         Token t = next();
         if(t.str == ")")            return;
-        back();
+        unget(t);
 
         while(true)
         {
@@ -68,7 +68,7 @@ namespace bodoasm
                 auto str = toLower(tmp.str);
                 if(str == "macro")      err.error(&t.pos, "Cannot nest macro definitions");
                 if(str == "endmacro")   break;
-                back();     // tmp
+                unget(tmp);
             }
             macro.tokens.push_back( t );
         }
@@ -110,7 +110,7 @@ namespace bodoasm
             if(t.str != ")")
             {
                 // non-empty argument list
-                back();
+                unget(t);
                 bool keepLooping = true;
                 while(keepLooping)
                 {
@@ -125,7 +125,8 @@ namespace bodoasm
                             esc.pos = t.pos;
                             args.emplace_back(std::move(esc));
                         }
-                        back();
+                        else
+                            unget(esc);
                     }
                     else if(t.str == "," || t.str == ")")
                     {
@@ -141,7 +142,7 @@ namespace bodoasm
             }
         }
         else /* if(t.str != "(") */
-            back();
+            unget(t);
 
         // At this point, fullArgList has all the arg tokens
         if(fullArgList.size() != macro->paramNames.size())

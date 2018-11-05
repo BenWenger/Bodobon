@@ -16,7 +16,7 @@ namespace bodoasm
     class AsmDefinition;
     class SymbolTable;
 
-    class Parser : private BufferedTokenSource
+    class Parser : private TokenSource
     {
     public:
         static void         parse(Assembler* asmblr, Lexer* lex, AsmDefinition* def, SymbolTable* syms, ErrorReporter& er);

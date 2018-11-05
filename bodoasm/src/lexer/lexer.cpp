@@ -21,7 +21,6 @@ namespace bodoasm
         cur.file = std::move(file);
 
         includeStack.clear();
-        clearTokenBuffer();
     }
     
     void Lexer::startInclude(const std::string& filename, const Position* errpos)

@@ -27,138 +27,148 @@ namespace bodoasm
     auto Parser_Expression::log_or() -> Exp
     {
         Exp exp = log_and();
+        Token t;
         while(true)
         {
-            auto t = next();
+            t = next();
             if     (t.str == "||")  makeBinOp( Expression::BinOp::LogOr, exp, log_and() );
             else                    break;
         }
-        back();
+        unget(t);
         return exp;
     }
     
     auto Parser_Expression::log_and() -> Exp
     {
         Exp exp = bin_or();
+        Token t;
         while(true)
         {
-            auto t = next();
+            t = next();
             if     (t.str == "&&")  makeBinOp( Expression::BinOp::LogAnd, exp, bin_or() );
             else                    break;
         }
-        back();
+        unget(t);
         return exp;
     }
     
     auto Parser_Expression::bin_or() -> Exp
     {
         Exp exp = bin_xor();
+        Token t;
         while(true)
         {
-            auto t = next();
+            t = next();
             if     (t.str == "|")   makeBinOp( Expression::BinOp::BinOr, exp, bin_xor() );
             else                    break;
         }
-        back();
+        unget(t);
         return exp;
     }
     
     auto Parser_Expression::bin_xor() -> Exp
     {
         Exp exp = bin_and();
+        Token t;
         while(true)
         {
-            auto t = next();
+            t = next();
             if     (t.str == "^")   makeBinOp( Expression::BinOp::BinXor, exp, bin_and() );
             else                    break;
         }
-        back();
+        unget(t);
         return exp;
     }
     
     auto Parser_Expression::bin_and() -> Exp
     {
         Exp exp = eq();
+        Token t;
         while(true)
         {
-            auto t = next();
+            t = next();
             if     (t.str == "&")   makeBinOp( Expression::BinOp::BinAnd, exp, eq() );
             else                    break;
         }
-        back();
+        unget(t);
         return exp;
     }
     
     auto Parser_Expression::eq() -> Exp
     {
         Exp exp = ineq();
+        Token t;
         while(true)
         {
-            auto t = next();
+            t = next();
             if     (t.str == "==")  makeBinOp( Expression::BinOp::Eq,    exp, ineq() );
             else if(t.str == "!=")  makeBinOp( Expression::BinOp::NotEq, exp, ineq() );
             else                    break;
         }
-        back();
+        unget(t);
         return exp;
     }
     
     auto Parser_Expression::ineq() -> Exp
     {
         Exp exp = shift();
+        Token t;
         while(true)
         {
-            auto t = next();
+            t = next();
             if     (t.str == ">=")  makeBinOp( Expression::BinOp::GrEq,    exp, shift() );
             else if(t.str == ">")   makeBinOp( Expression::BinOp::Greater, exp, shift() );
             else if(t.str == "<=")  makeBinOp( Expression::BinOp::LeEq,    exp, shift() );
             else if(t.str == "<")   makeBinOp( Expression::BinOp::Less,    exp, shift() );
             else                    break;
         }
-        back();
+        unget(t);
         return exp;
     }
     
     auto Parser_Expression::shift() -> Exp
     {
         Exp exp = add();
+        Token t;
         while(true)
         {
-            auto t = next();
+            t = next();
             if     (t.str == ">>")  makeBinOp( Expression::BinOp::RShift, exp, add() );
             else if(t.str == "<<")  makeBinOp( Expression::BinOp::LShift, exp, add() );
             else                    break;
         }
-        back();
+        unget(t);
         return exp;
     }
     
     auto Parser_Expression::add() -> Exp
     {
         Exp exp = mult();
+        Token t;
         while(true)
         {
-            auto t = next();
+            t = next();
             if     (t.str == "+")   makeBinOp( Expression::BinOp::Add, exp, mult() );
             else if(t.str == "-")   makeBinOp( Expression::BinOp::Sub, exp, mult() );
             else                    break;
         }
-        back();
+        unget(t);
         return exp;
     }
     
     auto Parser_Expression::mult() -> Exp
     {
         Exp exp = unary();
+        Token t;
         while(true)
         {
-            auto t = next();
+            t = next();
             if     (t.str == "*")   makeBinOp( Expression::BinOp::Mul, exp, unary() );
             else if(t.str == "/")   makeBinOp( Expression::BinOp::Div, exp, unary() );
             else if(t.str == "%")   makeBinOp( Expression::BinOp::Mod, exp, unary() );
             else                    break;
         }
-        back();
+        unget(t);
         return exp;
     }
     
@@ -177,16 +187,17 @@ namespace bodoasm
             else if(t.str == "<>")  return makeUnOp( Expression::UnOp::LoWord,  t.pos, unary() );
             else if(t.str == "?" && !t.ws_after)
             {
-                auto s = toLower(next().str);
+                auto word = next();
+                auto s = toLower(word.str);
                 if(s == "defined")  return makeUnOp( Expression::UnOp::Defined, t.pos, unary() );
                 else
                 {
-                    back();     // unget the word
-                    back();     // unget the ?
+                    unget(word);
+                    unget(t);
                 }
             }
             else
-                back();
+                unget(t);
         }
 
         return raw();
@@ -237,7 +248,7 @@ namespace bodoasm
                 t = next();
                 if(t.str != adjstr)
                 {
-                    back();
+                    unget(t);
                     break;
                 }
                 offset += adj;

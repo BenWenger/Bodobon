@@ -39,8 +39,9 @@ namespace bodoasm
     AddrModeExprs Parser_AddrMode::parse()
     {
         // peek at the first token just to get the position for error reporting
-        auto errPosition = next().pos;
-        back();
+        auto t = next();
+        auto errPosition = t.pos;
+        unget(t);
 
         try
         {
@@ -73,7 +74,7 @@ namespace bodoasm
         }
         // end of command must immediately follow
         auto t = next();
-        back();
+        unget(t);
         if(!t.isEnd())
             done();
         
@@ -136,7 +137,7 @@ namespace bodoasm
             if(t.str.empty())                   done();
             if(toFind == toLower(t.str.front()))         // possible match!
             {
-                back();     // unget the pattern match
+                unget(t);   // unget the pattern match
                 auto exprStopToken = getCurrentLexPos();
                 tryForkToPatternMatch(exprStartToken, exprStopToken, pattern[patPos].type);
                 next();     // toss pattern match and continue
@@ -147,8 +148,9 @@ namespace bodoasm
     void Parser_AddrMode::tryForkToPatternMatch(std::size_t exprStart, std::size_t exprStop, PatEl::Type type)
     {
         // peek at the first token just to get the position for error reporting
-        auto errPosition = next().pos;
-        back();
+        auto t = next();
+        auto errPosition = t.pos;
+        unget(t);
 
         RecursionMarker boogiewoogiefengshui(root, &errPosition);
 

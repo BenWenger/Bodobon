@@ -19,23 +19,27 @@ namespace bodoasm
             auto name = src.next();
             if(name.isPossibleSymbol())
             {
+                out.tokens.push_back(t);
+                out.tokens.push_back(name);
                 out.name = topPrefix + "." + name.str;
                 out.type = Type::Local;
                 out.ws_after = name.ws_after;
-                out.tokensConsumed = 2;
             }
             else
-                src.back(2);    // unget 't' and 'name'
+            {
+                src.unget(name);
+                src.unget(t);
+            }
         }
         else if(t.isPossibleSymbol())
         {
+            out.tokens.push_back(t);
             out.name = t.str;
             out.type = Type::Top;
             out.ws_after = t.ws_after;
-            out.tokensConsumed = 1;
         }
         else
-            src.back();         // unget 't'
+            src.unget(t);
 
         return out;
     }
@@ -46,56 +50,60 @@ namespace bodoasm
         // Or local:                                .sym
         // Or fully qualified:                      sym.sym
         SymbolParse out;
+        
+        auto a = src.next();
+        auto b = src.next();
+        auto c = src.next();
+        out.pos =               a.pos;
 
-        auto t = src.next();
-        out.pos =               t.pos;
-        out.tokensConsumed =    1;
-
-        if(t.str == "." && !t.ws_after)
+        if(a.str == "." && !a.ws_after)
         {
-            ++out.tokensConsumed;
-            auto name = src.next();
-            if(name.isPossibleSymbol())
+            if(b.isPossibleSymbol())
             {
-                out.name = topPrefix + "." + name.str;
+                out.name = topPrefix + "." + b.str;
                 out.type = Type::Local;
-                out.ws_after = name.ws_after;
+                out.ws_after = b.ws_after;
             }
         }
-        else if(t.isPossibleSymbol())
+        else if(a.isPossibleSymbol())
         {
-            if(t.ws_after)      // if there's whitespace after, there's not a dot
+            if(a.ws_after)      // if there's whitespace after, there's not a dot
             {
-                out.name = t.str;
+                out.name = a.str;
                 out.type = Type::Top;
                 out.ws_after = true;
             }
             else
             {
-                ++out.tokensConsumed;
-                auto dot = src.next();
-                if(dot.str == "." && !dot.ws_after)
+                if(b.str == "." && !b.ws_after)
                 {
-                    ++out.tokensConsumed;
-                    auto lclname = src.next();
-                    if(lclname.isPossibleSymbol())
+                    if(c.isPossibleSymbol())
                     {
                         out.type = Type::Full;
-                        out.ws_after = lclname.ws_after;
-                        out.name = t.str + "." + lclname.str;
+                        out.ws_after = c.ws_after;
+                        out.name = a.str + "." + c.str;
                     }
                 }
             }
         }
 
-        // If we didn't match... unget everything we grabbed
-        if(out.type == Type::None)
+        // Unget whatever didn't match, keep what did
+        switch(out.type)
         {
-            src.back(out.tokensConsumed);
-            out.tokensConsumed = 0;
+        case Type::None:    src.unget(c);               src.unget(b);               src.unget(a);               break;
+        case Type::Top:     out.tokens.push_back(a);    src.unget(c);               src.unget(b);               break;
+        case Type::Local:   out.tokens.push_back(a);    out.tokens.push_back(b);    src.unget(c);               break;
+        case Type::Full:    out.tokens.push_back(a);    out.tokens.push_back(b);    out.tokens.push_back(c);    break;
         }
-
-
         return out;
+    }
+
+    void SymbolParse::unget(TokenSource& src)
+    {
+        while(!tokens.empty())
+        {
+            src.unget(tokens.back());
+            tokens.pop_back();
+        }
     }
 }

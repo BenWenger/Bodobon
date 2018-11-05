@@ -30,9 +30,7 @@ namespace bodoasm
     protected:
                     SubParser(const Package& pkg, int maxRecursiveDepth);
                     
-        virtual Token   next() override;
-        virtual void    back() override;
-        void            advance(std::size_t count);
+        void        advance(std::size_t count);
 
         class       RecursionMarker
         {
@@ -59,6 +57,7 @@ namespace bodoasm
         void                stopReportingErrors()       { errReport = nullptr;          }
 
     private:
+        virtual Token       fetchToken() override;
         friend class RecursionMarker;
         ErrorReporter*      errReport;
         const Token*        tokenList;

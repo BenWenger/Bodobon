@@ -30,7 +30,7 @@ namespace bodoasm
             throw Error();
     }
 
-    Token SubParser::next()
+    Token SubParser::fetchToken()
     {
         Token out;
         if(pos >= tokenListSize)
@@ -39,20 +39,13 @@ namespace bodoasm
             out.type = Token::Type::CmdEnd;
         }
         else
-            out = tokenList[pos];
-        ++pos;
+            out = tokenList[pos++];
         return out;
     }
     
     void SubParser::advance(std::size_t count)
     {
         pos += count;
-    }
-
-    void SubParser::back()
-    {
-        if(pos > 0)
-            --pos;
     }
     
     auto SubParser::buildSubPackage(std::size_t start, std::size_t stop) -> Package
