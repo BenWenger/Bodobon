@@ -49,8 +49,6 @@ namespace bodoasm
         void                startMacroDef(const Position& pos);
         void                getStartMacroParamList(Macro& macro);
 
-        Token               fetchMacroToken();
-        Token               invokeMacro(const Token& backtick);
 
         struct MacroPlayback
         {
@@ -61,7 +59,7 @@ namespace bodoasm
             std::size_t         tokenPos;       // index of next token to be fetched from mac's token list
 
             typedef std::unordered_map<std::string, std::vector<Token>>     args_t;
-            typedef args_t::const_iterator                                  argIter_t;
+            typedef std::vector<Token>::const_iterator                      argIter_t;
             bool                outputtingArg;  // true if currently expanding one of the arguments, rather than the macro itself
             args_t              arguments;
             argIter_t           argIter;        // if outputtingArg is true, this is the next arg to be output
@@ -75,6 +73,10 @@ namespace bodoasm
             MacroPlayback& operator = (MacroPlayback&&) = delete;
         };
         std::vector<MacroPlayback::Ptr>                 macroStack;
+        
+        Token               fetchMacroToken();
+        Token               invokeMacro(const Token& backtick);
+        Token               nestTokenInMacro(Token t, const MacroPlayback& mpb);
     };
 }
 

@@ -55,10 +55,7 @@ namespace bodoasm
             if(t.type != Token::Type::CmdEnd)   err.error(&t.pos, "Unexpected end of file reached in macro definition");
         }
         else                                    err.error(&t.pos, "Unexpected token '" + t.str + "'");
-
-        // skip ends at the start of the macro
-        skipEnds();
-
+        
         // now start pulling and recording tokens until we reach EOF or #endmacro
         while(true)
         {
@@ -68,7 +65,7 @@ namespace bodoasm
             if(t.str == "#")
             {
                 auto tmp = next();
-                auto str = toLower(t.str);
+                auto str = toLower(tmp.str);
                 if(str == "macro")      err.error(&t.pos, "Cannot nest macro definitions");
                 if(str == "endmacro")   break;
                 back();     // tmp
@@ -100,6 +97,8 @@ namespace bodoasm
         mpb->tokenPos =         0;
         mpb->invokePos =        std::make_shared<Position>(backtick.pos);
         mpb->outputtingArg =    false;
+        if(!macroStack.empty())
+            mpb->invokePos->callStack = macroStack.back()->invokePos;
 
         std::vector<std::vector<Token>>     fullArgList;
         // Does the invocation have an argument list?
@@ -161,11 +160,51 @@ namespace bodoasm
         return fetchMacroToken();
     }
     
-    
     Token Parser::fetchMacroToken()
     {
-        // TODO do this
+        while(true)
+        {
+            if(macroStack.empty())      return next();
+            auto& mpb = *macroStack.back();
+
+            // outputting one of the arguments?
+            if(mpb.outputtingArg)
+            {
+                if(mpb.argIter != mpb.argIterEnd)
+                    return nestTokenInMacro(*(mpb.argIter++), mpb);
+                else
+                    mpb.outputtingArg = false;
+            }
+            // outputting macro body?
+            if(mpb.tokenPos < mpb.mac->tokens.size())
+            {
+                Token t = mpb.mac->tokens[mpb.tokenPos++];
+
+                // is it a parameter?
+                auto iter = mpb.arguments.find(t.str);
+                if(iter == mpb.arguments.end())             // no?
+                    return nestTokenInMacro(t, mpb);
+
+                // otherwise, start outputting the arg
+                mpb.outputtingArg = true;
+                mpb.argIter = iter->second.begin();
+                mpb.argIterEnd = iter->second.end();
+                continue;                                   // done in next iteration of loop
+            }
+            
+            // code here reached if we are at the end of our current macro playback.
+            //   so pop it!
+            macroStack.pop_back();
+        }
+        
+        throw std::runtime_error("Internal error:  Unreachable code reached in Parser::fetchMacroToken");
         return Token();
+    }
+    
+    inline Token Parser::nestTokenInMacro(Token t, const MacroPlayback& mpb)
+    {
+        t.pos.callStack = mpb.invokePos;
+        return t;
     }
 
 }
