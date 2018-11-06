@@ -46,7 +46,7 @@ namespace bodoasm
     
     void SubParser::advance(std::size_t count)
     {
-        pos += count;
+        for(std::size_t i = 0; i < count; ++i)      next();
     }
     
     auto SubParser::buildSubPackage(std::size_t start, std::size_t stop) -> Package

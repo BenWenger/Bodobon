@@ -84,6 +84,12 @@ namespace bodoasm
                         out.name = a.str + "." + c.str;
                     }
                 }
+                else  // no dot, just top level
+                {
+                    out.name = a.str;
+                    out.type = Type::Top;
+                    out.ws_after = false;
+                }
             }
         }
 
