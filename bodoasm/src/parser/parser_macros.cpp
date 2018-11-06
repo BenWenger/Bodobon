@@ -6,7 +6,7 @@
 
 namespace bodoasm
 {
-    void Parser::getStartMacroParamList(Macro& macro)
+    void Parser::getStartMacroParamList(Macro& macro)       // TODO - make sure multiple parameters don't share a name
     {
         // sort of special case for no parameters
         skipEnds();
@@ -82,6 +82,85 @@ namespace bodoasm
         symbols->addMacro(name.name, std::move(macro));
     }
 
+    void Parser::invokeMacro(const Token& backtick)
+    {
+        MacroInvocation         invoc = buildMacroInvocation(*this, backtick);
+
+        std::vector<Token>      output;
+        //expandMacro(output, invoc);
+
+    }
+    
+    auto Parser::buildMacroInvocation(TokenSource& src, const Token& backtick) const -> MacroInvocation
+    {
+        auto macName = SymbolParse::parseRef(src, curScope.topLabel);
+        if(!macName)        err.error(&macName.pos, "Expected macro name to follow backtick operator");
+        auto macro = symbols->getMacro(macName.name);
+        if(!macro)          err.error(&macName.pos, "'" + macName.name + "' is not a defined macro name");
+
+        std::vector<std::vector<Token>>     fullArgList;
+        // Does the invocation have an argument list?
+        auto t = src.next();
+        if(t.str == "(")
+        {
+            std::vector<Token>      args;
+            t = src.next();
+            if(t.str != ")")
+            {
+                // non-empty argument list
+                src.unget(t);
+                bool keepLooping = true;
+                while(keepLooping)
+                {
+                    t = src.next();
+                    if(t.isEoF())       err.error(&t.pos, "Unexpected EOF reached inside macro argument list");
+                    if(t.str == "/" && !t.ws_after)
+                    {
+                        // special escapes?!?!
+                        auto esc = src.next();
+                        if(esc.str == "," || esc.str == ")")
+                        {
+                            esc.pos = t.pos;
+                            args.emplace_back(std::move(esc));
+                        }
+                        else
+                            src.unget(esc);
+                    }
+                    else if(t.str == "," || t.str == ")")
+                    {
+                        if(args.empty())    err.error(&t.pos, "Unexpected '" + t.str + "' in macro argument list.  Macro arguments cannot be empty");
+                        fullArgList.emplace_back(std::move(args));
+                        args.clear();
+                        if(t.str == ")")
+                            keepLooping = false;
+                    }
+                    else
+                        args.emplace_back( std::move(t) );
+                }
+            }
+        }
+        else // if(t.str != "(") 
+            src.unget(t);
+
+        // At this point, fullArgList has all the arg tokens
+        if(fullArgList.size() != macro->paramNames.size())
+            err.error(&backtick.pos, "'" + macName.name + "' macro invoked with " + std::to_string(fullArgList.size()) + " parameters, but was expecting "
+                                         + std::to_string(macro->paramNames.size()) );
+        
+        // build and output MacroInvocation instance
+        MacroInvocation out;
+        out.invokePos = std::make_shared<Position>(backtick.pos);
+        out.macro = macro;
+        for(std::size_t i = 0; i < fullArgList.size(); ++i)
+        {
+            const std::string& name = macro->paramNames[i];
+            out.args.insert( { name, std::move(fullArgList[i]) } );
+        }
+
+        return out;
+    }
+
+    /*
     Token Parser::invokeMacro(const Token& backtick)
     {
         if(macroStack.size() > 30)          // number is arbitrary
@@ -141,7 +220,7 @@ namespace bodoasm
                 }
             }
         }
-        else /* if(t.str != "(") */
+        else // if(t.str != "(") 
             unget(t);
 
         // At this point, fullArgList has all the arg tokens
@@ -208,4 +287,5 @@ namespace bodoasm
         return t;
     }
 
+    */
 }

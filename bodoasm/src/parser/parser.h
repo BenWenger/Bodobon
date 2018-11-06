@@ -50,33 +50,15 @@ namespace bodoasm
         void                getStartMacroParamList(Macro& macro);
 
 
-        struct MacroPlayback
+        struct MacroInvocation
         {
-            typedef std::unique_ptr<MacroPlayback>      Ptr;
-
-            Position::Ptr       invokePos;
-            const Macro*        mac;
-            std::size_t         tokenPos;       // index of next token to be fetched from mac's token list
-
-            typedef std::unordered_map<std::string, std::vector<Token>>     args_t;
-            typedef std::vector<Token>::const_iterator                      argIter_t;
-            bool                outputtingArg;  // true if currently expanding one of the arguments, rather than the macro itself
-            args_t              arguments;
-            argIter_t           argIter;        // if outputtingArg is true, this is the next arg to be output
-            argIter_t           argIterEnd;     // this is where arg outputting ends
-
-            // I'm holding onto iterators, so these objects cannot be moved or copied
-            MacroPlayback() = default;
-            MacroPlayback(const MacroPlayback&) = delete;
-            MacroPlayback& operator = (const MacroPlayback&) = delete;
-            MacroPlayback(MacroPlayback&&) = delete;
-            MacroPlayback& operator = (MacroPlayback&&) = delete;
+            const Macro*                                            macro;
+            std::unordered_map< std::string, std::vector<Token> >   args;
+            std::shared_ptr<Position>                               invokePos;
         };
-        std::vector<MacroPlayback::Ptr>                 macroStack;
         
-        Token               fetchMacroToken();
-        Token               invokeMacro(const Token& backtick);
-        Token               nestTokenInMacro(Token t, const MacroPlayback& mpb);
+        void                invokeMacro(const Token& backtick);
+        MacroInvocation     buildMacroInvocation(TokenSource& src, const Token& backtick) const;
     };
 }
 

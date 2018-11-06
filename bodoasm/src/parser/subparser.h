@@ -21,15 +21,16 @@ namespace bodoasm
             const Token*        tokenList;
             std::size_t         tokenListSize;
         };
+                            SubParser(const Package& pkg, int maxRecursiveDepth);
+        std::size_t         getCurrentLexPos() const    { return pos - getUngottenCount();  }
+        std::size_t         getCurrentLexSize() const   { return tokenListSize;             }
 
-        virtual         ~SubParser() {};
+        virtual             ~SubParser() {};
 
-        virtual void    warning(const Position* p, const std::string& msg) override;
-        virtual void    error(const Position* p, const std::string& msg) override;
+        virtual void        warning(const Position* p, const std::string& msg) override;
+        virtual void        error(const Position* p, const std::string& msg) override;
 
-    protected:
-                    SubParser(const Package& pkg, int maxRecursiveDepth);
-                    
+    protected:                    
         void        advance(std::size_t count);
 
         class       RecursionMarker
@@ -51,8 +52,6 @@ namespace bodoasm
         };
 
 
-        std::size_t         getCurrentLexPos() const    { return pos - getUngottenCount();  }
-        std::size_t         getCurrentLexSize() const   { return tokenListSize;             }
         Package             buildSubPackage(std::size_t start, std::size_t stop);
         void                stopReportingErrors()       { errReport = nullptr;          }
 

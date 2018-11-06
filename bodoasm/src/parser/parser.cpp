@@ -77,14 +77,13 @@ namespace bodoasm
 
     Token Parser::fetchToken()
     {
-        Token out;
-        if(macroStack.empty())
-            out = lexer->next();
-        else
-            out = fetchMacroToken();
-
+        Token out = lexer->next();
         if(out.str == "`")
-            out = invokeMacro(out);
+        {
+            invokeMacro(out);
+            out = next();
+        }
+
         return out;
     }
     
