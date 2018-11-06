@@ -84,11 +84,78 @@ namespace bodoasm
 
     void Parser::invokeMacro(const Token& backtick)
     {
+        /* I've tried this like 40 times.  The [new] plan, which should work:
+
+        - single pass
+        - recursively expand macros as you come across them, with a maximum depth to catch cycles.
+        - each expansion produces a vector<Token>
+        - while expanding replace parameter instances with their provided arguments
+        - once expanding is complete, return the vector, which will be output with no further processing
+        
+        Some consequences of this (using C-style macros):
+            --------------------------
+            #define foo()       x
+            #define bar(x)      foo()
+            bar(1)              // <- expands to x, not to 1
+            -------------------------
+            #define foo(a, b)   a
+            foo(b, a)           // <- expands to b (not a cycle -- once the parameter substitution is done, you move on)
+            -------------------------
+            #define die(a,b)    x
+            #define foo()       die( 1,
+            #define bar()       2 )
+            foo() bar()         // <- foo expands to:   die( 1,
+                                //      at which point, 'die( 1' attempts to be expanded recursively, but can't be, as
+                                //      it is incomplete, causing an error.
+                                //  One might expect this to expand to die(1,2) -> x ... but it will not
+
+
+        Since we're effectively just building a linear list of tokens, I'll probably have the same 'output' vector
+        that just gets passed forward to all recursive expansions for them to tack on their tokens.
+
+        Then, to actually feed back to the main parser, 'unget' all tokens in reverse order.  Which might be inefficient,
+        but I'll be damned if it's not simple.
+        */
         MacroInvocation         invoc = buildMacroInvocation(*this, backtick);
 
         std::vector<Token>      output;
-        //expandMacro(output, invoc);
+        expandMacro(output, invoc, std::make_shared<Position>(backtick.pos), 0);
 
+        for(auto i = output.rbegin(); i != output.rend(); ++i)
+            unget(*i);
+    }
+    
+    void Parser::expandMacro(std::vector<Token>& output, const MacroInvocation& invoc, const std::shared_ptr<Position>& pos, int recurseCount) const
+    {
+        //  TODO  -- figure out the position stack.  I think I'm doing it wrong.
+        if(recurseCount >= maxMacroRecursionCount)      err.error(pos.get(), "Maximum macro recursion depth reached.  Do you have a circular dependency?");
+
+        SubParser::Package pkg;
+        pkg.errReport = &err;
+        pkg.tokenList = invoc.macro->tokens.data();
+        pkg.tokenListSize = invoc.macro->tokens.size();
+        SubParser src(pkg, 1);
+        while(true)
+        {
+            auto t = src.next();
+            if(t.isEoF())       break;
+
+            if(t.isPossibleSymbol())        // parameter substitution?
+            {
+                auto arg = invoc.args.find(t.str);
+                if(arg != invoc.args.end())
+                {
+                    output.insert( output.end(), arg->second.begin(), arg->second.end() );      // TODO - capture position stack
+                    continue;
+                }
+            }
+            else if(t.str == "`")           // recursive macro substitution?
+            {
+                auto inv = buildMacroInvocation(src, t);        // TODO finish
+                //expandMacro(output, inv, 
+            }
+            // TODO finish this
+        }
     }
     
     auto Parser::buildMacroInvocation(TokenSource& src, const Token& backtick) const -> MacroInvocation

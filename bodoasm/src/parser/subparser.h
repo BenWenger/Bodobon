@@ -12,7 +12,7 @@ namespace bodoasm
     // this is derived from TokenSource, but that doesn't make much sense.
     //   Maybe instead of having the package here, I should have a separate class
     //   to hold that package and let subparsers use it.  More refactoring for later.
-    class SubParser : public ErrorReporter, protected TokenSource
+    class SubParser : public ErrorReporter, public TokenSource
     {
     public:
         struct Package

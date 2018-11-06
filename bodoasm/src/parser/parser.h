@@ -59,6 +59,8 @@ namespace bodoasm
         
         void                invokeMacro(const Token& backtick);
         MacroInvocation     buildMacroInvocation(TokenSource& src, const Token& backtick) const;
+        void                expandMacro(std::vector<Token>& output, const MacroInvocation& invoc, const std::shared_ptr<Position>& pos, int recurseCount) const;
+        static const int    maxMacroRecursionCount = 20;
     };
 }
 
