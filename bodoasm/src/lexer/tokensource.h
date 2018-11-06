@@ -10,7 +10,15 @@ namespace bodoasm
     {
     public:
         virtual             ~TokenSource() = default;
-        Token               next()
+        virtual Token       next() = 0;
+        virtual void        unget(const Token& t) = 0;
+    };
+
+    class BufferedTokenSource : public TokenSource
+    {
+    public:
+        virtual             ~BufferedTokenSource() = default;
+        virtual Token       next() override
         {
             if(ungotten.empty())
                 return fetchToken();
@@ -18,7 +26,7 @@ namespace bodoasm
             ungotten.pop_back();
             return out;
         }
-        void                unget(const Token& t)
+        virtual void        unget(const Token& t) override
         {
             ungotten.push_back(t);
         }

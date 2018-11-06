@@ -172,7 +172,7 @@ namespace bodoasm
         {
             std::vector<Token>      args;
             t = src.next();
-            if(t.str != ")")
+            if(t.str != ")")o
             {
                 // non-empty argument list
                 src.unget(t);

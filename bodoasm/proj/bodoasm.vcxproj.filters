@@ -31,6 +31,9 @@
     <Filter Include="src\assembler">
       <UniqueIdentifier>{d40618f6-ef8c-4ebe-bcdb-dcd1c4a2a786}</UniqueIdentifier>
     </Filter>
+    <Filter Include="src\macros">
+      <UniqueIdentifier>{e35db811-99fe-4661-8bc9-49d6920f2307}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\src\main.cpp">
@@ -86,6 +89,9 @@
     </ClCompile>
     <ClCompile Include="..\src\parser\symbolparse.cpp">
       <Filter>src\parser</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\macros\macroprocessor.cpp">
+      <Filter>src\macros</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -145,6 +151,9 @@
     </ClInclude>
     <ClInclude Include="..\src\parser\symbolparse.h">
       <Filter>src\parser</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\macros\macroprocessor.h">
+      <Filter>src\macros</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

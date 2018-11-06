@@ -14,7 +14,7 @@
 
 namespace bodoasm
 {
-    class Lexer : public TokenSource
+    class Lexer : public BufferedTokenSource
     {
     public:
                         Lexer(ErrorReporter& er);

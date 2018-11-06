@@ -82,21 +82,4 @@ namespace bodoasm
             resolveSymbol(i, true);
         }
     }
-
-    ///////////////////////////////////////////////////////
-    
-    void SymbolTable::addMacro(const std::string& name, Macro&& mac)
-    {
-        auto pos = mac.definePos;
-        auto result = macros.insert( {name, std::make_unique<Macro>( std::move(mac) ) } );
-        if(!result.second)
-            err.error(&pos, "Macro name '" + name + "' was already defined here: " + ErrorReporter::formatPosition(pos));
-    }
-
-    const Macro* SymbolTable::getMacro(const std::string& name)
-    {
-        auto pos = macros.find(name);
-        if(pos == macros.end())     return nullptr;
-        return pos->second.get();
-    }
 }

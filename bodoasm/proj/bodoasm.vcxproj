@@ -128,6 +128,7 @@
     <ClCompile Include="..\src\error\error.cpp" />
     <ClCompile Include="..\src\expression\expression.cpp" />
     <ClCompile Include="..\src\lexer\lexer.cpp" />
+    <ClCompile Include="..\src\macros\macroprocessor.cpp" />
     <ClCompile Include="..\src\main.cpp" />
     <ClCompile Include="..\src\parser\parser.cpp" />
     <ClCompile Include="..\src\parser\parser_addrmode.cpp" />
@@ -148,6 +149,7 @@
     <ClInclude Include="..\src\expression\expression.h" />
     <ClInclude Include="..\src\lexer\lexer.h" />
     <ClInclude Include="..\src\lexer\tokensource.h" />
+    <ClInclude Include="..\src\macros\macroprocessor.h" />
     <ClInclude Include="..\src\parser\parser.h" />
     <ClInclude Include="..\src\parser\parsersubinstance.h" />
     <ClInclude Include="..\src\parser\parser_addrmode.h" />
