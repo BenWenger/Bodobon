@@ -80,24 +80,27 @@ namespace bodoasm
 
         // get param names
         t = next();
-        if(t.str != "(")    err.error(&t.pos, "Expected open parens");
-
-        t = nextSkipEnd();
-        if(t.str != ")")    // if close parens, there are no params
+        if(t.type != Token::Type::CmdEnd)   // CmdEnd is OK, it'll just be an empty param list
         {
-            unget(t);
-            std::set<std::string>       usedParamNames;
-            while(true)
-            {
-                t = nextSkipEnd();
-                if(!t.isPossibleSymbol())       err.error(&t.pos, "Macro parameter name invalid or missing");
-                auto i = usedParamNames.insert(t.str);
-                if(!i.second)                   err.error(&t.pos, "Cannot have multiple macro parameters with the same name");
-                macro.paramNames.push_back(t.str);
+            if(t.str != "(")    err.error(&t.pos, "Expected open parens");
 
-                t = nextSkipEnd();
-                if(t.str == ")")        break;
-                else if(t.str != ",")   err.error(&t.pos, "Unexpected token '" + t.str + "'");
+            t = nextSkipEnd();
+            if(t.str != ")")    // if close parens, there are no params
+            {
+                unget(t);
+                std::set<std::string>       usedParamNames;
+                while(true)
+                {
+                    t = nextSkipEnd();
+                    if(!t.isPossibleSymbol())       err.error(&t.pos, "Macro parameter name invalid or missing");
+                    auto i = usedParamNames.insert(t.str);
+                    if(!i.second)                   err.error(&t.pos, "Cannot have multiple macro parameters with the same name");
+                    macro.paramNames.push_back(t.str);
+
+                    t = nextSkipEnd();
+                    if(t.str == ")")        break;
+                    else if(t.str != ",")   err.error(&t.pos, "Unexpected token '" + t.str + "'");
+                }
             }
         }
 
@@ -167,7 +170,7 @@ namespace bodoasm
     auto MacroProcessor::getArgList(const std::string& macname, const Macro& macro) -> argList_t
     {
         auto paren = next();
-        if(paren.str == "(")        // no args
+        if(paren.str != "(")        // no args
         {
             unget(paren);
             if(!macro.paramNames.empty())   err.error(&paren.pos, "Macro '" + macname + "' missing argument list");
