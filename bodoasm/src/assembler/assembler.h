@@ -11,6 +11,7 @@
 #include "asmdefs/asmdefinition.h"
 #include "directives/directivespecs.h"
 #include "macros/macroprocessor.h"
+#include "tbl/tblfile.h"
 
 
 namespace bodoasm
@@ -47,6 +48,7 @@ namespace bodoasm
         void                directive_Rebase    (const Position& pos, const directiveParams_t& params);
         void                directive_Endbase   (const Position& pos, const directiveParams_t& params);
         void                directive_Byte      (const Position& pos, const directiveParams_t& params);
+        void                directive_TblFile   (const Position& pos, const directiveParams_t& params);
 
     private:
         ErrorReporter       err;
@@ -91,6 +93,9 @@ namespace bodoasm
         int_t                   unbasedPC;
         bool                    rebasing;
         bool                    PCEstablished;
+
+
+        TblFile::Ptr            tblFile;
     };
 }
 

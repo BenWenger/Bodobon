@@ -13,9 +13,10 @@ namespace bodoasm
             
             out["org"]    = { t::Integer,     t::Integer,        t::OptInteger,         t::OptInteger   };
             out["include"]= { t::String                                                                 };
-            out["rebase"] = { t::Integer                                                                };
             out["byte"]   = { t::IntOrString, t::OptIntOrString, p::loopBack(1)                         };
+            out["rebase"] = { t::Integer                                                                };
             out["endbase"]= {};
+            out["tblfile"]= { t::OptString                                                              };
 
             return out;
         }

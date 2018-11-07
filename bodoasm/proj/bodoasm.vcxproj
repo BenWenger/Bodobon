@@ -137,6 +137,7 @@
     <ClCompile Include="..\src\parser\subparser.cpp" />
     <ClCompile Include="..\src\parser\symbolparse.cpp" />
     <ClCompile Include="..\src\symbols\symboltable.cpp" />
+    <ClCompile Include="..\src\tbl\tblfile.cpp" />
     <ClCompile Include="..\src\types\stringpool.cpp" />
     <ClCompile Include="..\src\types\token.cpp" />
   </ItemGroup>
@@ -155,6 +156,7 @@
     <ClInclude Include="..\src\parser\symbolparse.h" />
     <ClInclude Include="..\src\parser\subparser.h" />
     <ClInclude Include="..\src\symbols\symboltable.h" />
+    <ClInclude Include="..\src\tbl\tblfile.h" />
     <ClInclude Include="..\src\types\basetypes.h" />
     <ClInclude Include="..\src\types\blocktypes.h" />
     <ClInclude Include="..\src\types\position.h" />

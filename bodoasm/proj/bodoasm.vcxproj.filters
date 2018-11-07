@@ -34,6 +34,9 @@
     <Filter Include="src\macros">
       <UniqueIdentifier>{e35db811-99fe-4661-8bc9-49d6920f2307}</UniqueIdentifier>
     </Filter>
+    <Filter Include="src\tbl">
+      <UniqueIdentifier>{cfb8d9f0-c4ff-4f6f-a1e9-12b2adc26e94}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\src\main.cpp">
@@ -89,6 +92,9 @@
     </ClCompile>
     <ClCompile Include="..\src\macros\macroprocessor.cpp">
       <Filter>src\macros</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\tbl\tblfile.cpp">
+      <Filter>src\tbl</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -148,6 +154,9 @@
     </ClInclude>
     <ClInclude Include="..\src\macros\macroprocessor.h">
       <Filter>src\macros</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\tbl\tblfile.h">
+      <Filter>src\tbl</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

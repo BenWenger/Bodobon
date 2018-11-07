@@ -1,4 +1,6 @@
 #include "assembler.h"
+#include "types/stringpool.h"
+#include <dshfs.h>
 
 namespace bodoasm
 {
@@ -15,6 +17,18 @@ namespace bodoasm
             dirTable["rebase"]      = &Assembler::directive_Rebase;
             dirTable["endbase"]     = &Assembler::directive_Endbase;
             dirTable["byte"]        = &Assembler::directive_Byte;
+            dirTable["tblfile"]     = &Assembler::directive_TblFile;
+        }
+    }
+    
+    namespace
+    {
+        // Make a path relative to the current file in the given position
+        std::string makePath(const Position& pos, const std::string& filename)
+        {
+            dshfs::Filename fn;
+            fn.setFullPath( StringPool::toStr(pos.fileId) );
+            return fn.getPathPart() + filename;
         }
     }
 
@@ -22,7 +36,37 @@ namespace bodoasm
     {
         if(!PCEstablished)      err.error(&pos, "Cannot output #byte values until PC has been established.  Please #org first");
 
-        // TODO
+        // Note - PC gets messed up if there's an error, but that shouldn't matter because no binary
+        //   gets made on an error any way.
+        auto startSize = curOrgBlock.dat.size();
+
+        for(auto& i : params)
+        {
+            if(i.type == DirectiveParam::Type::Integer)
+            {
+                auto v = i.valInt;
+                if(v < 0)       v += 0x100;
+                if(v < 0 || v > 0xFF)       err.error(&pos, "#byte value '" + std::to_string(i.valInt) + "' is out of range for a byte");
+
+                curOrgBlock.dat.push_back( static_cast<u8>(v) );
+            }
+            else
+            {
+                if(tblFile)
+                {
+                    tblFile->toBinary(err, pos, curOrgBlock.dat, i.valStr);
+                }
+                else
+                {
+                    for(auto& c : i.valStr)
+                        curOrgBlock.dat.push_back( static_cast<u8>(c) );
+                }
+            }
+        }
+
+        auto dif = curOrgBlock.dat.size() - startSize;
+        curPC += dif;
+        unbasedPC += dif;
     }
 
     void Assembler::directive_Org(const Position& pos, const directiveParams_t& params)
@@ -86,5 +130,13 @@ namespace bodoasm
         unbasedPC = curPC;
         curPC = params[0].valInt;
         rebasing = true;
+    }
+
+    void Assembler::directive_TblFile(const Position& pos, const directiveParams_t& params)
+    {
+        if(params.empty())
+            tblFile.reset();
+        else
+            tblFile = TblFile::load(err, pos, makePath(pos, params[0].valStr));
     }
 }
