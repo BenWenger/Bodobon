@@ -10,6 +10,7 @@
 #include "symbols/symboltable.h"
 #include "asmdefs/asmdefinition.h"
 #include "directives/directivespecs.h"
+#include "macros/macroprocessor.h"
 
 
 namespace bodoasm
@@ -52,6 +53,7 @@ namespace bodoasm
         Lexer               lexer;
         SymbolTable         symbols;
         AsmDefinition       asmDef;
+        MacroProcessor      macroProc;
 
         struct Future
         {

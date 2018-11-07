@@ -134,7 +134,6 @@
     <ClCompile Include="..\src\parser\parser_addrmode.cpp" />
     <ClCompile Include="..\src\parser\parser_directive.cpp" />
     <ClCompile Include="..\src\parser\parser_expression.cpp" />
-    <ClCompile Include="..\src\parser\parser_macros.cpp" />
     <ClCompile Include="..\src\parser\subparser.cpp" />
     <ClCompile Include="..\src\parser\symbolparse.cpp" />
     <ClCompile Include="..\src\symbols\symboltable.cpp" />
@@ -151,7 +150,6 @@
     <ClInclude Include="..\src\lexer\tokensource.h" />
     <ClInclude Include="..\src\macros\macroprocessor.h" />
     <ClInclude Include="..\src\parser\parser.h" />
-    <ClInclude Include="..\src\parser\parsersubinstance.h" />
     <ClInclude Include="..\src\parser\parser_addrmode.h" />
     <ClInclude Include="..\src\parser\parser_expression.h" />
     <ClInclude Include="..\src\parser\symbolparse.h" />

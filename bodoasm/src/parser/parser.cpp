@@ -8,13 +8,16 @@
 
 namespace bodoasm
 {
-    void Parser::parse(Assembler* asmblr, Lexer* lex, AsmDefinition* def, SymbolTable* syms, ErrorReporter& er)
+    void Parser::parse(Assembler* asmblr, Lexer* lex, MacroProcessor* mac, AsmDefinition* def, SymbolTable* syms, ErrorReporter& er)
     {
         Parser p(er);
         p.assembler =   asmblr;
         p.lexer =       lex;
         p.asmDefs =     def;
         p.symbols =     syms;
+        p.macroProc =   mac;
+
+        p.macroProc->setScopePointer(&p.curScope);
 
         p.fullParse();
     }
@@ -73,18 +76,6 @@ namespace bodoasm
                     return;
             } catch (Error&) {}
         }
-    }
-
-    Token Parser::fetchToken()
-    {
-        Token out = lexer->next();
-        if(out.str == "`")
-        {
-            invokeMacro(out);
-            out = next();
-        }
-
-        return out;
     }
     
     //////////////////////////////////////////////////////////////

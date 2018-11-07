@@ -19,8 +19,8 @@ namespace bodoasm
 
     ////////////////////////////////////////////////////////
 
-    MacroProcessor::MacroProcessor(ErrorReporter& e, Lexer* lex, Scope* sc)
-        : err(e), lexer(lex), scope(sc)
+    MacroProcessor::MacroProcessor(ErrorReporter& e, Lexer* lex)
+        : err(e), lexer(lex), scope(nullptr)
     {
         recursionDepth = 0;
     }
@@ -122,6 +122,9 @@ namespace bodoasm
 
     void MacroProcessor::expandMacro(const Token& backtick)
     {
+        int maclvl = backtick.macroExpandDepth + 1;
+        if(maclvl >= maxRecursionDepth)
+            err.error(&backtick.pos, "Maximum macro recursion depth reached.  Do you have a circular dependency?");
         Recurse     checkYoSelf(this, backtick.pos);
 
         // get macro name
@@ -133,7 +136,32 @@ namespace bodoasm
         // get arg list
         auto argList = getArgList(name.name, *macro);
 
-        // TODO
+        // start copying Tokens!
+        std::vector<Token>      tokens;
+        for(auto& i : macro->tokens)
+        {
+            if(i.isPossibleSymbol())
+            {
+                auto iter = argList.find(i.str);
+                if(iter != argList.end())
+                {
+                    for(auto& j : iter->second)
+                        tokens.push_back(j);
+                    tokens.back().ws_after = i.ws_after;
+                    continue;
+                }
+            }
+            tokens.push_back(i);
+        }
+
+        // output!
+        Position::Ptr subPos = std::make_shared<Position>(backtick.pos);
+        for(auto i = tokens.rbegin(); i != tokens.rend(); ++i)
+        {
+            i->pos.callStack = subPos;
+            i->macroExpandDepth = maclvl;
+            lexer->unget(*i);
+        }
     }
 
     auto MacroProcessor::getArgList(const std::string& macname, const Macro& macro) -> argList_t
@@ -164,6 +192,7 @@ namespace bodoasm
             {
                 // TODO escape characters???
                 t = next();
+                if(t.isEoF())           err.error(&t.pos, "Unexpected EOF in macro argument list");
                 if(t.str == "," || t.str == ")")
                 {
                     if(arg.empty())     err.error(&t.pos, "Unexpected token '" + t.str + "'");

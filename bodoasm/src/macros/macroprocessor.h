@@ -15,12 +15,13 @@ namespace bodoasm
     class MacroProcessor : public TokenSource
     {
     public:
-                        MacroProcessor(ErrorReporter& e, Lexer* lex, Scope* sc);
+                        MacroProcessor(ErrorReporter& e, Lexer* lex);
 
         virtual Token   next() override;
         virtual void    unget(const Token& t) override;
 
         void            defineMacro(const Position& definePos);
+        void            setScopePointer(Scope* sc)          { scope = sc;       }
     private:
         friend class Recurse;
         class Recurse

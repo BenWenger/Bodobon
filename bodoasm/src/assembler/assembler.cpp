@@ -33,6 +33,7 @@ namespace bodoasm
         : lexer(err)
         , symbols(err)
         , asmDef(err)
+        , macroProc(err, &lexer)
     {
         clearCurOrg();
 
@@ -46,7 +47,7 @@ namespace bodoasm
         clearCurOrg();
 
         lexer.startFile(path);
-        Parser::parse(this, &lexer, &asmDef, &symbols, err);
+        Parser::parse(this, &lexer, &macroProc, &asmDef, &symbols, err);
         if(err.getErrCount() > 0)       return;
 
         orgBlocks.emplace_back( std::move(curOrgBlock) );

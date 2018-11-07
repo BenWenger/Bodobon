@@ -94,7 +94,7 @@ namespace bodoasm
         // special case for #macro and #endmacro ... the parser handles these
         if(t.str == "macro")
         {
-            startMacroDef(directivePos);
+            macroProc->defineMacro(directivePos);
             return;
         }
         else if(t.str == "endmacro")

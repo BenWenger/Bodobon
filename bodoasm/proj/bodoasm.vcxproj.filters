@@ -81,9 +81,6 @@
     <ClCompile Include="..\src\parser\parser_expression.cpp">
       <Filter>src\parser</Filter>
     </ClCompile>
-    <ClCompile Include="..\src\parser\parser_macros.cpp">
-      <Filter>src\parser</Filter>
-    </ClCompile>
     <ClCompile Include="..\src\parser\subparser.cpp">
       <Filter>src\parser</Filter>
     </ClCompile>
@@ -138,9 +135,6 @@
       <Filter>src\parser</Filter>
     </ClInclude>
     <ClInclude Include="..\src\parser\parser_expression.h">
-      <Filter>src\parser</Filter>
-    </ClInclude>
-    <ClInclude Include="..\src\parser\parsersubinstance.h">
       <Filter>src\parser</Filter>
     </ClInclude>
     <ClInclude Include="..\src\parser\subparser.h">
