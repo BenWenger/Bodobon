@@ -134,7 +134,9 @@ namespace bodoasm
             {
                 tok.pos = cur.pos;
                 tok.type = Token::Type::CmdEnd;
+                tok.str = "\\";
                 advance();
+                tok.ws_after = onSkippableChar();
                 return false;
             }
 

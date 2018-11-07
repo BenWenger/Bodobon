@@ -184,6 +184,7 @@ namespace bodoasm
             if(!macro.paramNames.empty())   err.error(&paren.pos, "Macro '" + macname + "' missing argument list");
             return argList_t();
         }
+        unget(paren);
 
         ordArgList_t        ordArgs;
         std::vector<Token>  arg;
@@ -193,10 +194,17 @@ namespace bodoasm
         {
             while(true)
             {
-                // TODO escape characters???
                 t = next();
                 if(t.isEoF())           err.error(&t.pos, "Unexpected EOF in macro argument list");
-                if(t.str == "," || t.str == ")")
+                if(t.str == "\\" && !t.ws_after)        // some basic escape characters
+                {
+                    auto tmp = next();
+                    if(tmp.str == "," || tmp.str == ")")
+                        t = tmp;
+                    else
+                        unget(tmp);
+                }
+                else if(t.str == "," || t.str == ")")
                 {
                     if(arg.empty())     err.error(&t.pos, "Unexpected token '" + t.str + "'");
                     keepLooping = (t.str == ",");
@@ -212,7 +220,7 @@ namespace bodoasm
         if(ordArgs.size() != macro.paramNames.size())
         {
             err.error(&t.pos, "Macro '" + macname + "' expecting " + std::to_string(macro.paramNames.size()) +
-                                " arguments, but only " + std::to_string(ordArgs.size()) + " provided.");
+                                " arguments, but " + std::to_string(ordArgs.size()) + " provided.");
         }
 
         argList_t out;
