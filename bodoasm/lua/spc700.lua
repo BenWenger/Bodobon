@@ -77,7 +77,10 @@ addrModeTable_2 = { [0]=
 --        x0   x1   x2   x3    x4   x5   x6   x7      x8   x9   xA   xB    xC   xD   xE   xF
 }
 
-suffixes = {}
+suffixes = {
+    [".b"]= {"dp","dx","dy"},
+    [".w"]= {"ab","ax","ay"}
+}
 
 baseModePatterns = {
     ["ip"]= {},
@@ -134,9 +137,17 @@ baseModeSizes = {               -- does not include the opcode, or the other par
     ["rl"]= 1,
     ["d*"]= 1,
     ["ij"]= 2,
-    ["tc"]= 0
+    ["tc"]= 0,
+    ["--"]= 0
 }
 
+-- Support function
+function tblConcat(t1,t2)
+    for i=1,#t2 do
+        t1[#t1+1] = t2[i]
+    end
+    return t1
+end
 
 --
 --  Transform the above tables into something that can be used by the assembler, and where
@@ -145,36 +156,58 @@ baseModeSizes = {               -- does not include the opcode, or the other par
 
 opcodeLookup = {}           -- used to look up an opcode from a mnemonic/addrmode pair
 asmMnemonics = {}           -- the mnemonic table to give to the assembler
+addrModePatterns = {}       -- the table that combines baseModePatterns with itself so we have 2 parameters
 
-addOpcodeConfig = function(opcode, mnm, adm)
-    opcodeLookup[mnm..adm] = opcode
+addOpcodeConfig = function(opcode, mnm, fst, snd)
+    adm = fst..snd
+    opcodeLookup[adm..mnm] = opcode     -- put addr mode in the keystring first, since it is a fixed length
     
     if asmMnemonics[mnm] == nil then
         asmMnemonics[mnm] = {adm}
     else
         table.insert(asmMnemonics[mnm], adm)
     end
+    
+    if addrModePatterns[adm] == nil then
+        pattern = tblConcat( {}, baseModePatterns[fst] )
+        if snd ~= "--" then
+            pattern[#pattern + 1] = ","
+            pattern = tblConcat( pattern, baseModePatterns[snd] )
+        end
+        addrModePatterns[adm] = pattern
+    end
 end
 
 buildOpcodeTables = function()
+    impliedExceptions = {       -- some instructions technically have a mode, but could
+        ["div"]= true,          --   easily be considered implied mode.  So allow for implied
+        ["mul"]= true,          --   mode with these
+        ["das"]= true,
+        ["daa"]= true,
+        ["xcn"]= true
+    }
     for opcode=0,255 do
         mnm = mnemonicTable[opcode]
-        adm = addrModeTable[opcode]
-        if mnm ~= "---" then
-            addOpcodeConfig(opcode,mnm,adm)
-            -- special case for 'ac' mode, we also want to use 'ip' mode because some
-            --   people are lazy and don't want to type out the explicit 'A'
-            if adm == "ac" then
-                addOpcodeConfig(opcode,mnm,"ip")
+        fst = addrModeTable_1[opcode]
+        snd = addrModeTable_2[opcode]
+        if fst ~= "--" then
+            addOpcodeConfig(opcode,mnm,fst,snd)
+            if impliedExceptions[mnm] then
+                addOpcodeConfig(opcode,mnm,"ip","--")
             end
         end
     end
 end
 
-modes_priority = {"ip","ac","im","in","rl","ix","iy"}   -- use these modes if they're an option -- always
-modes_short = {"zp","zx","zy"}
+    
+-- use these modes if they're an option -- always
+modes_priority = {"ip","ac","cc","xx","yy","ya","sp","st","xi","xp","yi","im","ix","iy","mb","nb","rl","d*","ij","tc"}
+-- otherwise we can fall back to either short or long depending on the size of the operand
+modes_short = {"dp","dx","dy"}
 modes_long = {"ab","ax","ay"}
 
+
+ -- TODO this doesn't work.  FIX IT
 getBestMode = function(patterns)
     -- if there is a priority mode, use it
     for i,v in ipairs(modes_priority) do
@@ -200,8 +233,6 @@ getBestMode = function(patterns)
     end
         
     -- if there wasn't a long version, but there was a short one, use the short one.
-    --   this can happen for STX/STY instructions, which have zero page indexed, but not
-    --   absolute indexed
     return short
 end
 
