@@ -348,7 +348,7 @@ namespace bodoasm
                 v = static_cast<int>(lua_tointeger(*lua, toppos+i));
 
             if(v < 0 || v > 255)
-                err.error(&pos, "In lang Lua:  'bodoasm_getBinary' must return an array of unsigned integers within the range 0-255");
+                err.error(&pos, errmsg);
 
             if(requiredsize > 0)        bin[insertoffset+i] = static_cast<u8>(v);
             else                        bin.push_back(static_cast<u8>(v));

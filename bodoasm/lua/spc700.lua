@@ -318,7 +318,7 @@ getBestMode = function(patterns)
                 bestLong = mode
             end
         else
-            if prio < bestPrio
+            if prio < bestPrio then
                 bestPrio = prio
                 best = mode
             end
@@ -358,7 +358,7 @@ getBestMode = function(patterns)
     --    at this point, because there is no "long" pattern that will also match the "dp,dp" 
     --    pattern.  Therefore... we know that the argument for this short mode is the first
     --    expression in the arg list
-    local ex = pattern[bestShort][1]        -- get the expression
+    local ex = patterns[bestShort][1]       -- get the expression
     if ex ~= nil then                       -- has it been evaluated?
         if ex >= 0x00 and ex <= 0xFF then   -- is it within a byte range?
             return bestShort                --  if yes, we can use the short version!
@@ -420,7 +420,7 @@ getModeBinary_mb = function(output, args, size)
         error("Address for 'm.b' mode must be between $0000-$1FFF")
     end
     output[#output+1] = m & 0xFF
-    output[#output+1] = (m >> 8) | (v << 5)
+    output[#output+1] = (m >> 8) | (b << 5)
     return output, args
 end
 
@@ -433,8 +433,7 @@ getModeBinary_relative = function(output, args, size)
     if dif < -128 or dif > 127 then
         error("Branch out of range")
     end
-    
-    output[#output+1] = (dif + 128) ^ 0x80
+    output[#output+1] = (dif + 128) ~ 0x80
     return output, args
 end
 
@@ -503,7 +502,7 @@ bodoasm_init = function()
     buildOpcodeTables()
     return {
         ["Mnemonics"]=  asmMnemonics,
-        ["AddrModes"]=  modePatterns,
+        ["AddrModes"]=  addrModePatterns,
         ["Suffixes"]=   suffixes
     }
 end
