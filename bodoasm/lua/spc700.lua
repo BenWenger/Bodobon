@@ -237,8 +237,8 @@ Determining the "best" mode requires that modes be prioritized.
     SO... priority is:
         - Keyword modes         (best)
         - Indirect modes
-        - Indexed modes
         - Misc modes
+        - Indexed modes
         - Absolute / DirectPage (worst)
         
     Misc modes, like tcall, m.b, rl, etc don't really matter because those will never
@@ -292,7 +292,7 @@ addModePriority = function(fst, snd)
 end
 
 getBestMode = function(patterns)
-    -- The "best" mode is the one that has the highest priority.
+    -- The "best" mode is the one that has the lowest priority value.
     -- There could be a tie (Direct Page / Absolute) .. in which case, we want to prefer
     --    the "short" (direct page) option if possible... but fall back to the long
     --    option if not.
@@ -343,8 +343,12 @@ getBestMode = function(patterns)
     --  IE:  we have no "high priority" option, and we have both short/long options
     --    so we need to determine if we should use the short or the long version.
     
-    --  Short versions usually have the "short" part as the first argument, but
-    --    some modes are in the below forms:
+    --  Short versions usually have the "short" part as the first argument.. like:
+    --      "dp"                (ex:    ASL dp      )
+    --      "dp, <register>"    (ex:    MOV dp, A   )
+    --  For these, the dp byte is the first argument in the arg list.
+    --
+    --  But some modes are in the below forms:
     --      "<register>, dp"    (ex:    MOV A, dp   )
     --      "<register>, dx"    (ex:    MOV A, dp+X )
     --      "dp, dp"            (ex:    MOV dst, src)
