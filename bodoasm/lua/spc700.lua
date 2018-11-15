@@ -366,6 +366,135 @@ end
 
 -------------------------
 
+getModeBinary_immediate = function(output, args, size)
+    -- immediate mode:  single byte output, negatives allowed
+    local v = args[#args]
+    table.remove(args)
+    if v < 0 then v = v + 256 end
+    if v < 0x00 or v > 0xFF then
+        error("Value out of range for immediate mode")
+    end
+    output[#output+1] = v
+    return output, args
+end
+
+getModeBinary_singleByte = function(output, args, size)
+    -- Single byte modes, no negative allowed
+    local v = args[#args]
+    table.remove(args)
+    if v < 0x00 or v > 0xFF then
+        error("Value out of range")
+    end
+    output[#output+1] = v
+    return output, args
+end
+
+getModeBinary_doubleByte = function(output, args, size)
+    -- Double byte (absolute) modes, no negative allowed
+    local v = args[#args]
+    table.remove(args)
+    if v < 0x00 or v > 0xFFFF then
+        error("Value out of range")
+    end
+    output[#output+1] = v & 0xFF
+    output[#output+1] = (v >> 8) & 0xFF
+    return output, args
+end
+
+getModeBinary_mb = function(output, args, size)
+    -- m.b and /m.b modes -- "m" must be between 0-1FFF and b must be 0-7
+    --   output is in the form (b<<13)|m  (high 3 bits are b, low 13 bits are m)
+    local b = args[#args]
+    table.remove(args)
+    local m = args[#args]
+    table.remove(args)
+    
+    if b < 0 or b > 7 then
+        error("Bit value for 'm.b' mode must be between 0-7")
+    end
+    if m < 0 or m > 0x1FFF then
+        error("Address for 'm.b' mode must be between $0000-$1FFF")
+    end
+    output[#output+1] = m & 0xFF
+    output[#output+1] = (m >> 8) | (v << 5)
+    return output, args
+end
+
+getModeBinary_relative = function(output, args, size)
+    local pc = bodoasm.getPC()
+    local target = args[#args]
+    table.remove(args)
+    
+    local dif = target - (pc + size)
+    if dif < -128 or dif > 127 then
+        error("Branch out of range")
+    end
+    
+    output[#output+1] = (dif + 128) ^ 0x80
+    return output, args
+end
+
+getModeBinary_tcall = function(output, args, size)
+    -- tcall has an arg, but the arg just mangles the opcode rather than
+    --   being a separate byte of output.  Only values 0-15 are valid
+    local v = args[#args]
+    table.remove(args)
+    
+    if v < 0 or v > 15 then
+        error("TCALL operand out of range.  Only values 0-15 are valid")
+    end
+    
+    output[1] = output[1] + (v * 0x10)
+    return output, args
+end
+
+getModeBinary_deeStar = function(output, args, size)
+    -- d* modes are effectively just direct page, but they have an additional
+    --   argument that mangles the opcode to specify the bit
+    local b = args[#args]
+    table.remove(args)
+    
+    if b < 0 or b > 7 then
+        error("Bit selection value is out of range.  Must be between 0-7")
+    end
+    
+    -- b mangles the opcode
+    output[1] = output[1] + (b * 0x20)
+    
+    -- the rest is just direct page
+    return getModeBinary_singleByte(output, args, size)
+end
+
+getModeBinary_lut = {
+    ["im"]= getModeBinary_immediate,
+    ["dp"]= getModeBinary_singleByte,
+    ["dx"]= getModeBinary_singleByte,
+    ["dy"]= getModeBinary_singleByte,
+    ["ix"]= getModeBinary_singleByte,
+    ["iy"]= getModeBinary_singleByte,
+    ["ab"]= getModeBinary_doubleByte,
+    ["ax"]= getModeBinary_doubleByte,
+    ["ay"]= getModeBinary_doubleByte,
+    ["ij"]= getModeBinary_doubleByte,
+    ["mb"]= getModeBinary_mb,
+    ["nb"]= getModeBinary_mb,
+    ["rl"]= getModeBinary_relative,
+    ["tc"]= getModeBinary_tcall,
+    ["d*"]= getModeBinary_deeStar
+    --  other modes have no binary output
+}
+
+getModeBinary = function(md, output, args, size)
+    local func = getModeBinary_lut[md]
+    if func ~= nil then
+        return func(output, args, size)
+    end
+    return output, args
+end
+
+
+-------------------------
+
 bodoasm_init = function()
     buildOpcodeTables()
     return {
@@ -380,7 +509,23 @@ bodoasm_guessSize = function(mnemonic, patterns)
     return modeSizes[mode], {mode}
 end
 
---  TODO, redo this function
 bodoasm_getBinary = function(mnemonic, patterns)
-    -- THIS IS THE LAST PART OF SPC SUPPORT!! WOOOOOOOoooooo
+    local mode = getBestMode(patterns)
+    local fst = string.sub(mode,1,2)
+    local snd = string.sub(mode,3,4)
+    local size = modeSizes[mode]
+    
+    args = patterns[mode]
+    output = { opcodeLookup[mnemonic..mode] }
+    output, args = getModeBinary(snd, output, args, size)
+    output, args = getModeBinary(fst, output, args, size)
+    
+    -- special case... if 'snd' is relative mode, reverse the argument bytes
+    if snd == "rl" and #output == 3 then
+        local tmp = output[2]
+        output[2] = output[3]
+        output[3] = tmp
+    end
+    
+    return table.unpack(output)
 end
