@@ -111,8 +111,12 @@ namespace bodoasm
 
     void Assembler::directive_Include(const Position& pos, const directiveParams_t& params)
     {
-        // TODO
-        int foo = 4;
+        // Get the directory of the file doing the including, so we can get the included file
+        //   relative to it
+        dshfs::Filename fn = StringPool::toStr(pos.fileId);
+        fn.setFullPath( fn.getPathPart() + params[0].valStr );
+
+        lexer.startInclude(fn.getFullPath(), &pos);
     }
     
     void Assembler::directive_Endbase(const Position& pos, const directiveParams_t& params)

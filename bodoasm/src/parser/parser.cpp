@@ -94,18 +94,18 @@ namespace bodoasm
         if(sym)
         {
             auto t = next();
-            if(!sym.ws_after && t.str == ":")            // label definition
+            if(!sym.ws_after && t.str == ":")                   // label definition
             {
                 assembler->defineLabel(sym.pos, sym.name);
                 return;
             }
-            else if(t.str == "=")       // symbol assignment
+            else if(t.str == "=")                               // symbol assignment
             {
                 assembler->defineSymbol(sym.pos, sym.name, parse_expression());
                 return;
             }
             else                                                // neither
-            {                                                   // unget 't' and all tokens fetched or the symbol
+            {                                                   // unget 't' and all tokens fetched for the symbol
                 unget(t);
                 sym.unget(*this);
             }

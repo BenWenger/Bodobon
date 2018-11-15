@@ -48,7 +48,11 @@ loop:
     PUSH  PSW
     POP   X
     
-#byte 0,0,0,0,0,0,0,0
+#byte 0,0,0,0
+
+#include 'included.asm'
+
+#byte 0,0,0,0
     MOV   (X)+, A
     MOV   (X), A
     JMP   [:+ +X]
