@@ -48,6 +48,9 @@ namespace bodoasm
         void                parse_directive();
         void                parse_command();
         Expression::Ptr     parse_expression();
+
+        // TODO -- next thing is if/elif/else directives.  Those have to be handled on parser
+        //   level because they disrupt parsing logic.
     };
 }
 
