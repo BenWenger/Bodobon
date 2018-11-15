@@ -4,6 +4,7 @@
 dp = $11
 ab = $2222
 mb = $0FFF
+pcl = $FF62
 
 butt:
 
@@ -24,3 +25,33 @@ ADDW YA, dp
 
 AND1 C, /mb.2
 AND1 C, mb.3
+
+
+#byte 0,0,0,0,0,0,0,0
+
+loop:
+
+    BBC   dp.6, loop
+    BBS   dp.0, loop
+    CBNE  dp+X, loop
+    CLR1  dp.1
+    TCALL 0
+    TCALL 5
+    TCALL 15
+    XCN   A
+    XCN
+    MOV   SP, X
+    MOV   X, SP
+    PUSH  PSW
+    POP   X
+    
+#byte 0,0,0,0,0,0,0,0
+    MOV   (X)+, A
+    MOV   (X), A
+    JMP   [loop+X]
+    JMP   loop
+    EI
+    DI
+    DIV   YA, X
+    DIV
+    PCALL pcl

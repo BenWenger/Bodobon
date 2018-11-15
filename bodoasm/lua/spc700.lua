@@ -37,7 +37,7 @@ addrModeTable_1 = { [0]=
 --[[1x]] "rl",nil ,"d*","d*", "ac","ac","ac","ac",   "dp","xi","dp","dx", "ac","xx","xx","ij",  --[[1x]]
 --[[2x]] "ip",nil ,nil ,nil , "ac","ac","ac","ac",   "ac","dp","cc","dp", "ab","ac","dp","rl",  --[[2x]]
 --[[3x]] "rl",nil ,nil ,nil , "ac","ac","ac","ac",   "dp","xi","dp","dx", "ac","xx","xx","ab",  --[[3x]]
---[[4x]] "ip",nil ,nil ,nil , "ac","ac","ac","ac",   "ac","dp","cc","dp", "ab","xx","ab","dp",  --[[4x]]
+--[[4x]] "ip",nil ,nil ,nil , "ac","ac","ac","ac",   "ac","dp","cc","dp", "ab","xx","ab","pc",  --[[4x]]
 --[[5x]] "rl",nil ,nil ,nil , "ac","ac","ac","ac",   "dp","xi","ya","dx", "ac","xx","yy","ab",  --[[5x]]
 --[[6x]] "ip",nil ,nil ,nil , "ac","ac","ac","ac",   "ac","dp","cc","dp", "ab","yy","dp","ip",  --[[6x]]
 --[[7x]] "rl",nil ,nil ,nil , "ac","ac","ac","ac",   "dp","xi","ya","dx", "ac","ac","yy","ip",  --[[7x]]
@@ -103,7 +103,8 @@ baseModePatterns = {
     ["rl"]= {1},
     ["d*"]= {1, ".", 1},
     ["ij"]= {"[", 1, "+", "x", "]"},
-    ["tc"]= {1}
+    ["tc"]= {1},
+    ["pc"]= {1}
 }
 
 baseModeSizes = {               -- does not include the opcode, or the other param
@@ -133,6 +134,7 @@ baseModeSizes = {               -- does not include the opcode, or the other par
     ["d*"]= 1,
     ["ij"]= 2,
     ["tc"]= 0,
+    ["pc"]= 1,
     ["--"]= 0
 }
 
@@ -271,6 +273,7 @@ baseModePriorities = {
     ["im"]= 100,
     ["ip"]= 100,
     ["tc"]= 100,
+    ["pc"]= 100,
     ["rl"]= 100,
     ["d*"]= 100,
     ["--"]= 100,
@@ -451,6 +454,19 @@ getModeBinary_tcall = function(output, args, size)
     return output, args
 end
 
+getModeBinary_pcall = function(output, args, size)
+    -- pcall is stupid
+    local v = args[#args]
+    table.remove(args)
+    
+    if v < 0xFF00 or v > 0xFFFF then
+        error("PCALL operand out of range.  Must call on the $FFxx page")
+    end
+    
+    output[#output+1] = (v & 0xFF)
+    return output, args
+end
+
 getModeBinary_deeStar = function(output, args, size)
     -- d* modes are effectively just direct page, but they have an additional
     --   argument that mangles the opcode to specify the bit
@@ -483,6 +499,7 @@ getModeBinary_lut = {
     ["nb"]= getModeBinary_mb,
     ["rl"]= getModeBinary_relative,
     ["tc"]= getModeBinary_tcall,
+    ["pc"]= getModeBinary_pcall,
     ["d*"]= getModeBinary_deeStar
     --  other modes have no binary output
 }
