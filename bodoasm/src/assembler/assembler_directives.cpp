@@ -17,7 +17,8 @@ namespace bodoasm
             dirTable["rebase"]      = &Assembler::directive_Rebase;
             dirTable["endbase"]     = &Assembler::directive_Endbase;
             dirTable["byte"]        = &Assembler::directive_Byte;
-            dirTable["tblfile"]     = &Assembler::directive_TblFile;
+            dirTable["pushtable"]   = &Assembler::directive_PushTable;
+            dirTable["poptable"]    = &Assembler::directive_PopTable;
         }
     }
     
@@ -52,14 +53,14 @@ namespace bodoasm
             }
             else
             {
-                if(tblFile)
-                {
-                    tblFile->toBinary(err, pos, curOrgBlock.dat, i.valStr);
-                }
-                else
+                if(tblFiles.empty())
                 {
                     for(auto& c : i.valStr)
                         curOrgBlock.dat.push_back( static_cast<u8>(c) );
+                }
+                else
+                {
+                    tblFiles.back()->toBinary(err, pos, curOrgBlock.dat, i.valStr);
                 }
             }
         }
@@ -108,15 +109,10 @@ namespace bodoasm
         unbasedPC = curPC;
         rebasing = false;
     }
-
+    
     void Assembler::directive_Include(const Position& pos, const directiveParams_t& params)
     {
-        // Get the directory of the file doing the including, so we can get the included file
-        //   relative to it
-        dshfs::Filename fn = StringPool::toStr(pos.fileId);
-        fn.setFullPath( fn.getPathPart() + params[0].valStr );
-
-        lexer.startInclude(fn.getFullPath(), &pos);
+        lexer.startInclude( makePath(pos, params[0].valStr), &pos );
     }
     
     void Assembler::directive_Endbase(const Position& pos, const directiveParams_t& params)
@@ -136,11 +132,16 @@ namespace bodoasm
         rebasing = true;
     }
 
-    void Assembler::directive_TblFile(const Position& pos, const directiveParams_t& params)
+    void Assembler::directive_PushTable(const Position& pos, const directiveParams_t& params)
     {
-        if(params.empty())
-            tblFile.reset();
-        else
-            tblFile = TblFile::load(err, pos, makePath(pos, params[0].valStr));
+        auto tblFile = TblFile::load(err, pos, makePath(pos, params[0].valStr));
+        if(tblFile)
+            tblFiles.emplace_back( std::move(tblFile) );
+    }
+
+    void Assembler::directive_PopTable(const Position& pos, const directiveParams_t& params)
+    {
+        if(tblFiles.empty())        err.error(&pos, "#poptable:  There are no table files loaded");
+        else                        tblFiles.pop_back();
     }
 }

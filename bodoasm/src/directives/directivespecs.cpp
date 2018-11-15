@@ -11,12 +11,13 @@ namespace bodoasm
             typedef DirectiveParam::Type    t;
             directiveSpec_t out;
             
-            out["org"]    = { t::Integer,     t::Integer,        t::OptInteger,         t::OptInteger   };
-            out["include"]= { t::String                                                                 };
-            out["byte"]   = { t::IntOrString, t::OptIntOrString, p::loopBack(1)                         };
-            out["rebase"] = { t::Integer                                                                };
-            out["endbase"]= {};
-            out["tblfile"]= { t::OptString                                                              };
+            out["org"]      = { t::Integer,     t::Integer,        t::OptInteger,         t::OptInteger     };
+            out["include"]  = { t::String                                                                   };
+            out["byte"]     = { t::IntOrString, t::OptIntOrString, p::loopBack(1)                           };
+            out["rebase"]   = { t::Integer                                                                  };
+            out["endbase"]  = {                                                                             };
+            out["pushtable"]= { t::String                                                                   };
+            out["poptable"]=  {                                                                             };
 
             return out;
         }

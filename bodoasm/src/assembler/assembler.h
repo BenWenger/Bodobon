@@ -48,7 +48,8 @@ namespace bodoasm
         void                directive_Rebase    (const Position& pos, const directiveParams_t& params);
         void                directive_Endbase   (const Position& pos, const directiveParams_t& params);
         void                directive_Byte      (const Position& pos, const directiveParams_t& params);
-        void                directive_TblFile   (const Position& pos, const directiveParams_t& params);
+        void                directive_PushTable (const Position& pos, const directiveParams_t& params);
+        void                directive_PopTable  (const Position& pos, const directiveParams_t& params);
 
     private:
         ErrorReporter       err;
@@ -94,8 +95,7 @@ namespace bodoasm
         bool                    rebasing;
         bool                    PCEstablished;
 
-
-        TblFile::Ptr            tblFile;
+        std::vector<TblFile::Ptr>   tblFiles;
     };
 }
 

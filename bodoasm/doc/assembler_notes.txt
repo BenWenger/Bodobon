@@ -76,6 +76,15 @@ Directives
 =======================
     List is incomplete.  I'll add more later
     
+#macro  name [ ( args ) ]
+#endmacro
+    - define a macro with name 'name', invoked with a backtick and parens:  '`name()'.
+    - parens are optional if no args are passed to the macro
+    - args can be any number of optional arguments to be passed in
+    - macros operate on copy/paste semantics.  IE they are not parsed when first declared, rather
+        they are merely lexed and then injected into their invokations with parameters being replaced
+        with whatever was passed in
+    - no nesting macro definitions!!!!
     
 #org    addr,   offset, [size], [fill]
     - addr is the address (mandatory)
@@ -84,14 +93,29 @@ Directives
         an upper-bound address instead of a size
     - fill is the value to fill output with if the output was less than the
         desired size
+        
+#include    filename
+    - includes a file in a directory relative to this one
+    
+#byte v [, v ...]
+    - Can have any number of arguments as long as there's at least 1
+    - Numbers are dumped as individual bytes (must be only 1 byte wide)
+    - Strings are output according to table file translation
 
 #rebase     addr
-#endrebase
+#endbase
     - For relocatable code (does anyone actually use this?)
     - Changes the org addr but not output offset.  Ending reverts org
         addr to what it would be after all that binary was output
-    - Throw error if #org happens before #endrebase
-
+    - Throw warning if #org happens before #endbase
+    
+#pushtable name
+    - Loads and applies a table file.  'name' is the string filename
+    - Any previously loaded table is disabled until this table is popped
+#poptable
+    - Drops the most recently pushed table and reverts to previous table
+        (if any)
+    
 #if     expr
 #elif   expr
 #else
@@ -99,17 +123,6 @@ Directives
     - for conditional compilation.  'Expr' must be able to be evaluated on
         first pass.  A value of Zero is false, any other value is true
         
-#macro  name [, args...]
-#endmacro
-    - define a macro with name 'name', invoked with a backtick and parens:  '`name()'.
-    - parens are optional if no macros are passed to the macro
-    - args can be any number of optional arguments to be passed in
-    - macros operate on copy/paste semantics.  IE they are not parsed when first declared, rather
-        they are merely lexed and then injected into their invokations with parameters being replaced
-        with whatever was passed in
-    - no nesting macro definitions!!!!
-    
-    
     
     
 ========================
