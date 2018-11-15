@@ -5,22 +5,22 @@
 mnemonicTable = { [0]=
 --         x0      x1      x2      x3       x4      x5      x6      x7        x8      x9      xA      xB       xC      xD      xE      xF
 --[[0x]] "nop"  ,"tcall","set1" ,"bbs"  , "or"   ,"or"   ,"or"   ,"or"   ,  "or"   ,"or"   ,"or1"  ,"asl"  , "asl"  ,"push" ,"tset1","brk"  ,  --[[0x]]
---[[1x]] "bpl"  ,"tcall","clr1" ,"bbc"  , "or"   ,"or"   ,"or"   ,"or"   ,  "or"   ,"or"   ,"decw" ,"asl"  , "asl"  ,"dec"  ,"cmp"  ,"jmp"  ,  --[[1x]]
---[[2x]] "clrp" ,"tcall","set1" ,"bbs"  , "and"  ,"and"  ,"and"  ,"and"  ,  "and"  ,"and"  ,"or1"  ,"rol"  , "rol"  ,"push" ,"cbne" ,"bra"  ,  --[[2x]]
---[[3x]] "bmi"  ,"tcall","clr1" ,"bbc"  , "and"  ,"and"  ,"and"  ,"and"  ,  "and"  ,"and"  ,"incw" ,"rol"  , "rol"  ,"inc"  ,"cmp"  ,"call" ,  --[[3x]]
---[[4x]] "setp" ,"tcall","set1" ,"bbs"  , "eor"  ,"eor"  ,"eor"  ,"eor"  ,  "eor"  ,"eor"  ,"and1" ,"inc"  , "inc"  ,"push" ,"tclr1","pcall",  --[[4x]]
---[[5x]] "bvc"  ,"tcall","clr1" ,"bbc"  , "eor"  ,"eor"  ,"eor"  ,"eor"  ,  "eor"  ,"eor"  ,"cmpw" ,"inc"  , "inc"  ,"mov"  ,"cmp"  ,"jmp"  ,  --[[5x]]
---[[6x]] "clrc" ,"tcall","set1" ,"bbs"  , "cmp"  ,"cmp"  ,"cmp"  ,"cmp"  ,  "cmp"  ,"cmp"  ,"and1" ,"ror"  , "ror"  ,"push" ,"dbnz" ,"ret"  ,  --[[6x]]
---[[7x]] "bvs"  ,"tcall","clr1" ,"bbc"  , "cmp"  ,"cmp"  ,"cmp"  ,"cmp"  ,  "cmp"  ,"cmp"  ,"addw" ,"ror"  , "ror"  ,"mov"  ,"cmp"  ,"ret1" ,  --[[7x]]
+--[[1x]] "bpl"  ,nil    ,"clr1" ,"bbc"  , "or"   ,"or"   ,"or"   ,"or"   ,  "or"   ,"or"   ,"decw" ,"asl"  , "asl"  ,"dec"  ,"cmp"  ,"jmp"  ,  --[[1x]]
+--[[2x]] "clrp" ,nil    ,nil    ,nil    , "and"  ,"and"  ,"and"  ,"and"  ,  "and"  ,"and"  ,"or1"  ,"rol"  , "rol"  ,"push" ,"cbne" ,"bra"  ,  --[[2x]]
+--[[3x]] "bmi"  ,nil    ,nil    ,nil    , "and"  ,"and"  ,"and"  ,"and"  ,  "and"  ,"and"  ,"incw" ,"rol"  , "rol"  ,"inc"  ,"cmp"  ,"call" ,  --[[3x]]
+--[[4x]] "setp" ,nil    ,nil    ,nil    , "eor"  ,"eor"  ,"eor"  ,"eor"  ,  "eor"  ,"eor"  ,"and1" ,"inc"  , "inc"  ,"push" ,"tclr1","pcall",  --[[4x]]
+--[[5x]] "bvc"  ,nil    ,nil    ,nil    , "eor"  ,"eor"  ,"eor"  ,"eor"  ,  "eor"  ,"eor"  ,"cmpw" ,"inc"  , "inc"  ,"mov"  ,"cmp"  ,"jmp"  ,  --[[5x]]
+--[[6x]] "clrc" ,nil    ,nil    ,nil    , "cmp"  ,"cmp"  ,"cmp"  ,"cmp"  ,  "cmp"  ,"cmp"  ,"and1" ,"ror"  , "ror"  ,"push" ,"dbnz" ,"ret"  ,  --[[6x]]
+--[[7x]] "bvs"  ,nil    ,nil    ,nil    , "cmp"  ,"cmp"  ,"cmp"  ,"cmp"  ,  "cmp"  ,"cmp"  ,"addw" ,"ror"  , "ror"  ,"mov"  ,"cmp"  ,"ret1" ,  --[[7x]]
 --         x0      x1      x2      x3       x4      x5      x6      x7        x8      x9      xA      xB       xC      xD      xE      xF
---[[8x]] "setc" ,"tcall","set1" ,"bbs"  , "adc"  ,"adc"  ,"adc"  ,"adc"  ,  "adc"  ,"adc"  ,"eor1" ,"dec"  , "dec"  ,"mov"  ,"pop"  ,"mov"  ,  --[[8x]]
---[[9x]] "bcc"  ,"tcall","clr1" ,"bbc"  , "adc"  ,"adc"  ,"adc"  ,"adc"  ,  "adc"  ,"adc"  ,"subw" ,"dec"  , "dec"  ,"mov"  ,"div"  ,"xcn"  ,  --[[9x]]
---[[Ax]] "ei"   ,"tcall","set1" ,"bbs"  , "sbc"  ,"sbc"  ,"sbc"  ,"sbc"  ,  "sbc"  ,"sbc"  ,"mov1" ,"inc"  , "inc"  ,"cmp"  ,"pop"  ,"mov"  ,  --[[Ax]]
---[[Bx]] "bcs"  ,"tcall","clr1" ,"bbc"  , "sbc"  ,"sbc"  ,"sbc"  ,"sbc"  ,  "sbc"  ,"sbc"  ,"movw" ,"inc"  , "inc"  ,"mov"  ,"das"  ,"mov"  ,  --[[Bx]]
---[[Cx]] "di"   ,"tcall","set1" ,"bbs"  , "mov"  ,"mov"  ,"mov"  ,"mov"  ,  "cmp"  ,"mov"  ,"mov1" ,"mov"  , "mov"  ,"mov"  ,"pop"  ,"mul"  ,  --[[Cx]]
---[[Dx]] "bne"  ,"tcall","clr1" ,"bbc"  , "mov"  ,"mov"  ,"mov"  ,"mov"  ,  "mov"  ,"mov"  ,"movw" ,"mov"  , "dec"  ,"mov"  ,"cbne" ,"daa"  ,  --[[Dx]]
---[[Ex]] "clrv" ,"tcall","set1" ,"bbs"  , "mov"  ,"mov"  ,"mov"  ,"mov"  ,  "mov"  ,"mov"  ,"not1" ,"mov"  , "mov"  ,"notc" ,"pop"  ,"sleep",  --[[Ex]]
---[[Fx]] "beq"  ,"tcall","clr1" ,"bbc"  , "mov"  ,"mov"  ,"mov"  ,"mov"  ,  "mov"  ,"mov"  ,"mov"  ,"mov"  , "inc"  ,"mov"  ,"dbnz" ,"stop"    --[[Fx]]
+--[[8x]] "setc" ,nil    ,nil    ,nil    , "adc"  ,"adc"  ,"adc"  ,"adc"  ,  "adc"  ,"adc"  ,"eor1" ,"dec"  , "dec"  ,"mov"  ,"pop"  ,"mov"  ,  --[[8x]]
+--[[9x]] "bcc"  ,nil    ,nil    ,nil    , "adc"  ,"adc"  ,"adc"  ,"adc"  ,  "adc"  ,"adc"  ,"subw" ,"dec"  , "dec"  ,"mov"  ,"div"  ,"xcn"  ,  --[[9x]]
+--[[Ax]] "ei"   ,nil    ,nil    ,nil    , "sbc"  ,"sbc"  ,"sbc"  ,"sbc"  ,  "sbc"  ,"sbc"  ,"mov1" ,"inc"  , "inc"  ,"cmp"  ,"pop"  ,"mov"  ,  --[[Ax]]
+--[[Bx]] "bcs"  ,nil    ,nil    ,nil    , "sbc"  ,"sbc"  ,"sbc"  ,"sbc"  ,  "sbc"  ,"sbc"  ,"movw" ,"inc"  , "inc"  ,"mov"  ,"das"  ,"mov"  ,  --[[Bx]]
+--[[Cx]] "di"   ,nil    ,nil    ,nil    , "mov"  ,"mov"  ,"mov"  ,"mov"  ,  "cmp"  ,"mov"  ,"mov1" ,"mov"  , "mov"  ,"mov"  ,"pop"  ,"mul"  ,  --[[Cx]]
+--[[Dx]] "bne"  ,nil    ,nil    ,nil    , "mov"  ,"mov"  ,"mov"  ,"mov"  ,  "mov"  ,"mov"  ,"movw" ,"mov"  , "dec"  ,"mov"  ,"cbne" ,"daa"  ,  --[[Dx]]
+--[[Ex]] "clrv" ,nil    ,nil    ,nil    , "mov"  ,"mov"  ,"mov"  ,"mov"  ,  "mov"  ,"mov"  ,"not1" ,"mov"  , "mov"  ,"notc" ,"pop"  ,"sleep",  --[[Ex]]
+--[[Fx]] "beq"  ,nil    ,nil    ,nil    , "mov"  ,"mov"  ,"mov"  ,"mov"  ,  "mov"  ,"mov"  ,"mov"  ,"mov"  , "inc"  ,"mov"  ,"dbnz" ,"stop"    --[[Fx]]
 --         x0      x1      x2      x3       x4      x5      x6      x7        x8      x9      xA      xB       xC      xD      xE      xF
 }
 
@@ -34,22 +34,22 @@ mnemonicTable = { [0]=
 addrModeTable_1 = { [0]=
 --        x0   x1   x2   x3    x4   x5   x6   x7      x8   x9   xA   xB    xC   xD   xE   xF
 --[[0x]] "ip","tc","d*","d*", "ac","ac","ac","ac",   "ac","dp","cc","dp", "ab","st","ab","ip",  --[[0x]]
---[[1x]] "rl","--","d*","d*", "ac","ac","ac","ac",   "dp","xi","dp","dx", "ac","xx","xx","ij",  --[[1x]]
---[[2x]] "ip","--","--","--", "ac","ac","ac","ac",   "ac","dp","cc","dp", "ab","ac","dp","rl",  --[[2x]]
---[[3x]] "rl","--","--","--", "ac","ac","ac","ac",   "dp","xi","dp","dx", "ac","xx","xx","ab",  --[[3x]]
---[[4x]] "ip","--","--","--", "ac","ac","ac","ac",   "ac","dp","cc","dp", "ab","xx","ab","dp",  --[[4x]]
---[[5x]] "rl","--","--","--", "ac","ac","ac","ac",   "dp","xi","ya","dx", "ac","xx","yy","ab",  --[[5x]]
---[[6x]] "ip","--","--","--", "ac","ac","ac","ac",   "ac","dp","cc","dp", "ab","yy","dp","ip",  --[[6x]]
---[[7x]] "rl","--","--","--", "ac","ac","ac","ac",   "dp","xi","ya","dx", "ac","ac","yy","ip",  --[[7x]]
+--[[1x]] "rl",nil ,"d*","d*", "ac","ac","ac","ac",   "dp","xi","dp","dx", "ac","xx","xx","ij",  --[[1x]]
+--[[2x]] "ip",nil ,nil ,nil , "ac","ac","ac","ac",   "ac","dp","cc","dp", "ab","ac","dp","rl",  --[[2x]]
+--[[3x]] "rl",nil ,nil ,nil , "ac","ac","ac","ac",   "dp","xi","dp","dx", "ac","xx","xx","ab",  --[[3x]]
+--[[4x]] "ip",nil ,nil ,nil , "ac","ac","ac","ac",   "ac","dp","cc","dp", "ab","xx","ab","dp",  --[[4x]]
+--[[5x]] "rl",nil ,nil ,nil , "ac","ac","ac","ac",   "dp","xi","ya","dx", "ac","xx","yy","ab",  --[[5x]]
+--[[6x]] "ip",nil ,nil ,nil , "ac","ac","ac","ac",   "ac","dp","cc","dp", "ab","yy","dp","ip",  --[[6x]]
+--[[7x]] "rl",nil ,nil ,nil , "ac","ac","ac","ac",   "dp","xi","ya","dx", "ac","ac","yy","ip",  --[[7x]]
 --        x0   x1   x2   x3    x4   x5   x6   x7      x8   x9   xA   xB    xC   xD   xE   xF
---[[8x]] "ip","--","--","--", "ac","ac","ac","ac",   "ac","dp","cc","dp", "ab","yy","st","dp",  --[[8x]]
---[[9x]] "rl","--","--","--", "ac","ac","ac","ac",   "dp","xi","ya","dx", "ac","xx","ya","ac",  --[[9x]]
---[[Ax]] "ip","--","--","--", "ac","ac","ac","ac",   "ac","dp","cc","dp", "ab","yy","ac","xp",  --[[Ax]]
---[[Bx]] "rl","--","--","--", "ac","ac","ac","ac",   "dp","xi","ya","dx", "ac","sp","ac","ac",  --[[Bx]]
---[[Cx]] "ip","--","--","--", "dp","ab","xi","ix",   "xx","ab","mb","dp", "ab","xx","xx","ya",  --[[Cx]]
---[[Dx]] "rl","--","--","--", "dx","ax","ay","iy",   "dp","dy","dp","dx", "yy","ac","dx","ac",  --[[Dx]]
---[[Ex]] "ip","--","--","--", "ac","ac","ac","ac",   "ac","xx","mb","yy", "yy","ip","yy","ip",  --[[Ex]]
---[[Fx]] "rl","--","--","--", "ac","ac","ac","ac",   "xx","xx","dp","yy", "yy","yy","yy","ip"   --[[Fx]]
+--[[8x]] "ip",nil ,nil ,nil , "ac","ac","ac","ac",   "ac","dp","cc","dp", "ab","yy","st","dp",  --[[8x]]
+--[[9x]] "rl",nil ,nil ,nil , "ac","ac","ac","ac",   "dp","xi","ya","dx", "ac","xx","ya","ac",  --[[9x]]
+--[[Ax]] "ip",nil ,nil ,nil , "ac","ac","ac","ac",   "ac","dp","cc","dp", "ab","yy","ac","xp",  --[[Ax]]
+--[[Bx]] "rl",nil ,nil ,nil , "ac","ac","ac","ac",   "dp","xi","ya","dx", "ac","sp","ac","ac",  --[[Bx]]
+--[[Cx]] "ip",nil ,nil ,nil , "dp","ab","xi","ix",   "xx","ab","mb","dp", "ab","xx","xx","ya",  --[[Cx]]
+--[[Dx]] "rl",nil ,nil ,nil , "dx","ax","ay","iy",   "dp","dy","dp","dx", "yy","ac","dx","ac",  --[[Dx]]
+--[[Ex]] "ip",nil ,nil ,nil , "ac","ac","ac","ac",   "ac","xx","mb","yy", "yy","ip","yy","ip",  --[[Ex]]
+--[[Fx]] "rl",nil ,nil ,nil , "ac","ac","ac","ac",   "xx","xx","dp","yy", "yy","yy","yy","ip"   --[[Fx]]
 --        x0   x1   x2   x3    x4   x5   x6   x7      x8   x9   xA   xB    xC   xD   xE   xF
 }
 
@@ -58,28 +58,23 @@ addrModeTable_1 = { [0]=
 addrModeTable_2 = { [0]=
 --        x0   x1   x2   x3    x4   x5   x6   x7      x8   x9   xA   xB    xC   xD   xE   xF
 --[[0x]] "--","--","--","rl", "dp","ab","xi","ix",   "im","dp","mb","--", "--","--","--","--",  --[[0x]]
---[[1x]] "--","--","--","rl", "dx","ax","ay","iy",   "im","yi","--","--", "--","--","ab","--",  --[[1x]]
---[[2x]] "--","--","--","--", "dp","ab","xi","ix",   "im","dp","nb","--", "--","--","rl","--",  --[[2x]]
---[[3x]] "--","--","--","--", "dx","ax","ay","iy",   "im","yi","--","--", "--","--","dp","--",  --[[3x]]
---[[4x]] "--","--","--","--", "dp","ab","xi","ix",   "im","dp","mb","--", "--","--","--","--",  --[[4x]]
---[[5x]] "--","--","--","--", "dx","ax","ay","iy",   "im","yi","dp","--", "--","ac","ab","--",  --[[5x]]
---[[6x]] "--","--","--","--", "dp","ab","xi","ix",   "im","dp","nb","--", "--","--","rl","--",  --[[6x]]
---[[7x]] "--","--","--","--", "dx","ax","ay","iy",   "im","yi","dp","--", "--","xx","dp","--",  --[[7x]]
+--[[1x]] "--",nil ,"--","rl", "dx","ax","ay","iy",   "im","yi","--","--", "--","--","ab","--",  --[[1x]]
+--[[2x]] "--",nil ,nil ,nil , "dp","ab","xi","ix",   "im","dp","nb","--", "--","--","rl","--",  --[[2x]]
+--[[3x]] "--",nil ,nil ,nil , "dx","ax","ay","iy",   "im","yi","--","--", "--","--","dp","--",  --[[3x]]
+--[[4x]] "--",nil ,nil ,nil , "dp","ab","xi","ix",   "im","dp","mb","--", "--","--","--","--",  --[[4x]]
+--[[5x]] "--",nil ,nil ,nil , "dx","ax","ay","iy",   "im","yi","dp","--", "--","ac","ab","--",  --[[5x]]
+--[[6x]] "--",nil ,nil ,nil , "dp","ab","xi","ix",   "im","dp","nb","--", "--","--","rl","--",  --[[6x]]
+--[[7x]] "--",nil ,nil ,nil , "dx","ax","ay","iy",   "im","yi","dp","--", "--","xx","dp","--",  --[[7x]]
 --        x0   x1   x2   x3    x4   x5   x6   x7      x8   x9   xA   xB    xC   xD   xE   xF
---[[8x]] "--","--","--","--", "dp","ab","xi","ix",   "im","dp","mb","--", "--","im","--","im",  --[[8x]]
---[[9x]] "--","--","--","--", "dx","ax","ay","iy",   "im","yi","dp","--", "--","sp","xx","--",  --[[9x]]
---[[Ax]] "--","--","--","--", "dp","ab","xi","ix",   "im","dp","mb","--", "--","im","--","ac",  --[[Ax]]
---[[Bx]] "--","--","--","--", "dx","ax","ay","iy",   "im","yi","dp","--", "--","xx","--","xp",  --[[Bx]]
---[[Cx]] "--","--","--","--", "ac","ac","ac","ac",   "im","xx","cc","yy", "yy","im","--","--",  --[[Cx]]
---[[Dx]] "--","--","--","--", "ac","ac","ac","ac",   "xx","xx","ya","yy", "--","yy","rl","--",  --[[Dx]]
---[[Ex]] "--","--","--","--", "dp","ab","xi","ix",   "im","ab","--","dp", "ab","--","--","--",  --[[Ex]]
---[[Fx]] "--","--","--","--", "dx","ax","ay","iy",   "dp","dy","dp","dx", "--","ac","rl","--"   --[[Fx]]
+--[[8x]] "--",nil ,nil ,nil , "dp","ab","xi","ix",   "im","dp","mb","--", "--","im","--","im",  --[[8x]]
+--[[9x]] "--",nil ,nil ,nil , "dx","ax","ay","iy",   "im","yi","dp","--", "--","sp","xx","--",  --[[9x]]
+--[[Ax]] "--",nil ,nil ,nil , "dp","ab","xi","ix",   "im","dp","mb","--", "--","im","--","ac",  --[[Ax]]
+--[[Bx]] "--",nil ,nil ,nil , "dx","ax","ay","iy",   "im","yi","dp","--", "--","xx","--","xp",  --[[Bx]]
+--[[Cx]] "--",nil ,nil ,nil , "ac","ac","ac","ac",   "im","xx","cc","yy", "yy","im","--","--",  --[[Cx]]
+--[[Dx]] "--",nil ,nil ,nil , "ac","ac","ac","ac",   "xx","xx","ya","yy", "--","yy","rl","--",  --[[Dx]]
+--[[Ex]] "--",nil ,nil ,nil , "dp","ab","xi","ix",   "im","ab","--","dp", "ab","--","--","--",  --[[Ex]]
+--[[Fx]] "--",nil ,nil ,nil , "dx","ax","ay","iy",   "dp","dy","dp","dx", "--","ac","rl","--"   --[[Fx]]
 --        x0   x1   x2   x3    x4   x5   x6   x7      x8   x9   xA   xB    xC   xD   xE   xF
-}
-
-suffixes = {
-    [".b"]= {"dp","dx","dy"},
-    [".w"]= {"ab","ax","ay"}
 }
 
 baseModePatterns = {
@@ -158,16 +153,42 @@ opcodeLookup = {}           -- used to look up an opcode from a mnemonic/addrmod
 asmMnemonics = {}           -- the mnemonic table to give to the assembler
 addrModePatterns = {}       -- the table that combines baseModePatterns with itself so we have 2 parameters
 
+suffixes = {
+    [".b"]= {},
+    [".w"]= {}
+}
+
+modeSizes = {}              -- total size of an instruction with the given mode (both operands, plus opcode)
+
 addOpcodeConfig = function(opcode, mnm, fst, snd)
-    adm = fst..snd
-    opcodeLookup[adm..mnm] = opcode     -- put addr mode in the keystring first, since it is a fixed length
+    local adm = fst..snd
     
+    -- add this addr mode to the suffix list
+    if     fst == "dp" or fst == "dx" or fst == "dy" or snd == "dp" or snd == "dx" or snd == "dy" then
+        suffixes[".b"][adm] = adm
+    elseif fst == "ab" or fst == "ax" or fst == "ay" or snd == "ab" or snd == "ax" or snd == "ay" then
+        suffixes[".w"][adm] = adm
+    end
+    
+    -- Add it to opcode lookup table
+    opcodeLookup[mnm..adm] = opcode
+    
+    -- Add it to the priority list
+    addModePriority(fst,snd)
+    
+    -- add it to the mode sizes
+    if modeSizes[adm] == nil then
+        modeSizes[adm] = 1 + baseModeSizes[fst] + baseModeSizes[snd]
+    end
+    
+    -- Add it to the mnemonic table for the assembler
     if asmMnemonics[mnm] == nil then
         asmMnemonics[mnm] = {adm}
     else
         table.insert(asmMnemonics[mnm], adm)
     end
     
+    -- and add the pattern to the addrmode patterns for the assembler
     if addrModePatterns[adm] == nil then
         pattern = tblConcat( {}, baseModePatterns[fst] )
         if snd ~= "--" then
@@ -179,7 +200,7 @@ addOpcodeConfig = function(opcode, mnm, fst, snd)
 end
 
 buildOpcodeTables = function()
-    impliedExceptions = {       -- some instructions technically have a mode, but could
+    local impliedExceptions = { -- some instructions technically have a mode, but could
         ["div"]= true,          --   easily be considered implied mode.  So allow for implied
         ["mul"]= true,          --   mode with these
         ["das"]= true,
@@ -187,10 +208,10 @@ buildOpcodeTables = function()
         ["xcn"]= true
     }
     for opcode=0,255 do
-        mnm = mnemonicTable[opcode]
-        fst = addrModeTable_1[opcode]
-        snd = addrModeTable_2[opcode]
-        if fst ~= "--" then
+        local mnm = mnemonicTable[opcode]
+        if mnm ~= nil then
+            local fst = addrModeTable_1[opcode]
+            local snd = addrModeTable_2[opcode]
             addOpcodeConfig(opcode,mnm,fst,snd)
             if impliedExceptions[mnm] then
                 addOpcodeConfig(opcode,mnm,"ip","--")
@@ -199,41 +220,148 @@ buildOpcodeTables = function()
     end
 end
 
-    
--- use these modes if they're an option -- always
-modes_priority = {"ip","ac","cc","xx","yy","ya","sp","st","xi","xp","yi","im","ix","iy","mb","nb","rl","d*","ij","tc"}
--- otherwise we can fall back to either short or long depending on the size of the operand
-modes_short = {"dp","dx","dy"}
-modes_long = {"ab","ax","ay"}
+
+--[[
+Determining the "best" mode requires that modes be prioritized.
+
+    - Modes that have keywords like "A", "(X)", "PSW", etc need to be preferred
+        over any mode that contains an expression, so that they don't get mistaken
+        for expressions
+    - Likewise, modes that add X or Y (dp+X, ab+Y) have to be preferred above
+        their non-indexed counterparts to prevent the +X/+Y from being part of the
+        expression
+    - Indirect modes should be preferred over non-indirect modes, so that the parens
+        don't get included in the expression (though SPC uses brackets ... so that's
+        kind of a non-issue here.  Whatever)
+        
+    SO... priority is:
+        - Keyword modes         (best)
+        - Indirect modes
+        - Indexed modes
+        - Misc modes
+        - Absolute / DirectPage (worst)
+        
+    Misc modes, like tcall, m.b, rl, etc don't really matter because those will never
+    conflict, so there is never a need to sort by priority.  But put them above Absolute/DP
+    and indexed anyway just because.
+        
+    The mode with the LOWEST priority is the "best" matching mode when assembling
+--]]
 
 
- -- TODO this doesn't work.  FIX IT
-getBestMode = function(patterns)
-    -- if there is a priority mode, use it
-    for i,v in ipairs(modes_priority) do
-        if patterns[v] then return v end
+baseModePriorities = {
+-- keyword
+    ["ac"]= 0,
+    ["cc"]= 0,
+    ["xx"]= 0,
+    ["yy"]= 0,
+    ["ya"]= 0,
+    ["sp"]= 0,
+    ["st"]= 0,
+    ["xi"]= 0,
+    ["xp"]= 0,
+    ["yi"]= 0,
+-- indirect
+    ["ix"]= 10,
+    ["iy"]= 10,
+    ["ij"]= 10,
+-- misc
+    ["mb"]= 100,
+    ["nb"]= 100,
+    ["im"]= 100,
+    ["ip"]= 100,
+    ["tc"]= 100,
+    ["rl"]= 100,
+    ["d*"]= 100,
+    ["--"]= 100,
+-- indexed
+    ["ax"]= 1000,
+    ["ay"]= 1000,
+    ["dx"]= 1000,
+    ["dy"]= 1000,
+-- absolute
+    ["ab"]= 10000,
+    ["dp"]= 10000
+}
+modePriorities = {}
+addModePriority = function(fst, snd)
+    local md = fst..snd
+    if modePriorities[md] == nil then
+        modePriorities[md] = baseModePriorities[fst] + baseModePriorities[snd]
     end
+end
+
+getBestMode = function(patterns)
+    -- The "best" mode is the one that has the highest priority.
+    -- There could be a tie (Direct Page / Absolute) .. in which case, we want to prefer
+    --    the "short" (direct page) option if possible... but fall back to the long
+    --    option if not.
+    local best = nil            -- the best option that isn't one of the below
+    local bestShort = nil       -- the best option that is short  (dp/dx/dy)
+    local bestLong  = nil       -- the best option that is longer (ab/ax/ay)
     
-    local short = nil
-    -- otherwise, see if this can be a short instruction
-    for i,v in ipairs(modes_short) do
-        if patterns[v] then
-            short = v
-            -- use it unconditionally if the expression is evaluated now
-            --   and it can fit in a byte
-            if patterns[v][1] ~= nil and patterns[v][1] >= 0 and patterns[v][1] <= 0xFF then
-                return v
+    local bestPrio = 99999
+    local bestShortPrio = 99999
+    local bestLongPrio = 99999
+    
+    for mode, _ in pairs(patterns) do
+        local prio = modePriorities[mode]
+        -- is it short?
+        if suffixes[".b"][mode] ~= nil then
+            if prio < bestShortPrio then
+                bestShortPrio = prio
+                bestShort = mode
+            end
+        elseif suffixes[".w"][mode] ~= nil then
+            if prio < bestLongPrio then
+                bestLongPrio = prio
+                bestLong = mode
+            end
+        else
+            if prio < bestPrio
+                bestPrio = prio
+                best = mode
             end
         end
     end
     
-    -- otherwise, it probably matches a long one
-    for i,v in ipairs(modes_long) do
-        if patterns[v] then return v end
+    -- if we had a 'best' mode, just use it
+    if best ~= nil then
+        return best
     end
-        
-    -- if there wasn't a long version, but there was a short one, use the short one.
-    return short
+    -- if we have no short version, use the long
+    if bestShort == nil then
+        return bestLong
+    end
+    -- if we have no long version, use the short
+    if bestLong == nil then
+        return bestShort
+    end
+    
+    -- Only possible to reach here if:
+    --    best == nil  and  bestShort ~= nil  and   bestLong ~= nil
+    --  IE:  we have no "high priority" option, and we have both short/long options
+    --    so we need to determine if we should use the short or the long version.
+    
+    --  Short versions usually have the "short" part as the first argument, but
+    --    some modes are in the below forms:
+    --      "<register>, dp"    (ex:    MOV A, dp   )
+    --      "<register>, dx"    (ex:    MOV A, dp+X )
+    --      "dp, dp"            (ex:    MOV dst, src)
+    --
+    --  In the first two cases, the short argument is STILL the first argument, because registers
+    --    do not have an argument.  And the "dp,dp" case is actually an impossibility to have
+    --    at this point, because there is no "long" pattern that will also match the "dp,dp" 
+    --    pattern.  Therefore... we know that the argument for this short mode is the first
+    --    expression in the arg list
+    local ex = pattern[bestShort][1]        -- get the expression
+    if ex ~= nil then                       -- has it been evaluated?
+        if ex >= 0x00 and ex <= 0xFF then   -- is it within a byte range?
+            return bestShort                --  if yes, we can use the short version!
+        end
+    end
+    
+    return bestLong         -- otherwise, we can't use the short version ... use the long version
 end
 
 -------------------------
@@ -252,35 +380,7 @@ bodoasm_guessSize = function(mnemonic, patterns)
     return modeSizes[mode], {mode}
 end
 
+--  TODO, redo this function
 bodoasm_getBinary = function(mnemonic, patterns)
-    local mode = getBestMode(patterns)
-    local size = modeSizes[mode]
-    local opcode = opcodeLookup[mnemonic .. mode]
-    local val = patterns[mode][1]
-    
-    if mode == "im" and val < 0 then
-        val = val + 256
-    end
-    
-    if mode == "rl" then
-        local pc = bodoasm.getPC()
-        local out = val - (pc + 2)
-        if out < -128 or out > 127 then
-            error("Relative branch out of range")
-        end
-        out = (out + 128) ~ 0x80
-        return opcode, out
-    elseif size == 3 then
-        if val < 0 or val > 0xFFFF then
-            error("value out of range")
-        end
-        return opcode, val & 0xFF, (val >> 8) & 0xFF
-    elseif size == 2 then
-        if val < 0 or val > 0xFF then
-            error("value out of range")
-        end
-        return opcode, val & 0xFF
-    end
-    
-    return opcode
+    -- THIS IS THE LAST PART OF SPC SUPPORT!! WOOOOOOOoooooo
 end
