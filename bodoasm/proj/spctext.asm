@@ -26,6 +26,9 @@ ADDW YA, dp
 AND1 C, /mb.2
 AND1 C, mb.3
 
+BPL :+
+:
+
 
 #byte 0,0,0,0,0,0,0,0
 
@@ -48,10 +51,11 @@ loop:
 #byte 0,0,0,0,0,0,0,0
     MOV   (X)+, A
     MOV   (X), A
-    JMP   [loop+X]
-    JMP   loop
+    JMP   [:+ +X]
+    JMP   :+
     EI
-    DI
+:   DI
     DIV   YA, X
     DIV
     PCALL pcl
+    

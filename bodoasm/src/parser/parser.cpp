@@ -94,7 +94,7 @@ namespace bodoasm
         if(sym)
         {
             auto t = next();
-            if(t.str == ":")            // label definition
+            if(!sym.ws_after && t.str == ":")            // label definition
             {
                 assembler->defineLabel(sym.pos, sym.name);
                 return;
