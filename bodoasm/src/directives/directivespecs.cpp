@@ -17,7 +17,11 @@ namespace bodoasm
             out["rebase"]   = { t::Integer                                                                  };
             out["endbase"]  = {                                                                             };
             out["pushtable"]= { t::String                                                                   };
-            out["poptable"]=  {                                                                             };
+            out["poptable"] = {                                                                             };
+            out["if"]       = { t::Integer                                                                  };
+            out["elif"]     = { t::Integer                                                                  };
+            out["else"]     = {                                                                             };
+            out["endif"]    = {                                                                             };
 
             return out;
         }

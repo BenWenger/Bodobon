@@ -3,6 +3,7 @@
 #include "directives/directivespecs.h"
 #include "parser_expression.h"
 #include "assembler/assembler.h"
+#include "error/error.h"
 
 namespace bodoasm
 {
@@ -183,7 +184,48 @@ namespace bodoasm
         if     (name == "if")       condDirective_if(directivePos, params);
         else if(name == "elif")     condDirective_elif(directivePos, params);
         else if(name == "else")     condDirective_else(directivePos, params);
+        else if(name == "endif")    condDirective_endif(directivePos, params);
         else                        assembler->doDirective(directivePos, name, params);
+    }
+
+    
+    void Parser::condDirective_if(const Position& pos, const directiveParams_t& params)
+    {
+        CondBlock blk;
+        blk.state = (params[0].valInt == 0) ? CondBlock::State::NotYet : CondBlock::State::Active;
+        conditionalState.push_back(blk);
+    }
+    
+    void Parser::condDirective_elif(const Position& pos, const directiveParams_t& params)
+    {
+        if(conditionalState.empty())        err.error(&pos, "#elif reached without matching #if");
+        auto& blk = conditionalState.back();
+        if(blk.elseReached)                 err.error(&pos, "#elif reached after #else command");
+
+        if(blk.state == CondBlock::State::NotYet)
+        {
+            if(params[0].valInt != 0)
+                blk.state = CondBlock::State::Active;
+        }
+        else
+            blk.state = CondBlock::State::Done;
+    }
+    
+    void Parser::condDirective_else(const Position& pos, const directiveParams_t& params)
+    {
+        if(conditionalState.empty())        err.error(&pos, "#else reached without matching #if");
+        auto& blk = conditionalState.back();
+        if(blk.elseReached)                 err.error(&pos, "Second #else reached after #else command");
+
+        if(blk.state == CondBlock::State::NotYet)       blk.state = CondBlock::State::Active;
+        else                                            blk.state = CondBlock::State::Done;
+        blk.elseReached = true;
+    }
+    
+    void Parser::condDirective_endif(const Position& pos, const directiveParams_t& params)
+    {
+        if(conditionalState.empty())        err.error(&pos, "#endif reached without matching #if");
+        conditionalState.pop_back();
     }
 
 }

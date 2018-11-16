@@ -1,6 +1,33 @@
 
 #org $1000, 0, $1000, $00
 
+foo = 1
+bar = 1
+
+#if foo == 1
+    #byte 'foo  = 1        '
+    #if bar == 1
+        #byte 'bar  = 1        '
+    #elif bar == 2
+        #byte 'bar  = 2        '
+    #elif bar == 1
+        #byte 'IMPOSSIBLE      '
+    #else
+        #byte 'else block'
+    #endif
+#elif foo == 2
+    #byte 'foo  = 2        '
+    #byte 'no bar worries  '
+#else
+    #byte 'foo and bar are '
+    #byte 'uninteresting   '
+#endif
+
+
+
+
+
+#if 1
 dp = $11
 ab = $2222
 mb = $0FFF
@@ -63,3 +90,5 @@ loop:
     DIV
     PCALL pcl
     
+    
+#endif

@@ -3,6 +3,7 @@
 
 #include <unordered_map>
 #include <string>
+#include <vector>
 #include "error/error.h"
 #include "lexer/lexer.h"
 #include "expression/expression.h"
@@ -10,6 +11,8 @@
 #include "types/blocktypes.h"
 #include "lexer/tokensource.h"
 #include "macros/macroprocessor.h"
+#include "types/position.h"
+#include "directives/directivespecs.h"
 
 namespace bodoasm
 {
@@ -34,6 +37,7 @@ namespace bodoasm
         
         void                fullParse();
         void                parseOne();
+        void                parseOneOffCondition();
 
         bool                skipEnds(bool skipFileEnds = false);
         void                skipRemainderOfCommand();
@@ -49,13 +53,23 @@ namespace bodoasm
         void                parse_command();
         Expression::Ptr     parse_expression();
 
-        enum class CondBlock
+        struct CondBlock
         {
-            NotYet,     // we've seen "#if 0"s but no "#if 1" yet
-            Active,     // We are currently in an "#if 1"
-            Done        // We have already exited an "#if 1", and are now in #elif/else .. waiting for #endif
+            enum class State
+            {
+                NotYet,     // we've seen "#if 0"s but no "#if 1" yet
+                Active,     // We are currently in an "#if 1"
+                Done,       // We have already exited an "#if 1", and are now in #elif/else .. waiting for #endif
+                Disabled    // the entire elif chain is disabled because of an outer elif chain
+            };
+            State       state;
+            bool        elseReached = false;
         };
         std::vector<CondBlock>      conditionalState;
+        void                condDirective_if   (const Position& pos, const directiveParams_t& params);
+        void                condDirective_elif (const Position& pos, const directiveParams_t& params);
+        void                condDirective_else (const Position& pos, const directiveParams_t& params);
+        void                condDirective_endif(const Position& pos, const directiveParams_t& params);
     };
 }
 

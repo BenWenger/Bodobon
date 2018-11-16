@@ -181,31 +181,31 @@ namespace bodoasm
         switch(c)
         {
         case '!':
-            if(peek() == '=')       { tok.str = "!=";   advance();  }
-            else                    { tok.str = "!";                }
+            if(peek() == '=')       { tok.str = "!=";   tok.type = Token::Type::Operator;   advance();  }
+            else                    { tok.str = "!";    tok.type = Token::Type::Operator;               }
             break;
         case '|':
-            if(peek() == '|')       { tok.str = "||";   advance();  }
-            else                    { tok.str = "|";                }
+            if(peek() == '|')       { tok.str = "||";   tok.type = Token::Type::Operator;   advance();  }
+            else                    { tok.str = "|";    tok.type = Token::Type::Operator;               }
             break;
         case '&':
-            if(peek() == '&')       { tok.str = "&&";   advance();  }
-            else                    { tok.str = "&";                }
+            if(peek() == '&')       { tok.str = "&&";   tok.type = Token::Type::Operator;   advance();  }
+            else                    { tok.str = "&";    tok.type = Token::Type::Operator;               }
             break;
         case '=':
-            if(peek() == '=')       { tok.str = "==";   advance();  }
-            else                    { tok.str = "=";                }
+            if(peek() == '=')       { tok.str = "==";   tok.type = Token::Type::Operator;   advance();  }
+            else                    { tok.str = "=";    tok.type = Token::Type::Operator;               }
             break;
         case '<':
-            if(peek() == '=')       { tok.str = "<=";   advance();  }
-            else if(peek() == '>')  { tok.str = "<>";   advance();  }
-            else if(peek() == '<')  { tok.str = "<<";   advance();  }
-            else                    { tok.str = "<";                }
+            if(peek() == '=')       { tok.str = "<=";   tok.type = Token::Type::Operator;   advance();  }
+            else if(peek() == '>')  { tok.str = "<>";   tok.type = Token::Type::Operator;   advance();  }
+            else if(peek() == '<')  { tok.str = "<<";   tok.type = Token::Type::Operator;   advance();  }
+            else                    { tok.str = "<";    tok.type = Token::Type::Operator;               }
             break;
         case '>':
-            if(peek() == '=')       { tok.str = ">=";   advance();  }
-            else if(peek() == '>')  { tok.str = ">>";   advance();  }
-            else                    { tok.str = ">";                }
+            if(peek() == '=')       { tok.str = ">=";   tok.type = Token::Type::Operator;   advance();  }
+            else if(peek() == '>')  { tok.str = ">>";   tok.type = Token::Type::Operator;   advance();  }
+            else                    { tok.str = ">";    tok.type = Token::Type::Operator;               }
             break;
 
         case '@':   case '#':   case '^':   case '*':   case '(':   case ')':   case '/':

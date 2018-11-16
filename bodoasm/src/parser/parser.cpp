@@ -41,6 +41,8 @@ namespace bodoasm
                     skipRemainderOfCommand();
                 }
             }
+            if(!conditionalState.empty())
+                err.error(nullptr, "Unexpected end of file reached when inside an #if block");
         }
         catch(...) {}   // any other error stops all parsing
     }
@@ -83,6 +85,12 @@ namespace bodoasm
 
     void Parser::parseOne()
     {
+        // Check to see if we're on the 'false' part of an #if chain
+        if(!conditionalState.empty() && conditionalState.back().state != CondBlock::State::Active)
+        {
+            parseOneOffCondition();
+            return;
+        }
         //  A command can be any number of label definitions, followed by one of the following:
         //   - an assembler directive       #<directive name> [...]
         //   - a symbol assignment          <symbol> = <expression>
@@ -129,6 +137,41 @@ namespace bodoasm
         //   it must be an actual command that needs pattern matching with the Lua
         unget(t);
         parse_command();
+    }
+    
+    void Parser::parseOneOffCondition()
+    {
+        auto& blk = conditionalState.back();
+
+        // when we're off condition, we only want to look for #if/#elif/#else/#endif
+        auto t = next();
+        if(t.str == "#")
+        {
+            bool docmd = false;
+            auto pos = t.pos;
+
+            t = next();
+            auto str = toLower(t.str);
+
+            if(str == "if")
+            {
+                CondBlock b;
+                b.state = CondBlock::State::Disabled;
+                conditionalState.push_back(b);
+            }
+            else if(str == "elif" || str == "else")
+                docmd = (blk.state != CondBlock::State::Disabled);
+            else
+                docmd = (str == "endif");
+
+            if(docmd)
+            {
+                unget(t);
+                parse_directive();
+                return;
+            }
+        }
+        skipRemainderOfCommand();
     }
 
     SubParser::Package Parser::buildEolPackage(std::vector<Token>& owner)
