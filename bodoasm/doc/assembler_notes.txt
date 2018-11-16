@@ -121,7 +121,8 @@ Directives
 #else
 #endif
     - for conditional compilation.  'Expr' must be able to be evaluated on
-        first pass.  A value of Zero is false, any other value is true
+        first pass.  A value of Zero is false, any other integer value is true
+        Must be an integer
         
     
     
