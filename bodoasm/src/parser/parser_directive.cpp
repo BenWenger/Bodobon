@@ -178,7 +178,12 @@ namespace bodoasm
         }
 
         // Otherwise, all is well
-        assembler->doDirective(directivePos, name, params);
+        //   if this is conditional ... we (the parser) need to handle it.
+        // Everything else goes to the assembler
+        if     (name == "if")       condDirective_if(directivePos, params);
+        else if(name == "elif")     condDirective_elif(directivePos, params);
+        else if(name == "else")     condDirective_else(directivePos, params);
+        else                        assembler->doDirective(directivePos, name, params);
     }
 
 }

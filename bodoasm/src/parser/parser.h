@@ -49,8 +49,13 @@ namespace bodoasm
         void                parse_command();
         Expression::Ptr     parse_expression();
 
-        // TODO -- next thing is if/elif/else directives.  Those have to be handled on parser
-        //   level because they disrupt parsing logic.
+        enum class CondBlock
+        {
+            NotYet,     // we've seen "#if 0"s but no "#if 1" yet
+            Active,     // We are currently in an "#if 1"
+            Done        // We have already exited an "#if 1", and are now in #elif/else .. waiting for #endif
+        };
+        std::vector<CondBlock>      conditionalState;
     };
 }
 
