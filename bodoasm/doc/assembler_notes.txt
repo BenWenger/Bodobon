@@ -124,6 +124,30 @@ Directives
         first pass.  A value of Zero is false, any other integer value is true
         Must be an integer
         
+        
+        
+-----------------------------------
+Directives to do next:
+
+#pushtable    <--  needs to be able to push "none" table
+#align      mod, [fillbyte]
+#pad        addr, [fillbyte]
+#word       val, [val, ...]
+#long       val, [val, ...]
+#dword      val, [val, ...]
+#error      msg
+#warn       msg
+#termstring bytes
+#var        name, size
+
+
+
+Other things to do:
+
+- ==, != and comparison operators for strings
+- escape characters for strings
+- 65816
+        
     
     
 ========================
