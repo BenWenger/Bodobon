@@ -50,6 +50,8 @@ namespace bodoasm
         void                directive_Byte      (const Position& pos, const directiveParams_t& params);
         void                directive_PushTable (const Position& pos, const directiveParams_t& params);
         void                directive_PopTable  (const Position& pos, const directiveParams_t& params);
+        void                directive_Pad       (const Position& pos, const directiveParams_t& params);
+        void                directive_Align     (const Position& pos, const directiveParams_t& params);
 
     private:
         ErrorReporter       err;

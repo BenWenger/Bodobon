@@ -59,9 +59,8 @@ class Tester:
                     print('OK')
                 else:
                     print('COMPARE FAILURE')
-            except e:
+            except:
                 print("ERROR FAILURE")
-                raise e
     
 
 if __name__ == '__main__':

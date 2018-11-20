@@ -19,6 +19,8 @@ namespace bodoasm
             dirTable["byte"]        = &Assembler::directive_Byte;
             dirTable["pushtable"]   = &Assembler::directive_PushTable;
             dirTable["poptable"]    = &Assembler::directive_PopTable;
+            dirTable["pad"]         = &Assembler::directive_Pad;
+            dirTable["align"]       = &Assembler::directive_Align;
         }
     }
     
@@ -143,5 +145,54 @@ namespace bodoasm
     {
         if(tblFiles.empty())        err.error(&pos, "#poptable:  There are no table files loaded");
         else                        tblFiles.pop_back();
+    }
+    
+    void Assembler::directive_Pad(const Position& pos, const directiveParams_t& params)
+    {
+        if(!PCEstablished)  err.error(&pos, "PC has not been established. Cannot do a #pad without a preceeding #org");
+
+        auto target = params[0].valInt;
+        auto dif = target - curPC;
+        if(dif < 0)         err.error(&pos, "Cannot pad to " + std::to_string(target) + " because PC is already past it (PC=" + std::to_string(curPC) + ")");
+
+        u8 fill = 0;
+        if(params.size() > 1)
+        {
+            auto tmp = params[1].valInt;
+            if(tmp < 0)     tmp += 0x100;
+            if( (tmp < 0) || (tmp > 0xFF) ) err.error(&pos, "#pad fill parameter is too large to fit in a byte");
+            fill = static_cast<u8>(tmp);
+        }
+
+        curOrgBlock.dat.resize( static_cast<std::size_t>(curOrgBlock.dat.size() + dif), fill );
+        unbasedPC += dif;
+        curPC += dif;
+    }
+
+    void Assembler::directive_Align(const Position& pos, const directiveParams_t& params)
+    {
+        if(!PCEstablished)  err.error(&pos, "PC has not been established. Cannot do an #align without a preceeding #org");
+
+        auto target = params[0].valInt;
+        if(target <= 0)     err.error(&pos, "#align value must be greater than zero");
+        
+        u8 fill = 0;
+        if(params.size() > 1)
+        {
+            auto tmp = params[1].valInt;
+            if(tmp < 0)     tmp += 0x100;
+            if( (tmp < 0) || (tmp > 0xFF) ) err.error(&pos, "#pad fill parameter is too large to fit in a byte");
+            fill = static_cast<u8>(tmp);
+        }
+
+        
+        auto mod = curPC % target;
+        if(mod > 0)
+        {
+            auto dif = target - mod;
+            curOrgBlock.dat.resize( static_cast<std::size_t>(curOrgBlock.dat.size() + dif), fill );
+            unbasedPC += dif;
+            curPC += dif;
+        }
     }
 }

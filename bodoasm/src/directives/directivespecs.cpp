@@ -22,6 +22,8 @@ namespace bodoasm
             out["elif"]     = { t::Integer                                                                  };
             out["else"]     = {                                                                             };
             out["endif"]    = {                                                                             };
+            out["pad"]      = { t::Integer,     t::OptInteger                                               };
+            out["align"]    = { t::Integer,     t::OptInteger                                               };
 
             return out;
         }
