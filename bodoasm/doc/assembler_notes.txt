@@ -125,13 +125,13 @@ Directives
         Must be an integer
         
         
+#align      mod, [fillbyte]
+#pad        addr, [fillbyte]
         
 -----------------------------------
 Directives to do next:
 
 #pushtable    <--  needs to be able to push "none" table
-#align      mod, [fillbyte]
-#pad        addr, [fillbyte]
 #word       val, [val, ...]
 #long       val, [val, ...]
 #dword      val, [val, ...]
