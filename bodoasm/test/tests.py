@@ -2,6 +2,7 @@ import os
 import subprocess
 import filecmp
 import shutil
+import sys
 
 os.chdir( os.path.dirname(os.path.realpath(__file__)) )
 
@@ -37,13 +38,16 @@ class Tester:
         return filecmp.cmp(srcfile, dstfile)
         
     def clean(self):
+        config = 'Release_x86'
+        if len(sys.argv) > 1:
+            config = sys.argv[1]
         if os.path.isdir('tmpdir'):
             shutil.rmtree('tmpdir')
         if os.path.isdir('lua'):
             shutil.rmtree('lua')
         os.mkdir('tmpdir')
         shutil.copytree( '../lua', 'lua' )
-        shutil.copyfile( '../bin/Release_Win32/bodoasm.exe', 'bodoasm.exe')
+        shutil.copyfile( '../bin/'+config+'/bodoasm.exe', 'bodoasm.exe')
         
     def runTests(self):
         self.clean()
