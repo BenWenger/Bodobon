@@ -4,15 +4,10 @@
 #include <iostream>
 #include "assembler/assembler.h"
 
-std::string getPathToLua()
+std::string getPathToLua(const std::string& append)
 {
     auto path = dshfs::Filename(dshfs::fs.getExecutablePath()).getPathPart();
-#ifdef _DEBUG
-    path.append("../lua/");
-#else
-    path.append("lua/");
-#endif
-    return path;
+    return path + append;
 }
 
 int main(int argc, char* argv[])
@@ -28,8 +23,11 @@ int main(int argc, char* argv[])
             std::string modeStr = argv[1];
             std::string srcFile = argv[2];
             std::string dstFile = argv[3];
+            std::string luapath = "lua/";
+            if(argc > 4)
+                luapath = argv[4];
 
-            bodoasm::Assembler prog( getPathToLua(), modeStr );
+            bodoasm::Assembler prog( getPathToLua(luapath), modeStr );
             prog.assembleFile( srcFile );
             if( prog.okToProceed() )        prog.finalize();
             if( prog.okToProceed() )
