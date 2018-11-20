@@ -28,8 +28,7 @@ class Tester:
         subprocess.run(
             ['bodoasm', mode, 'testdata/'+filename+'.asm', 'tmpdir/'+filename+'.bin'],
             check=True,
-            stdout=subprocess.DEVNULL,
-            stderr=subprocess.DEVNULL
+            stdout=subprocess.DEVNULL
         )
         
     def compare(self, filename):
@@ -52,15 +51,12 @@ class Tester:
     def runTests(self):
         self.clean()
         for test in self.getFiles():
-            try:
-                print((test + '...').ljust(40), end='')
-                self.callAsm(test)
-                if self.compare(test):
-                    print('OK')
-                else:
-                    print('COMPARE FAILURE')
-            except:
-                print("ERROR FAILURE")
+            print((test + '...').ljust(40), end='')
+            self.callAsm(test)
+            if self.compare(test):
+                print('OK')
+            else:
+                print('COMPARE FAILURE')
     
 
 if __name__ == '__main__':

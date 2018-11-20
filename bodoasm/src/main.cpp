@@ -39,25 +39,17 @@ int main(int argc, char* argv[])
             bool ok = prog.okToProceed();
             std::cout << "Assembly " << (ok ? "completed successfully" : "failed") << ".  " << prog.getErrCount() << " Error(s), " << prog.getWarnCount() << " Warning(s)" << std::endl;
 
-            if(!prog.okToProceed())
-            {
-                char c;
-                std::cin >> c;      // TODO this is just for convenience when debugging.  Remove this code
-            }
-            
             return prog.okToProceed() ? 0 : 1;
         }
         catch(std::exception& e)
         {
-            std::cout << "Fatal Error:  " << e.what() << std::endl;
+            std::cerr << "Fatal Error:  " << e.what() << std::endl;
         }
         catch(...)
         {
-            std::cout << "Unknown fatal error" << std::endl;
+            std::cerr << "Unknown fatal error" << std::endl;
         }
     }
 
-    char c;
-    std::cin >> c;
     return 1;
 }

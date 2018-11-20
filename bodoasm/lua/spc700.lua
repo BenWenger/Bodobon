@@ -8,8 +8,8 @@ mnemonicTable = { [0]=
 --[[1x]] "bpl"  ,nil    ,"clr1" ,"bbc"  , "or"   ,"or"   ,"or"   ,"or"   ,  "or"   ,"or"   ,"decw" ,"asl"  , "asl"  ,"dec"  ,"cmp"  ,"jmp"  ,  --[[1x]]
 --[[2x]] "clrp" ,nil    ,nil    ,nil    , "and"  ,"and"  ,"and"  ,"and"  ,  "and"  ,"and"  ,"or1"  ,"rol"  , "rol"  ,"push" ,"cbne" ,"bra"  ,  --[[2x]]
 --[[3x]] "bmi"  ,nil    ,nil    ,nil    , "and"  ,"and"  ,"and"  ,"and"  ,  "and"  ,"and"  ,"incw" ,"rol"  , "rol"  ,"inc"  ,"cmp"  ,"call" ,  --[[3x]]
---[[4x]] "setp" ,nil    ,nil    ,nil    , "eor"  ,"eor"  ,"eor"  ,"eor"  ,  "eor"  ,"eor"  ,"and1" ,"inc"  , "inc"  ,"push" ,"tclr1","pcall",  --[[4x]]
---[[5x]] "bvc"  ,nil    ,nil    ,nil    , "eor"  ,"eor"  ,"eor"  ,"eor"  ,  "eor"  ,"eor"  ,"cmpw" ,"inc"  , "inc"  ,"mov"  ,"cmp"  ,"jmp"  ,  --[[5x]]
+--[[4x]] "setp" ,nil    ,nil    ,nil    , "eor"  ,"eor"  ,"eor"  ,"eor"  ,  "eor"  ,"eor"  ,"and1" ,"lsr"  , "lsr"  ,"push" ,"tclr1","pcall",  --[[4x]]
+--[[5x]] "bvc"  ,nil    ,nil    ,nil    , "eor"  ,"eor"  ,"eor"  ,"eor"  ,  "eor"  ,"eor"  ,"cmpw" ,"lsr"  , "lsr"  ,"mov"  ,"cmp"  ,"jmp"  ,  --[[5x]]
 --[[6x]] "clrc" ,nil    ,nil    ,nil    , "cmp"  ,"cmp"  ,"cmp"  ,"cmp"  ,  "cmp"  ,"cmp"  ,"and1" ,"ror"  , "ror"  ,"push" ,"dbnz" ,"ret"  ,  --[[6x]]
 --[[7x]] "bvs"  ,nil    ,nil    ,nil    , "cmp"  ,"cmp"  ,"cmp"  ,"cmp"  ,  "cmp"  ,"cmp"  ,"addw" ,"ror"  , "ror"  ,"mov"  ,"cmp"  ,"ret1" ,  --[[7x]]
 --         x0      x1      x2      x3       x4      x5      x6      x7        x8      x9      xA      xB       xC      xD      xE      xF

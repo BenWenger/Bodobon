@@ -48,7 +48,7 @@ namespace bodoasm
     
     void ErrorReporter::output(const char* prefix, const Position* pos, const std::string& msg)
     {
-        auto& out = std::cout;
+        auto& out = std::cerr;
         out << prefix << ": ";
         if(pos)
             out << formatPosition(*pos) << " ";
