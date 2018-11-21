@@ -13,7 +13,7 @@ namespace bodoasm
     {
         enum Type
         {
-            Integer,
+            Integer = 0,
             String,
             IntOrString,
 
@@ -31,7 +31,7 @@ namespace bodoasm
 
         static Type loopBack(int count)
         {
-            return static_cast<Type>( static_cast<int>(Type::LoopBack) + 1 );
+            return static_cast<Type>( static_cast<int>(Type::LoopBack) + count );
         }
 
         static bool isTypeOptional(Type t)

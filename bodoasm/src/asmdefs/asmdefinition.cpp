@@ -45,6 +45,7 @@ namespace bodoasm
         // Create the 'bodoasm' global table and populate it
         //   with callbacks
         lua_newtable(*lua);
+        addDirectiveStuffToLua(*lua);
         for(auto& i : funcSuppliers)
             i(*lua);
         lua_setglobal(*lua, "bodoasm");
@@ -357,4 +358,100 @@ namespace bodoasm
         return numvals;
     }
 
+    int AsmDefinition::lua_addDirective(luawrap::Lua& lua)
+    {
+        if(lua_type(lua, 1) != LUA_TSTRING)     luaL_error(lua, "First parameter to addDirective() must be the directive name");
+        CustomDirective     cust;
+        cust.name = lua.toString(1);
+
+        int top = lua_gettop(lua);
+        for(int i = 2; i <= top; ++i)
+        {
+            bool valid = true;
+            if(!lua_isinteger(lua, i))          valid = false;
+            else 
+            {
+                auto v = lua_tointeger(lua, i);
+                if(v < 0 || v >= static_cast<int>(DirectiveParam::Type::End))
+                    valid = false;
+                else
+                    cust.spec.push_back( static_cast<DirectiveParam::Type>(v) );
+            }
+
+            if(!valid)
+                luaL_error(lua, ("addDirective parameter " + std::to_string(i) + " is not a valid parameter type").c_str());
+        }
+
+        customDirectives[ toLower(cust.name) ] = std::move(cust);
+        return 0;
+    }
+
+    void AsmDefinition::addDirectiveStuffToLua(luawrap::Lua& lua)
+    {
+        lua_pushliteral(lua, "addDirective");
+        lua.pushFunction(this, &AsmDefinition::lua_addDirective);
+        lua_settable(lua,-3);
+
+        constexpr int count = 6;
+        static_assert(count == static_cast<int>(DirectiveParam::Type::End), "Some parameter types are missing from AsmDefinition::addDirectiveStuffToLua");
+
+        static const char* const paramtypenames[count] = {
+            "integer",
+            "string",
+            "intOrString",
+            "optInteger",
+            "optString",
+            "optIntOrString"
+        };
+        static const DirectiveParam::Type paramtypes[count] = {
+            DirectiveParam::Type::Integer,
+            DirectiveParam::Type::String,
+            DirectiveParam::Type::IntOrString,
+            DirectiveParam::Type::OptInteger,
+            DirectiveParam::Type::OptString,
+            DirectiveParam::Type::OptIntOrString
+        };
+
+        lua_pushliteral(lua, "directive");
+        lua_createtable(lua, 0, count);
+        for(int i = 0; i < count; ++i)
+        {
+            lua_pushstring(lua, paramtypenames[i]);     // should be able to use pushliteral here.  Curse your saftey measures, Lua!
+            lua_pushinteger(lua, static_cast<lua_Integer>(paramtypes[i]));
+            lua_settable(lua, -3);
+        }
+        lua_settable(lua, -3);
+    }
+    
+    std::vector<DirectiveParam::Type>* AsmDefinition::getCustomDirectiveSpec(const std::string& directiveName)
+    {
+        auto i = customDirectives.find( toLower(directiveName) );
+        if(i == customDirectives.end())     return nullptr;
+
+        return &i->second.spec;
+    }
+
+    void AsmDefinition::doDirective(const Position& pos, const std::string& name, const directiveParams_t& params)
+    {
+        LuaStackSaver stk(*lua);
+
+        auto i = customDirectives.find( name );
+        if(i == customDirectives.end())
+            err.fatal(&pos, "Internal error:  Bad custom directive name passed to AsmDefinition::runDirective (" + name + ")");
+
+        if(lua_getglobal(*lua, i->second.name.c_str()) != LUA_TFUNCTION)
+            err.error(&pos, "Lua error:  Custom directive '" + i->second.name + "' defined, but no global function with that name exists");
+
+        for(auto& p : params)
+        {
+            switch(p.type)
+            {
+            case DirectiveParam::Type::Integer:     lua_pushinteger(*lua, static_cast<lua_Integer>(p.valInt));      break;
+            case DirectiveParam::Type::String:      lua->pushString(p.valStr);                                      break;
+            default:                                err.error(&pos, "Internal error:  bad parameter type passed to AsmDefinition::runDirective");
+            }
+        }
+
+        lua->callFunction( static_cast<int>( params.size() ), 0 );
+    }
 }

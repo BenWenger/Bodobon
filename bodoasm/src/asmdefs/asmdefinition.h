@@ -8,6 +8,7 @@
 #include <set>
 #include "types/blocktypes.h"
 #include "types/position.h"
+#include "directives/directivespecs.h"
 
 namespace luawrap
 {
@@ -35,6 +36,9 @@ namespace bodoasm
         int             guessInstructionSize(const Position& pos, const std::string& mnemonic, AddrModeMatchMap& patterns);
         int             generateBinary(const Position& pos, const std::string& mnemonic, const AddrModeMatchMap& patterns, std::vector<u8>& bin, int insertoffset = 0, int requiredsize = -1);
 
+        std::vector<DirectiveParam::Type>*  getCustomDirectiveSpec(const std::string& directiveName);
+        void                                doDirective(const Position& pos, const std::string& name, const directiveParams_t& params);
+
     private:
         ErrorReporter&  err;
 
@@ -44,6 +48,15 @@ namespace bodoasm
         std::unordered_map<std::string, vec_t>  suffixModes;        // addr modes associated with suffixes
 
         std::vector<funcSupplier_t>             funcSuppliers;
+
+        struct CustomDirective
+        {
+            std::string                         name;
+            std::vector<DirectiveParam::Type>   spec;
+        };
+        std::unordered_map<std::string, CustomDirective>    customDirectives;
+        void            addDirectiveStuffToLua(luawrap::Lua& lua);
+        int             lua_addDirective(luawrap::Lua& lua);
 
         void            clear();
         void            loadAddrModes();

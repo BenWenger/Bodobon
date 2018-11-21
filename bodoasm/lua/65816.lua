@@ -194,7 +194,21 @@ pushX =  function(v)    pushStat(stackX,  "X",  v816(v))    end
 popX =   function()     popStat (stackX,  "X" )             end
 setX =   function(v)    setStat (stackX,  "X",  v816(v))    end
 
--- TODO figure a way to add the directives to the assembler
+buildDirectives = function()
+    v = bodoasm.directive.integer
+    bodoasm.addDirective('pushDP', v)
+    bodoasm.addDirective('popDP'    )
+    bodoasm.addDirective('setDP',  v)
+    bodoasm.addDirective('pushDB', v)
+    bodoasm.addDirective('popDB'    )
+    bodoasm.addDirective('setDB',  v)
+    bodoasm.addDirective('pushM',  v)
+    bodoasm.addDirective('popM'     )
+    bodoasm.addDirective('setM',   v)
+    bodoasm.addDirective('pushX',  v)
+    bodoasm.addDirective('popX'     )
+    bodoasm.addDirective('setX',   v)
+end
 
 -------------------------
 -------------------------
@@ -411,7 +425,9 @@ getBinClbk = {
 -------------------------
 -------------------------
 
+
 bodoasm_init = function()
+    buildDirectives()
     buildInstructions()
     pushDP(0)
     pushDB(0)

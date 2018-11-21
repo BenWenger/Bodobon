@@ -101,10 +101,20 @@ namespace bodoasm
         else if(t.str == "endmacro")
             err.error(&t.pos, "#endmacro directive reached outside of macro definition");
 
-        auto iter = directiveSpecs.find(name);
-        if(iter == directiveSpecs.end())        err.error(&t.pos, "'" + name + "' is an unrecognized directive");
+        // get the directive specs
+        bool isCustom = true;
+        const auto* spec = asmDefs->getCustomDirectiveSpec(name);      // was it specified by the Lua?
+        if(!spec)
+        {
+            isCustom = false;                       // guess not.  See if it's an assembler directive
+            auto iter = directiveSpecs.find(name);
+            if(iter != directiveSpecs.end())
+                spec = &iter->second;
+        }
+        if(!spec)
+            err.error(&t.pos, "'" + name + "' is an unrecognized directive");
 
-        DirectiveTypeTraverser  paramTypes(iter->second);
+        DirectiveTypeTraverser  paramTypes(*spec);
         directiveParams_t       params;
 
         std::vector<Token>      tokenOwner;
@@ -185,6 +195,7 @@ namespace bodoasm
         else if(name == "elif")     condDirective_elif(directivePos, params);
         else if(name == "else")     condDirective_else(directivePos, params);
         else if(name == "endif")    condDirective_endif(directivePos, params);
+        else if(isCustom)           asmDefs->doDirective(directivePos, name, params);
         else                        assembler->doDirective(directivePos, name, params);
     }
 
