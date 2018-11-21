@@ -58,12 +58,58 @@ namespace bodoasm
         lua_pushliteral(lua, "getPC");
         lua.pushFunction(this, &Assembler::lua_getPC);
         lua_settable(lua, -3);
+        lua_pushliteral(lua, "get");
+        lua.pushFunction(this, &Assembler::lua_get);
+        lua_settable(lua, -3);
+        lua_pushliteral(lua, "set");
+        lua.pushFunction(this, &Assembler::lua_set);
+        lua_settable(lua, -3);
     }
     
     int Assembler::lua_getPC(luawrap::Lua& lua)
     {
         lua_pushinteger(lua, static_cast<lua_Integer>(curPC));
         return 1;
+    }
+
+    int Assembler::lua_get(luawrap::Lua& lua)
+    {
+        if(lua_type(lua,1) != LUA_TSTRING)  luaL_error(lua, "First parameter to bodoasm.get must be a string");
+        auto str = lua.toString(1,false);
+        auto i = curLuaState.find(str);
+        if(i == curLuaState.end())
+            lua_pushnil(lua);
+        else
+        {
+            switch(i->second.type)
+            {
+            case StateEntry::Type::Integer:     lua_pushinteger(lua, i->second.valInt);         break;
+            case StateEntry::Type::String:      lua.pushString(i->second.valStr);               break;
+            default:
+                luaL_error(lua, "Internal error in Assembler::lua_get:  state object is of unknown type");
+            }
+        }
+        return 1;
+    }
+    
+    int Assembler::lua_set(luawrap::Lua& lua)
+    {
+        if(lua_type(lua,1) != LUA_TSTRING)  luaL_error(lua, "First parameter to bodoasm.get must be a string");
+
+        StateEntry ent;
+        if(lua_isinteger(lua, 2))
+        {
+            ent.type = StateEntry::Type::Integer;
+            ent.valInt = lua_tointeger(lua, 2);
+        }
+        else
+        {
+            ent.type = StateEntry::Type::String;
+            ent.valStr = lua.toString(2);
+        }
+
+        curLuaState[ lua.toString(1) ] = std::move(ent);
+        return 0;
     }
 
     void Assembler::clearCurOrg()
@@ -113,6 +159,7 @@ namespace bodoasm
             fut.matches =           std::move(matches);
             fut.promisedSize =      adj;
             fut.pcAtTime =          curPC;
+            fut.stateMap =          curLuaState;
             curOrgBlock.futures.emplace_back(std::move(fut));
 
             for(int i = 0; i < adj; ++i)
@@ -173,12 +220,14 @@ namespace bodoasm
 
     void Assembler::resolveFutures()
     {
+        auto oldState = std::move(curLuaState);
         for(auto& blk : orgBlocks)
         {
-            for(auto future : blk.futures)
+            for(auto& future : blk.futures)
             {
                 try
                 {
+                    curLuaState = std::move(future.stateMap);           // modifies futures.  This should be ok
                     curPC = future.pcAtTime;
                     resolveAndTypeMatch(future.matches, true);
                     asmDef.generateBinary(future.pos, StringPool::toStr(future.mnemonic), future.matches, blk.dat, future.binaryPos, future.promisedSize);
@@ -187,6 +236,7 @@ namespace bodoasm
                 {}
             }
         }
+        curLuaState = std::move(oldState);
     }
 
     void Assembler::checkOrgConflicts()

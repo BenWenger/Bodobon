@@ -1,6 +1,7 @@
 #ifndef BODOASM_ASSEMBLER_H_INCLUDED
 #define BODOASM_ASSEMBLER_H_INCLUDED
 
+#include <unordered_map>
 #include <string>
 #include <luawrap.h>
 #include <dshfs.h>
@@ -59,6 +60,19 @@ namespace bodoasm
         SymbolTable         symbols;
         AsmDefinition       asmDef;
         MacroProcessor      macroProc;
+        
+        struct StateEntry
+        {
+            enum class Type
+            {
+                Integer,
+                String
+            };
+            Type            type;
+            lua_Integer     valInt;
+            std::string     valStr;
+        };
+        typedef std::unordered_map<std::string, StateEntry>     luaStateMap_t;
 
         struct Future
         {
@@ -68,6 +82,7 @@ namespace bodoasm
             AddrModeMatchMap    matches;
             int                 promisedSize;
             int_t               pcAtTime;
+            luaStateMap_t       stateMap;
         };
         
         struct OrgBlock
@@ -88,6 +103,8 @@ namespace bodoasm
 
         void                    addLuaFuncs(luawrap::Lua& lua);
         int                     lua_getPC(luawrap::Lua& lua);
+        int                     lua_get(luawrap::Lua& lua);
+        int                     lua_set(luawrap::Lua& lua);
 
         void                    clearCurOrg();
         std::vector<OrgBlock>   orgBlocks;
@@ -96,6 +113,7 @@ namespace bodoasm
         int_t                   unbasedPC;
         bool                    rebasing;
         bool                    PCEstablished;
+        luaStateMap_t           curLuaState;
 
         std::vector<TblFile::Ptr>   tblFiles;
     };

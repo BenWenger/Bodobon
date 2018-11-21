@@ -30,7 +30,7 @@ addrModes = { [0]=
 --[[3x]] "rl" ,"iy" ,"in" ,"siy", "dx" ,"dx" ,"dx" ,"iyl",   "ip" ,"ay" ,"ac" ,"ip" , "ax" ,"ax" ,"ax" ,"axl",  --[[3x]]
 --[[4x]] "ip" ,"ix" ,nil  ,"sr" , "mv" ,"dp" ,"dp" ,"inl",   "ip" ,"imm","ac" ,"ip" , "ab" ,"ab" ,"ab" ,"abl",  --[[4x]]
 --[[5x]] "rl" ,"iy" ,"in" ,"siy", "mv" ,"dx" ,"dx" ,"iyl",   "ip" ,"ay" ,"ip" ,"ip" , "abl","ax" ,"ax" ,"axl",  --[[5x]]
---[[6x]] "ip" ,"ix" ,"i16","sr" , "dp" ,"dp" ,"dp" ,"inl",   "ip" ,"imm","ac" ,"ip" , "jin","ab" ,"ab" ,"abl",  --[[6x]]
+--[[6x]] "ip" ,"ix" ,"per","sr" , "dp" ,"dp" ,"dp" ,"inl",   "ip" ,"imm","ac" ,"ip" , "jin","ab" ,"ab" ,"abl",  --[[6x]]
 --[[7x]] "rl" ,"iy" ,"in" ,"siy", "dx" ,"dx" ,"dx" ,"iyl",   "ip" ,"ay" ,"ip" ,"ip" , "jix","ax" ,"ax" ,"axl",  --[[7x]]
 --         x0    x1    x2    x3     x4    x5    x6    x7       x8    x9    xA    xB     xC    xD    xE    xF
 --[[8x]] "rl" ,"ix" ,"rll","sr" , "dp" ,"dp" ,"dp" ,"inl",   "ip" ,"imm","ip" ,"ip" , "ab" ,"ab" ,"ab" ,"abl",  --[[8x]]
@@ -71,7 +71,8 @@ patterns = {
 ["rl"]=     {1},
 ["rll"]=    {1},
 ["siy"]=    {"(", 1, ",", "s", ")", ",", "y"},
-["sr"]=     {1, ",", "s"}
+["sr"]=     {1, ",", "s"},
+["per"]=    {1}
 }
 
 suffixes = {
@@ -107,14 +108,15 @@ modeSizes = {
 ["rl"]=     2,
 ["rll"]=    3,
 ["siy"]=    2,
-["sr"]=     2
+["sr"]=     2,
+["per"]=    3
 }
 
 --
 -- Stuff that is built computationally
 --
 opcodeLookup = {}
-mnemoics = {}
+mnemonics = {}
 
 addOp = function(opcode, mn, md)
     -- add to opcodeLookup
@@ -131,7 +133,7 @@ end
 buildInstructions = function()
     for opcode=0,255 do
         local mn = mnemonicTable[opcode]
-        if mn ~= nil
+        if mn ~= nil then
             local md = addrModes[opcode]
             addOp(opcode, mn, md)
             
@@ -140,7 +142,7 @@ buildInstructions = function()
             if md == "imm" or md == "imx" then
                 addOp(opcode, mn, "im8")
                 addOp(opcode, mn, "i16")
-            elseif md == "ac"               -- ac mode could also be implied, if the user is lazy
+            elseif md == "ac" then          -- ac mode could also be implied, if the user is lazy
                 addOp(opcode, mn, "ip")
             end
         end
@@ -160,7 +162,7 @@ pushStat = function(stk, name, v)
     bodoasm.set(name, v)
 end
 popStat = function(stk, name)
-    if #stk == 1 then error("#pop"..name.." used when "..name.." stack is empty")
+    if #stk == 1 then error("#pop"..name.." used when "..name.." stack is empty") end
     table.remove(stk)
     bodoasm.set(name,stk[#stk])
 end
@@ -176,15 +178,15 @@ end
 
 bound = function(v, mx, name)
     if v >= 0 and v <= mx then return v end
-    error("Value for "..name.." must be between 0 and $" .. string.format("%X", mx)
+    error("Value for "..name.." must be between 0 and $" .. string.format("%X", mx))
 end
 
-pushDP = function(v)    pushStat(stackDP, "DP", bound(v,0xFFFF,"DP")    end
+pushDP = function(v)    pushStat(stackDP, "DP", bound(v,0xFFFF,"DP"))   end
 popDP =  function()     popStat (stackDP, "DP")                         end
-setDP =  function(v)    setStat (stackDP, "DP", bound(v,0xFFFF,"DP")    end
-pushDB = function(v)    pushStat(stackDB, "DB", bound(v,0xFF,"DB")      end
+setDP =  function(v)    setStat (stackDP, "DP", bound(v,0xFFFF,"DP"))   end
+pushDB = function(v)    pushStat(stackDB, "DB", bound(v,0xFF,"DB"))     end
 popDB =  function()     popStat (stackDB, "DB")                         end
-setDB =  function(v)    setStat (stackDB, "DB", bound(v,0xFF,"DB")      end
+setDB =  function(v)    setStat (stackDB, "DB", bound(v,0xFF,"DB"))     end
 pushM =  function(v)    pushStat(stackM,  "M",  v816(v))    end
 popM =   function()     popStat (stackM,  "M" )             end
 setM =   function(v)    setStat (stackM,  "M",  v816(v))    end
@@ -203,7 +205,7 @@ setX =   function(v)    setStat (stackX,  "X",  v816(v))    end
 modeGroupPriority = {
     ["ac" ]=true,   ["imm"]=true,   ["imx"]=true,   ["in" ]=true,   ["inl"]=true,   ["jin"]=true,
     ["jix"]=true,   ["ix" ]=true,   ["iy" ]=true,   ["iyl"]=true,   ["ip" ]=true,   ["siy"]=true,
-    ["sr" ]=true,   ["mv" ]=true,   ["rl" ]=true,   ["rll"]=true,   ["jil"]
+    ["sr" ]=true,   ["mv" ]=true,   ["rl" ]=true,   ["rll"]=true,   ["jil"]=true,   ["per"]=true
 }
 --   Other groups need size distinctions
 modeGroupShort = {
@@ -220,12 +222,12 @@ getBestMode = function(patterns)
     local short = nil
     local med = nil
     local long = nil
-    for mode, _ in pairs(patterns)
+    for mode, _ in pairs(patterns) do
         if modeGroupPriority[mode] then
             -- if this is imx or imm... we need to use the size of M/X to determine the size of this op
-            if mode == imm then
+            if mode == "imm" then
                 if bodoasm.get("M") == 8 then return "im8" else return "i16"    end
-            elseif mode == imx then
+            elseif mode == "imx" then
                 if bodoasm.get("X") == 8 then return "im8" else return "i16"    end
             else
                 return mode
@@ -242,9 +244,11 @@ getBestMode = function(patterns)
     if      short == nil and long == nil then return med
     elseif  med   == nil and long == nil then return short
     elseif  short == nil and med  == nil then return long
+    end
     
     -- otherwise, we don't know the size, and we have to figure it out.
     --   do we have an operand?
+    mode = short or med or long
     local v = patterns[mode][1]
     if v == nil then
         -- no operand... we just have to pick one
@@ -264,7 +268,7 @@ getBestMode = function(patterns)
         if short == "im8" then      -- immediate mode is pretty easy
             if v >= -255 and v <= 255 then return short end
         else
-            if convertToDpAddr(v) != nil then return short end
+            if convertToDpAddr(v) ~= nil then return short end
         end
     end
     if med ~= nil then
@@ -272,7 +276,7 @@ getBestMode = function(patterns)
         if med == "i16" then
             if v >= -65535 and v <= 65535 then return med end
         else
-            if convertToAbsAddr(v) != nil then return med end
+            if convertToAbsAddr(v) ~= nil then return med end
         end
     end
     
@@ -356,13 +360,18 @@ getBin_im16 = function(opcode, v)
     return opcode, (v & 0xFF), v >> 8
 end
 
+getBin_per = function(opcode, v)
+    if v < 0 or v > 0xFFFF then error("PER value out of range") end
+    return opcode, (v & 0xFF), v >> 8
+end
+
 getBin_jix = function(opcode, v)
     local pc = bodoasm.getPC() + 3
     if (pc & 0xFF0000) ~= (v & 0xFF0000) then error("Indirect,X Jump pointer must be in same bank as the PC") end
     return opcode, (v & 0xFF), (v >> 8) & 0xFF
 end
 
-getBin_jix = function(opcode, src, dst)
+getBin_mv = function(opcode, src, dst)
     if (src < 0) or (src > 0xFF) then error("Source bank byte is out of range") end
     if (dst < 0) or (dst > 0xFF) then error("Destination bank byte is out of range") end
     return opcode, dst, src
@@ -394,7 +403,8 @@ getBinClbk = {
 ["im8"]=    getBin_im8,
 ["i16"]=    getBin_im16,
 ["jix"]=    getBin_jix,
-["mv"]=     getBin_mv
+["mv"]=     getBin_mv,
+["per"]=    getBin_per
 }
 
 -------------------------
@@ -427,19 +437,4 @@ bodoasm_getBinary = function(mnemonic, patterns)
     
     return getBinClbk[mode](opcode, pat[1], pat[2])
 end
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
