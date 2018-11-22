@@ -176,19 +176,29 @@ namespace bodoasm
 
         if(lhs->isString())
         {
-            // only supported operator on strings is +
-            if(binOp == BinOp::Add)
+            // only supported operators on strings are +, ==, !=
+            switch(binOp)
             {
+            case BinOp::Add:
                 valStr = lhs->valStr + rhs->valStr;
-                lhs.reset();
-                rhs.reset();
                 type = Type::String;
-                return true;
-            }
-            else
-            {
+                break;
+            case BinOp::Eq:
+                valInt = (lhs->valStr == rhs->valStr);
+                type = Type::Integer;
+                break;
+            case BinOp::NotEq:
+                valInt = (lhs->valStr != rhs->valStr);
+                type = Type::Integer;
+                break;
+            default:
                 err.error(&pos, getName(binOp) + " binary operator cannot be used on strings.");
             }
+
+            pos = lhs->pos;
+            lhs.reset();
+            rhs.reset();
+            return true;
         }
         if(lhs->isInteger())
         {

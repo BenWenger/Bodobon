@@ -145,7 +145,6 @@ Directives to do next:
 
 Other things to do:
 
-- ==, != and comparison operators for strings
 - escape characters for strings
         
     
