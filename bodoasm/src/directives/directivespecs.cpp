@@ -28,6 +28,8 @@ namespace bodoasm
             out["word"]     = { t::Integer,     t::OptInteger,     p::loopBack(1)                           };
             out["long"]     = { t::Integer,     t::OptInteger,     p::loopBack(1)                           };
             out["dword"]    = { t::Integer,     t::OptInteger,     p::loopBack(1)                           };
+            out["warning"]  = { t::String                                                                   };
+            out["error"]    = { t::String                                                                   };
 
             return out;
         }

@@ -132,12 +132,14 @@ Directives
         
 #align      mod, [fillbyte]
 #pad        addr, [fillbyte]
+
+
+#error      msg
+#warning    msg
         
 -----------------------------------
 Directives to do next:
 
-#error      msg
-#warn       msg
 #termstring bytes
 #var        name, size
 

@@ -25,6 +25,8 @@ namespace bodoasm
             dirTable["word"]        = &Assembler::directive_Word;
             dirTable["long"]        = &Assembler::directive_Long;
             dirTable["dword"]       = &Assembler::directive_DWord;
+            dirTable["warning"]     = &Assembler::directive_Warning;
+            dirTable["error"]       = &Assembler::directive_Error;
         }
     }
     

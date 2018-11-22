@@ -1,7 +1,5 @@
 
-#org $0, 0
+#warning "This is a warning"
 
-#byte $00
-#word $2211
-#long $554433
-#dword $99887766
+
+#error "This is an error"

@@ -57,6 +57,8 @@ namespace bodoasm
         void                directive_Word      (const Position& pos, const directiveParams_t& params);
         void                directive_Long      (const Position& pos, const directiveParams_t& params);
         void                directive_DWord     (const Position& pos, const directiveParams_t& params);
+        void                directive_Warning   (const Position& pos, const directiveParams_t& params)      { err.warning(&pos, params[0].valStr);  }
+        void                directive_Error     (const Position& pos, const directiveParams_t& params)      { err.error(&pos, params[0].valStr);    }
 
     private:
         ErrorReporter       err;
