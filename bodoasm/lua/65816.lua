@@ -193,9 +193,15 @@ setM =   function(v)    setStat (stackM,  "M",  v816(v))    end
 pushX =  function(v)    pushStat(stackX,  "X",  v816(v))    end
 popX =   function()     popStat (stackX,  "X" )             end
 setX =   function(v)    setStat (stackX,  "X",  v816(v))    end
+autoMX = function(v)
+    if v ~= 0 and v ~= nil then     bodoasm.set("automx", 1)
+    else                            bodoasm.set("automx", 0)
+    end
+end
 
 buildDirectives = function()
     v = bodoasm.directive.integer
+    o = bodoasm.directive.optInteger
     bodoasm.addDirective('pushDP', v)
     bodoasm.addDirective('popDP'    )
     bodoasm.addDirective('setDP',  v)
@@ -208,6 +214,7 @@ buildDirectives = function()
     bodoasm.addDirective('pushX',  v)
     bodoasm.addDirective('popX'     )
     bodoasm.addDirective('setX',   v)
+    bodoasm.addDirective('autoMX', o)
 end
 
 -------------------------
@@ -433,6 +440,8 @@ bodoasm_init = function()
     pushDB(0)
     pushM(8)
     pushX(8)
+    --autoMX(1)
+    bodoasm.set("automx",1)
     
     return {
         ["Mnemonics"]=  mnemonics,
@@ -450,6 +459,22 @@ bodoasm_getBinary = function(mnemonic, patterns)
     local mode = getBestMode(patterns)
     local opcode = opcodeLookup[mnemonic..mode]
     local pat = patterns[mode]
+    
+    -- Auto MX?
+    v = pat[1]
+    if v ~= nil then
+        if mnemonic == "sep" then
+            if bodoasm.get("automx") ~= 0 then 
+                if (v & 0x20) ~= 0 then setM(8)     end
+                if (v & 0x10) ~= 0 then setX(8)     end
+            end
+        elseif mnemonic == "rep" then
+            if bodoasm.get("automx") ~= 0 then
+                if (v & 0x20) ~= 0 then setM(16)    end
+                if (v & 0x10) ~= 0 then setX(16)    end
+            end
+        end
+    end
     
     return getBinClbk[mode](opcode, pat[1], pat[2])
 end

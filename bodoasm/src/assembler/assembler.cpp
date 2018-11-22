@@ -95,6 +95,7 @@ namespace bodoasm
     int Assembler::lua_set(luawrap::Lua& lua)
     {
         if(lua_type(lua,1) != LUA_TSTRING)  luaL_error(lua, "First parameter to bodoasm.get must be a string");
+        auto name = lua.toString(1);
 
         StateEntry ent;
         if(lua_isinteger(lua, 2))
@@ -108,7 +109,7 @@ namespace bodoasm
             ent.valStr = lua.toString(2);
         }
 
-        curLuaState[ lua.toString(1) ] = std::move(ent);
+        curLuaState[ name ] = std::move(ent);
         return 0;
     }
 
