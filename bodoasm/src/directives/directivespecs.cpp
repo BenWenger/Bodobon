@@ -16,7 +16,8 @@ namespace bodoasm
             out["byte"]     = { t::IntOrString, t::OptIntOrString, p::loopBack(1)                           };
             out["rebase"]   = { t::Integer                                                                  };
             out["endbase"]  = {                                                                             };
-            out["pushtable"]= { t::String                                                                   };
+            out["pushtable"]= { t::OptString                                                                };
+            out["settable"] = { t::OptString                                                                };
             out["poptable"] = {                                                                             };
             out["if"]       = { t::Integer                                                                  };
             out["elif"]     = { t::Integer                                                                  };

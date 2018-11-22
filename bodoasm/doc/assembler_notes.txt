@@ -109,9 +109,11 @@ Directives
         addr to what it would be after all that binary was output
     - Throw warning if #org happens before #endbase
     
-#pushtable name
+#settable  [name]
+#pushtable [name]
     - Loads and applies a table file.  'name' is the string filename
     - Any previously loaded table is disabled until this table is popped
+    - If name is omitted, that is disabling table files
 #poptable
     - Drops the most recently pushed table and reverts to previous table
         (if any)
@@ -131,7 +133,6 @@ Directives
 -----------------------------------
 Directives to do next:
 
-#pushtable    <--  needs to be able to push "none" table
 #word       val, [val, ...]
 #long       val, [val, ...]
 #dword      val, [val, ...]
@@ -146,7 +147,6 @@ Other things to do:
 
 - ==, != and comparison operators for strings
 - escape characters for strings
-- 65816
         
     
     

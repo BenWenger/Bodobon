@@ -35,6 +35,7 @@ namespace bodoasm
         , asmDef(err)
         , macroProc(err, &lexer)
     {
+        tblFiles.push_back(nullptr);
         clearCurOrg();
 
         buildDirTable();

@@ -18,6 +18,7 @@ namespace bodoasm
             dirTable["endbase"]     = &Assembler::directive_Endbase;
             dirTable["byte"]        = &Assembler::directive_Byte;
             dirTable["pushtable"]   = &Assembler::directive_PushTable;
+            dirTable["settable"]    = &Assembler::directive_SetTable;
             dirTable["poptable"]    = &Assembler::directive_PopTable;
             dirTable["pad"]         = &Assembler::directive_Pad;
             dirTable["align"]       = &Assembler::directive_Align;
@@ -55,14 +56,14 @@ namespace bodoasm
             }
             else
             {
-                if(tblFiles.empty())
+                if(tblFiles.back())
                 {
-                    for(auto& c : i.valStr)
-                        curOrgBlock.dat.push_back( static_cast<u8>(c) );
+                    tblFiles.back()->toBinary(err, pos, curOrgBlock.dat, i.valStr);
                 }
                 else
                 {
-                    tblFiles.back()->toBinary(err, pos, curOrgBlock.dat, i.valStr);
+                    for(auto& c : i.valStr)
+                        curOrgBlock.dat.push_back( static_cast<u8>(c) );
                 }
             }
         }
@@ -136,15 +137,24 @@ namespace bodoasm
 
     void Assembler::directive_PushTable(const Position& pos, const directiveParams_t& params)
     {
-        auto tblFile = TblFile::load(err, pos, makePath(pos, params[0].valStr));
-        if(tblFile)
-            tblFiles.emplace_back( std::move(tblFile) );
+        TblFile::Ptr    ptr = nullptr;
+        if(params.size() >= 1)
+            ptr = TblFile::load(err, pos, makePath(pos, params[0].valStr));
+        tblFiles.emplace_back( std::move(ptr) );
     }
 
     void Assembler::directive_PopTable(const Position& pos, const directiveParams_t& params)
     {
-        if(tblFiles.empty())        err.error(&pos, "#poptable:  There are no table files loaded");
+        if(tblFiles.size() <= 1)    err.error(&pos, "#poptable:  Table stack is empty");
         else                        tblFiles.pop_back();
+    }
+
+    void Assembler::directive_SetTable(const Position& pos, const directiveParams_t& params)
+    {
+        TblFile::Ptr    ptr = nullptr;
+        if(params.size() >= 1)
+            ptr = TblFile::load(err, pos, makePath(pos, params[0].valStr));
+        tblFiles.back() = std::move(ptr);
     }
     
     void Assembler::directive_Pad(const Position& pos, const directiveParams_t& params)
