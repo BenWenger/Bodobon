@@ -16,12 +16,15 @@ namespace bodoasm
             dirTable["include"]     = &Assembler::directive_Include;
             dirTable["rebase"]      = &Assembler::directive_Rebase;
             dirTable["endbase"]     = &Assembler::directive_Endbase;
-            dirTable["byte"]        = &Assembler::directive_Byte;
             dirTable["pushtable"]   = &Assembler::directive_PushTable;
             dirTable["settable"]    = &Assembler::directive_SetTable;
             dirTable["poptable"]    = &Assembler::directive_PopTable;
             dirTable["pad"]         = &Assembler::directive_Pad;
             dirTable["align"]       = &Assembler::directive_Align;
+            dirTable["byte"]        = &Assembler::directive_Byte;
+            dirTable["word"]        = &Assembler::directive_Word;
+            dirTable["long"]        = &Assembler::directive_Long;
+            dirTable["dword"]       = &Assembler::directive_DWord;
         }
     }
     
@@ -66,6 +69,78 @@ namespace bodoasm
                         curOrgBlock.dat.push_back( static_cast<u8>(c) );
                 }
             }
+        }
+
+        auto dif = curOrgBlock.dat.size() - startSize;
+        curPC += dif;
+        unbasedPC += dif;
+    }
+
+    void Assembler::directive_Word(const Position& pos, const directiveParams_t& params)
+    {
+        if(!PCEstablished)      err.error(&pos, "Cannot output #word values until PC has been established.  Please #org first");
+
+        auto startSize = curOrgBlock.dat.size();
+
+        for(auto& i : params)
+        {
+            auto v = i.valInt;
+            if(v < 0)                       v += 0x10000;
+            if(v < 0 || v > 0xFFFF)         err.error(&pos, "#word value '" + std::to_string(i.valInt) + "' is out of range for a word");
+
+            // TODO Endian config -- right now this is just little endian, but eventually we want
+            //   the Lua to be able to specify big endian
+            curOrgBlock.dat.push_back( static_cast<u8>( v       & 0xFF) );
+            curOrgBlock.dat.push_back( static_cast<u8>((v >> 8) & 0xFF) );
+        }
+
+        auto dif = curOrgBlock.dat.size() - startSize;
+        curPC += dif;
+        unbasedPC += dif;
+    }
+    
+    void Assembler::directive_Long(const Position& pos, const directiveParams_t& params)
+    {
+        if(!PCEstablished)      err.error(&pos, "Cannot output #long values until PC has been established.  Please #org first");
+
+        auto startSize = curOrgBlock.dat.size();
+
+        for(auto& i : params)
+        {
+            auto v = i.valInt;
+            if(v < 0)                       v += 0x1000000;
+            if(v < 0 || v > 0xFFFFFF)       err.error(&pos, "#long value '" + std::to_string(i.valInt) + "' is out of range for a long");
+
+            // TODO Endian config -- right now this is just little endian, but eventually we want
+            //   the Lua to be able to specify big endian
+            curOrgBlock.dat.push_back( static_cast<u8>( v        & 0xFF) );
+            curOrgBlock.dat.push_back( static_cast<u8>((v >>  8) & 0xFF) );
+            curOrgBlock.dat.push_back( static_cast<u8>((v >> 16) & 0xFF) );
+        }
+
+        auto dif = curOrgBlock.dat.size() - startSize;
+        curPC += dif;
+        unbasedPC += dif;
+    }
+    
+    void Assembler::directive_DWord(const Position& pos, const directiveParams_t& params)
+    {
+        if(!PCEstablished)      err.error(&pos, "Cannot output #dword values until PC has been established.  Please #org first");
+
+        auto startSize = curOrgBlock.dat.size();
+
+        for(auto& i : params)
+        {
+            auto v = i.valInt;
+            if(v < 0)                       v += 0x100000000;
+            if(v < 0 || v > 0xFFFFFFFF)     err.error(&pos, "#dword value '" + std::to_string(i.valInt) + "' is out of range for a dword");
+
+            // TODO Endian config -- right now this is just little endian, but eventually we want
+            //   the Lua to be able to specify big endian
+            curOrgBlock.dat.push_back( static_cast<u8>( v        & 0xFF) );
+            curOrgBlock.dat.push_back( static_cast<u8>((v >>  8) & 0xFF) );
+            curOrgBlock.dat.push_back( static_cast<u8>((v >> 16) & 0xFF) );
+            curOrgBlock.dat.push_back( static_cast<u8>((v >> 24) & 0xFF) );
         }
 
         auto dif = curOrgBlock.dat.size() - startSize;

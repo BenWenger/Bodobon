@@ -48,12 +48,15 @@ namespace bodoasm
         void                directive_Include   (const Position& pos, const directiveParams_t& params);
         void                directive_Rebase    (const Position& pos, const directiveParams_t& params);
         void                directive_Endbase   (const Position& pos, const directiveParams_t& params);
-        void                directive_Byte      (const Position& pos, const directiveParams_t& params);
         void                directive_PushTable (const Position& pos, const directiveParams_t& params);
         void                directive_SetTable  (const Position& pos, const directiveParams_t& params);
         void                directive_PopTable  (const Position& pos, const directiveParams_t& params);
         void                directive_Pad       (const Position& pos, const directiveParams_t& params);
         void                directive_Align     (const Position& pos, const directiveParams_t& params);
+        void                directive_Byte      (const Position& pos, const directiveParams_t& params);
+        void                directive_Word      (const Position& pos, const directiveParams_t& params);
+        void                directive_Long      (const Position& pos, const directiveParams_t& params);
+        void                directive_DWord     (const Position& pos, const directiveParams_t& params);
 
     private:
         ErrorReporter       err;

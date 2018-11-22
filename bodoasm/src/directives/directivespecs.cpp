@@ -13,7 +13,6 @@ namespace bodoasm
             
             out["org"]      = { t::Integer,     t::Integer,        t::OptInteger,         t::OptInteger     };
             out["include"]  = { t::String                                                                   };
-            out["byte"]     = { t::IntOrString, t::OptIntOrString, p::loopBack(1)                           };
             out["rebase"]   = { t::Integer                                                                  };
             out["endbase"]  = {                                                                             };
             out["pushtable"]= { t::OptString                                                                };
@@ -25,6 +24,10 @@ namespace bodoasm
             out["endif"]    = {                                                                             };
             out["pad"]      = { t::Integer,     t::OptInteger                                               };
             out["align"]    = { t::Integer,     t::OptInteger                                               };
+            out["byte"]     = { t::IntOrString, t::OptIntOrString, p::loopBack(1)                           };
+            out["word"]     = { t::Integer,     t::OptInteger,     p::loopBack(1)                           };
+            out["long"]     = { t::Integer,     t::OptInteger,     p::loopBack(1)                           };
+            out["dword"]    = { t::Integer,     t::OptInteger,     p::loopBack(1)                           };
 
             return out;
         }
