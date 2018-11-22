@@ -98,9 +98,12 @@ Directives
     - includes a file in a directory relative to this one
     
 #byte v [, v ...]
+#word       val, [val, ...]
+#long       val, [val, ...]
+#dword      val, [val, ...]
     - Can have any number of arguments as long as there's at least 1
     - Numbers are dumped as individual bytes (must be only 1 byte wide)
-    - Strings are output according to table file translation
+    - Strings are output according to table file translation  (for byte only -- others can only output integers)
 
 #rebase     addr
 #endbase
@@ -133,9 +136,6 @@ Directives
 -----------------------------------
 Directives to do next:
 
-#word       val, [val, ...]
-#long       val, [val, ...]
-#dword      val, [val, ...]
 #error      msg
 #warn       msg
 #termstring bytes
