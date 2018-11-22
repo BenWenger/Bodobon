@@ -298,5 +298,19 @@ namespace bodoasm
             advance();
         }
     }
+    
+    Token Lexer::next()
+    {
+        if(cur.ungotten.empty())
+            return fetchToken();
+        Token out = cur.ungotten.back();
+        cur.ungotten.pop_back();
+        return out;
+    }
+
+    void Lexer::unget(const Token& t)
+    {
+        cur.ungotten.push_back(t);
+    }
 }
 

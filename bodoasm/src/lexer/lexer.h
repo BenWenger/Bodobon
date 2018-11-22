@@ -14,16 +14,19 @@
 
 namespace bodoasm
 {
-    class Lexer : public BufferedTokenSource
+    class Lexer : public TokenSource
     {
     public:
                         Lexer(ErrorReporter& er);
         
         void            startFile(const std::string& filename);
         void            startInclude(const std::string& filename, const Position* errpos);
+        
+        virtual Token   next() override;
+        virtual void    unget(const Token& t) override;
 
     private:
-        virtual Token   fetchToken() override;
+        Token           fetchToken();
 
     private:
         typedef std::unique_ptr<dshfs::FileStream>  file_t;
@@ -32,6 +35,7 @@ namespace bodoasm
             Position            pos;
             std::string         text;
             file_t              file;
+            std::vector<Token>  ungotten;
 
             void clear()
             {
@@ -40,6 +44,7 @@ namespace bodoasm
                 pos.linePos = 0;
                 text.clear();
                 file.reset();
+                ungotten.clear();
             }
         };
         ErrorReporter&          err;

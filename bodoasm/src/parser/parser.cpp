@@ -6,9 +6,6 @@
 #include "asmdefs/asmdefinition.h"
 #include "symbolparse.h"
 
-//  TODO --  There is a bug with #include that makes it so that if #include is the very last line (with no following line break)
-//  parsing stops before the file is included
-
 namespace bodoasm
 {
     void Parser::parse(Assembler* asmblr, Lexer* lex, MacroProcessor* mac, AsmDefinition* def, SymbolTable* syms, ErrorReporter& er)
