@@ -34,7 +34,7 @@ namespace bodoasm
             return static_cast<Type>( static_cast<int>(Type::LoopBack) + count );
         }
 
-        static bool isTypeOptional(Type t)
+        static bool isTypeRequired(Type t)
         {
             switch(t)
             {
@@ -42,9 +42,9 @@ namespace bodoasm
             case Type::OptString:
             case Type::OptIntOrString:
             case Type::End:
-                return true;
+                return false;
             }
-            return false;
+            return true;
         }
 
         static Type realType(Type t)

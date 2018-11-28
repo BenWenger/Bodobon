@@ -181,7 +181,7 @@ namespace bodoasm
         }
 
         // Now that we have all the inputs, make sure nothing but optionals are omitted
-        if( !DirectiveParam::isTypeOptional(paramTypes.peek()) )
+        if( DirectiveParam::isTypeRequired(paramTypes.peek()) )
         {
             t = next();
             unget(t);

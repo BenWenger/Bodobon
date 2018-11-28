@@ -1,3 +1,53 @@
+======================
+USAGE
+======================
+Things I absolutely need:
+    - Source file(s)
+    - Destination file    (if outputting a binary)
+    - mode / asmdef
+    
+Other things I want
+    - flag:  outputting binary?  Or just assembling single object file?
+    - flag:  overwriting binary?  Or patch assembling?
+    - flag:  link?  vs. assemble object
+    
+    
+    
+bodoasm <srcfile_0> [<srcfile_1>] [<srcfile_n>] [<options>]
+Options:
+    -d <dir>        Object file directory.  When creating object files, they will be placed in this dir, 
+                        when linking, they will be taken from this directory
+    -a <mode>       Assemble.  The arg is the mode to assemble with (ie:  6502/spc700/65816)
+    -o <outfile>    Output binary.  outfile is the binary file name
+    -f              Full overwrite (output file is erased before output).  Must be used with -o
+    -w              Treat warnings as errors (no output if warning)
+    -D <dir>        Lua directory for asm defs.  If the lua does not exist here, it will look in the
+                        default directory
+                        
+Future options maybe:
+    -v              output version?
+    -e              verbose error output (stack trace) for Lua (for debugging your Lua).
+    
+    
+Single call:
+    bodoasm myfile.asm -a 6502 -o myrom.nes
+    
+Two-call ... assemble object file
+    bodoasm myfile.asm -a 6502
+    bodoasm myfile.asm -a 6502 -d obj           ; puts .obj files in an obj subdirectory
+    
+Two-call ... link
+    bodoasm myfile.obj -o myrom.nes
+    bodoasm myfile.obj -o myrom.nes -d obj      ; myfile.obj is in the obj/ subdirectory
+
+Notes:
+    Need either -a or -o (or both)
+        -a only = assemble to an object file
+        -o only = link object files into a binary
+        -a and -o = assemble to a binary file    (if both, -d is unused)
+
+    Need at least 1 source file
+
 
 SCOPE
 ======================
@@ -31,6 +81,8 @@ macro exits and you return to your "true" scope.
 scope (and access existing locals in your true scope) by prefixing them with the @ operator:
 
     (TODO come up with an example for this)
+    (TODO I don't even know if this is accurate any more.  Look at what I did for Macro scope
+    if anything)
             
             
 ======================
