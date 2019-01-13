@@ -1,0 +1,170 @@
+
+
+Game specific details need to be stored externally.  For this, the best way seems to be in a Lua script rather than
+something static like a json or yml file.  This way the Lua can dictate everything about how the audio is constructed.
+
+The downside is this means the Lua will have to dictate everything about how the audio is constructed.  The model I'm
+imaginging effectively requires the Lua completely recreate the game's music engine.  Granted this is something any
+music editor with real-time playback would have to do anyway, so maybe it's not that big of a deal.  But this does
+mean that adding support for new games is going to be quite complicated.
+
+
+The editor itself will need to have knowledge about some systems.  I'm thinking I will start specifically with native
+NES channels, possibly add NES expansions like VRC6/etc later, and possibly even SPC support at some point (pipe dream).
+The Lua will need to tell the editor which system it needs to use, as well as which of its channels are active and
+available for editing/playback.  For example, Final Fantasy only uses the pulses and the triangle, so it wouldn't
+make sense for the editor to support noise/dmc when editing those songs.
+
+
+
+
+Songs consist of multiple channels.  Each channel can have one tone playing at a time.  Tones may have different
+properties depending on what the Lua deems appropriate to edit.  For Final Fantasy, a tone will probably consist of
+the following:
+
+    - Pitch             4 octaves * 12 pitches = 48 possible values... or 49 if "rest" is treated as a pitch (which is likely)
+    - Envelope          16 possible values (to dictate which envelope pattern to use)
+    - Envelope speed    16 possible values
+    - Length            16 possible values
+    
+The song itself will have some other properties:
+    - Tempo             6 possible values
+    
+And the driver as a whole (all songs) will have additional properties:
+    - Frequency Table       (48 entries)
+    - Length Table          (6 * 16 = 96 entries)
+    - Envelope Speed Table  (16 entries)
+    - Envelope Patterns     (16 tables, each with 32 entries)
+    
+    I am undecided on whether these tables will be editable in the editor or whether they will just be CSV files.  The Lua
+    will know the structure of these tables, but the editor won't, so it won't really know how to build an effective
+    GUI for editing them.  And trying to have the Lua dictate the GUI is a can of worms that I'm not sure is worth opening.
+    
+    
+    
+The above data is what the Lua driver will need in order to play back the music.  It will be available to the Lua
+but will be edited by the program.  To indicate HOW it can be edited, some constraints need to be put on the editor.  For
+example, if there are only 49 possible tones, it doesn't make sense for the user to be able to input any arbitrary tone.
+We need the Lua to tell the editor how many and which tones are available.
+
+Additionally, the editor needs to know how to display the tones.  The GUI I am imagining will have tones represented as
+horizontal bars.  The pitch represented by the Y position, and time/length reprsented by the X axis:
+
+                         -----     -----     
+
+          ---------------                     ---------
+    ------
+                              -----     ------
+
+Other attributes (like envelope or volume or whatever) might be represented by bar thickness or color or both.  But that's
+not something that will be in the initial version.
+
+Since all of the above properties are effectively opaque to the editor, it will need the Lua to tell it which properties
+are tied to which display element and how.  For example, in Final Fantasy the length of the bar depends both on the length
+property of the tone, as well as the tempo... a la "length = tempoTable[songTempoProperty][toneLengthProperty]"
+
+
+======== NEW IDEAS ==========
+
+Each game will "extract" to multiple files:
+    - One "host" file which has information common to all songs
+    - Multiple "song" file which has information for an individual song
+
+All these files are effectively JSON files.  Object keys that start with a '#' character
+are reserved names that are recognized for the editor.  Anything that doesn't start with '#'
+can be used by individual drivers to store whatever information they need
+
+Host file format:
+
+    - "#header" block, which is an object with the below properties:
+        "#fileType" = "Bodobeep host file"
+        "#version"  = "No version"              <-  for now
+        
+    - "#properties" block, with below properties:
+        "#driver"   = file name of the Lua driver to use for editing
+        
+Song file format:
+
+    - "#header" block
+        "#fileType" = "Bodobeep song file"
+        "#version"  = "No version"
+        
+    - "#properties"
+        "#host"     = file name of the host file
+        
+    - "#channels" = an array of channel objects (one for each channel the song has).
+    
+        Each channel object has the below properties:
+        - "#properties"
+                - "#name"    = A display name for the channel
+                - "#loopPos" = an integer indicating what point to jump to when end of score data is
+                                reached.  If not present, the track will permanently stop when end is reached.
+                                
+        - '#score' = an array of Tone objects.  Tone objects have no information known to the editor and can
+                        be arranged however the Lua driver needs them to be
+
+
+
+==============================
+==============================
+==============================
+
+EVERYTHING BELOW THIS IS TRASH
+
+THESE ARE OLD IDEAS THAT WON'T WORK BECAUSE THEY'RE TOO COMPLICATED/RESTRICTED
+
+==============================
+==============================
+==============================
+
+
+
+
+
+A song consists of multiple channels
+
+Each channel consists of multiple notes and events
+
+
+Each note can have many properties assigned to it, to indicate what it will sound like:
+    - length                                (the only thing that is required)
+    - zero or one frequency
+    - zero or one volume
+    - zero or one timbre (instrument)
+    - zero or more commands                 (<- fancy bit)
+    
+    
+    (TODO:  figure out how to do things "on release")
+    
+    
+A "command" is a sequence that changes note properties over time.  For example, a song might do an ADSR effect by
+having a command which modifies the volume over time.  A command will resemble a traditional score, in that it will
+be a sequence of events spaced out over time.  The speed at which a command is executed will be flexible, and may
+be tied to the command in the data for each note.
+
+
+A note need not have everything assigned to it.  For example, Final Fantasy doesn't need a volume, since its music
+driver outputs volume levels based on some envelope tables, which would probably be handled with commands.  This
+also means that notes in Final Fantasy NEED to have one command to control the volume.
+
+These requirements will likely vary by game.  To capture this, there will be a "constraints" file which dictates
+what parts of the song are and are not editable.  The editor will assume all are editable unless a constraint says
+otherwise.
+
+
+Final Fantasy 1 constraints:
+    Master constraints (applies to the game as a whole):
+        - exactly 16 commands in group "envelope"
+        - exactly 1 "envelope speed" table 
+        - exactly 1 "tones" table
+        - exactly 1 "tempo" table
+        - master clock of 60 Hz
+    Song constraints:
+        - ?
+    "envelope" commands:
+        - fixed speed (from "envelope speed" table)
+        - exactly 32 entries
+        - fixed:  sustain after release
+        - each entry between [0,15]
+    
+    
