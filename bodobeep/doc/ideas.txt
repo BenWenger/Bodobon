@@ -70,37 +70,37 @@ Each game will "extract" to multiple files:
     - One "host" file which has information common to all songs
     - Multiple "song" file which has information for an individual song
 
-All these files are effectively JSON files.  Object keys that start with a '#' character
-are reserved names that are recognized for the editor.  Anything that doesn't start with '#'
-can be used by individual drivers to store whatever information they need
+All these files are effectively JSON files.  Object keys that start with an underscore
+are reserved names that are recognized for the editor.  Anything that doesn't start with an
+underscore can be used by individual drivers to store whatever information they need
 
 Host file format:
 
-    - "#header" block, which is an object with the below properties:
-        "#fileType" = "Bodobeep host file"
-        "#version"  = "No version"              <-  for now
+    - "_header" block, which is an object with the below properties:
+        "_fileType" = "Bodobeep host file"
+        "_version"  = "No version"              <-  for now
         
-    - "#properties" block, with below properties:
-        "#driver"   = file name of the Lua driver to use for editing
+    - "_properties" block, with below properties:
+        "_driver"   = file name of the Lua driver to use for editing
         
 Song file format:
 
-    - "#header" block
-        "#fileType" = "Bodobeep song file"
-        "#version"  = "No version"
+    - "_header" block
+        "_fileType" = "Bodobeep song file"
+        "_version"  = "No version"
         
-    - "#properties"
-        "#host"     = file name of the host file
+    - "_properties"
+        "_host"     = file name of the host file
         
-    - "#channels" = an array of channel objects (one for each channel the song has).
+    - "_channels" = an array of channel objects (one for each channel the song has).
     
         Each channel object has the below properties:
-        - "#properties"
-                - "#name"    = A display name for the channel
-                - "#loopPos" = an integer indicating what point to jump to when end of score data is
+        - "_properties"
+                - "_name"    = A display name for the channel
+                - "_loopPos" = an integer indicating what point to jump to when end of score data is
                                 reached.  If not present, the track will permanently stop when end is reached.
                                 
-        - '#score' = an array of Tone objects.  Tone objects have no information known to the editor and can
+        - '_score' = an array of Tone objects.  Tone objects have no information known to the editor and can
                         be arranged however the Lua driver needs them to be
 
 

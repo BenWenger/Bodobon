@@ -5,12 +5,12 @@ def jsonWriteDict(file, dictionary, indent=2):
     
 def buildHeader(isHost):
     out = {
-        '#version':     'No version'
+        '_version':     'No version'
     }
     if isHost:
-        out['#fileType'] = 'Bodobeep host file'
+        out['_fileType'] = 'Bodobeep host file'
     else:
-        out['#fileType'] = 'Bodobeep song file'
+        out['_fileType'] = 'Bodobeep song file'
     
     return out
 
@@ -18,9 +18,9 @@ class HostBuilder:
     def build(self, file):
     
         out = {
-            '#header':      buildHeader(True),
-            '#properties':  {
-                '#driver':      'FinalFantasy.lua'
+            '_header':      buildHeader(True),
+            '_properties':  {
+                '_driver':      'FinalFantasy.lua'
             }
         }
         
@@ -157,14 +157,14 @@ class ChannelBuilder:
         
         # done with the loop, finalize our stuff
         properties = {
-            '#name':        chName
+            '_name':        chName
         }
         if loopPos >= 0 and not hasFullStop:
-            properties['#loopPos'] = loopPos
+            properties['_loopPos'] = loopPos
             
         return {
-            '#score':       score,
-            '#properties':  properties
+            '_score':       score,
+            '_properties':  properties
         }
         
         
@@ -184,11 +184,11 @@ class SongBuilder:
         channels = [(0, 'Pulse 1'), (1, 'Pulse 2'), (2, 'Triangle')]
         bldr = ChannelBuilder()
         return {
-            '#header':      buildHeader(False),
-            '#properties':  {
-                '#host':        'FinalFantasy.bodobeephost'
+            '_header':      buildHeader(False),
+            '_properties':  {
+                '_host':        'FinalFantasy.bodobeephost'
             },
-            '#channels':    [bldr.build(file, songId, chId, chName) for (chId, chName) in channels]
+            '_channels':    [bldr.build(file, songId, chId, chName) for (chId, chName) in channels]
         }
         
     
