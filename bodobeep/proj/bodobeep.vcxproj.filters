@@ -1,0 +1,79 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="Source Files\audio">
+      <UniqueIdentifier>{1104eeaa-dcc6-4c0f-bb99-8047f5047434}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\audio\nes">
+      <UniqueIdentifier>{0ed1e8f1-d012-44a7-b0ef-25c92e5ddeca}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\src\main.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\jsonfile.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\audio\blsynth.cpp">
+      <Filter>Source Files\audio</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\audio\nes\nativepulse.cpp">
+      <Filter>Source Files\audio\nes</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\audio\nes\nativetriangle.cpp">
+      <Filter>Source Files\audio\nes</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\audio\nes\nes.cpp">
+      <Filter>Source Files\audio\nes</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\audio\audiosystem.cpp">
+      <Filter>Source Files\audio</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\src\driver.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\json.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\jsonfile.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\audio\blsynth.h">
+      <Filter>Source Files\audio</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\types.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\audio\nes\nes.h">
+      <Filter>Source Files\audio\nes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\audio\nes\nativepulse.h">
+      <Filter>Source Files\audio\nes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\luasupport.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\audio\nes\nativetriangle.h">
+      <Filter>Source Files\audio\nes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\audio\audiosystem.h">
+      <Filter>Source Files\audio</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\audio\nes\neschannel.h">
+      <Filter>Source Files\audio\nes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\tonechain.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\song.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+  </ItemGroup>
+</Project>
