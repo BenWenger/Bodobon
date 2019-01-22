@@ -9,13 +9,17 @@
 
 namespace bodobeep
 {
-    class Score;
-
+    class Song;
     class Driver
     {
     public:
-        void            loadDriverFile(const std::string& filename);
-        void            playScore(const Score* score);
+                        Driver() = delete;
+                        Driver(const std::string& fullpath);
+        void            playSong(const Song* song);
+
+        void            setHostData(const json::object& hostdata);
+
+        timestamp_t     getLengthOfTone(int chanId, const Tone& tone);
 
     private:
         luawrap::Lua                    lua;

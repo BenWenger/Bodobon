@@ -12,7 +12,7 @@ chanDuties = {
 ]]--
 chanNames = {"Pulse 1", "Pulse 2", "Triangle"}
 chanStatus = {}
-for k,v in chanNames do
+for k,v in pairs(chanNames) do
     chanStatus[v] = {}
 end
 
@@ -23,7 +23,7 @@ bodo_startPlayback = function()
 end
 
 
-bodo_getDuration = function(chanId, tone)
+bodo_getLength = function(chanId, tone)
     return bodo.host.lengthTable[tone.length]
 end
 

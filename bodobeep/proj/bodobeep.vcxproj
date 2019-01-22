@@ -126,6 +126,9 @@
     <ClCompile Include="..\src\audio\nes\nativepulse.cpp" />
     <ClCompile Include="..\src\audio\nes\nativetriangle.cpp" />
     <ClCompile Include="..\src\audio\nes\nes.cpp" />
+    <ClCompile Include="..\src\data.cpp" />
+    <ClCompile Include="..\src\driver.cpp" />
+    <ClCompile Include="..\src\editor.cpp" />
     <ClCompile Include="..\src\main.cpp" />
     <ClCompile Include="..\src\jsonfile.cpp" />
   </ItemGroup>
@@ -136,11 +139,12 @@
     <ClInclude Include="..\src\audio\nes\nes.h" />
     <ClInclude Include="..\src\audio\nes\nativepulse.h" />
     <ClInclude Include="..\src\audio\nes\neschannel.h" />
+    <ClInclude Include="..\src\data.h" />
     <ClInclude Include="..\src\driver.h" />
+    <ClInclude Include="..\src\editor.h" />
     <ClInclude Include="..\src\json.h" />
     <ClInclude Include="..\src\jsonfile.h" />
     <ClInclude Include="..\src\luasupport.h" />
-    <ClInclude Include="..\src\song.h" />
     <ClInclude Include="..\src\tonechain.h" />
     <ClInclude Include="..\src\types.h" />
   </ItemGroup>

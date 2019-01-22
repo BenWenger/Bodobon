@@ -34,6 +34,15 @@
     <ClCompile Include="..\src\audio\audiosystem.cpp">
       <Filter>Source Files\audio</Filter>
     </ClCompile>
+    <ClCompile Include="..\src\driver.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\editor.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\data.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\src\driver.h">
@@ -72,7 +81,10 @@
     <ClInclude Include="..\src\tonechain.h">
       <Filter>Source Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\src\song.h">
+    <ClInclude Include="..\src\editor.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\data.h">
       <Filter>Source Files</Filter>
     </ClInclude>
   </ItemGroup>

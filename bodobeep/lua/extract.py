@@ -157,7 +157,7 @@ class ChannelBuilder:
         
         # done with the loop, finalize our stuff
         properties = {
-            '_name':        chName
+            '_track':       chName
         }
         if loopPos >= 0 and not hasFullStop:
             properties['_loopPos'] = loopPos
@@ -186,7 +186,7 @@ class SongBuilder:
         return {
             '_header':      buildHeader(False),
             '_properties':  {
-                '_host':        'FinalFantasy.bodobeephost'
+                '_host':        'FinalFantasy.bbh.json'
             },
             '_channels':    [bldr.build(file, songId, chId, chName) for (chId, chName) in channels]
         }
@@ -201,11 +201,11 @@ if __name__ == "__main__":
     hBldr = HostBuilder()
     sBldr = SongBuilder()
     
-    outFile = open("FinalFantasy.bodobeephost", "wb")
+    outFile = open("FinalFantasy.bbh.json", "wb")
     jsonWriteDict( outFile, hBldr.build(srcFile) )
     outFile.close()
     
     for i in range(24):
-        outFile = open("{:02X}_song.bodobeepsong".format(i), "wb")
+        outFile = open("{:02X}_song.bbs.json".format(i), "wb")
         jsonWriteDict( outFile, sBldr.build(srcFile, i) )
         outFile.close()

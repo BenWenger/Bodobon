@@ -21,9 +21,10 @@ namespace bodobeep
         FileType                        fileType = FileType::None;
 
         void load(std::istream& s);
-        void pushPublicToLua(luawrap::Lua& lua);
-
-    private:
+        
+        static void pushJsonToLua(luawrap::Lua& lua, const json::value&  v);
+        static void pushJsonToLua(luawrap::Lua& lua, const json::object& v);
+        static void pushJsonToLua(luawrap::Lua& lua, const json::array&  v);
     };
 }
 

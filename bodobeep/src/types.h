@@ -13,7 +13,7 @@ namespace bodobeep
     struct Tone
     {
         timestamp_t         length;
-        json::object        properties;
+        json::value         userData;
     };
 }
 

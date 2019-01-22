@@ -41,6 +41,11 @@ namespace bodobeep
             vals.clear();
         }
 
+        void                addTone(timestamp_t time, Tone&& tone)
+        {
+            theMap[time] = std::move(tone);
+        }
+
     private:
         map_t               theMap;
     };

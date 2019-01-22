@@ -16,48 +16,47 @@ namespace bodobeep
 
             auto hdr = i->second.get<json::object>();
             i = hdr.find("_fileType");
-            if(i == obj.end())                  throw std::runtime_error("_header field is missing _filetype field");
+            if(i == hdr.end())                  throw std::runtime_error("_header field is missing _filetype field");
             if(!i->second.is<std::string>())    throw std::runtime_error("_fileType field is not a string");
 
             return i->second.get<std::string>();
         }
+    }
 
-        void pushToLua(luawrap::Lua& lua, const json::value& v);
-        void pushToLua(luawrap::Lua& lua, const json::object& obj)
+    void JsonFile::pushJsonToLua(luawrap::Lua& lua, const json::object& obj)
+    {
+        lua_createtable(lua, 0, obj.size());
+        for(auto& i : obj)
         {
-            lua_createtable(lua, 0, obj.size());
-            for(auto& i : obj)
+            auto& name = i.first;
+            if(!name.empty() && name[0] != '_')
             {
-                auto& name = i.first;
-                if(!name.empty() && name[0] != '_')
-                {
-                    lua.pushString(name);
-                    pushToLua(lua, i.second);
-                    lua_settable(lua, -3);
-                }
+                lua.pushString(name);
+                pushJsonToLua(lua, i.second);
+                lua_settable(lua, -3);
             }
         }
+    }
 
-        void pushToLua(luawrap::Lua& lua, const json::array& ar)
+    void JsonFile::pushJsonToLua(luawrap::Lua& lua, const json::array& ar)
+    {
+        lua_createtable(lua, ar.size(), 1);
+        for(std::size_t i = 0; i < ar.size(); ++i)
         {
-            lua_createtable(lua, ar.size(), 1);
-            for(std::size_t i = 0; i < ar.size(); ++i)
-            {
-                pushToLua(lua, ar[i]);
-                lua_seti(lua, -2, static_cast<lua_Integer>(i));
-            }
+            pushJsonToLua(lua, ar[i]);
+            lua_seti(lua, -2, static_cast<lua_Integer>(i));
         }
+    }
 
-        void pushToLua(luawrap::Lua& lua, const json::value& v)
-        {
-            if(v.is<double>())              lua_pushnumber(lua, v.get<double>());
-            else if(v.is<json::object>())   pushToLua(lua, v.get<json::object>());
-            else if(v.is<json::array>())    pushToLua(lua, v.get<json::array>());
-            else if(v.is<std::string>())    lua.pushString( v.get<std::string>() );
-            else if(v.is<std::int64_t>())   lua_pushinteger( lua, v.get<std::int64_t>() );
-            else if(v.is<bool>())           lua_pushboolean( lua, v.get<bool>() ? 1 : 0 );
-            else                            lua_pushnil( lua );
-        }
+    void JsonFile::pushJsonToLua(luawrap::Lua& lua, const json::value& v)
+    {
+        if(v.is<double>())              lua_pushnumber(lua, v.get<double>());
+        else if(v.is<json::object>())   pushJsonToLua(lua, v.get<json::object>());
+        else if(v.is<json::array>())    pushJsonToLua(lua, v.get<json::array>());
+        else if(v.is<std::string>())    lua.pushString( v.get<std::string>() );
+        else if(v.is<std::int64_t>())   lua_pushinteger( lua, v.get<std::int64_t>() );
+        else if(v.is<bool>())           lua_pushboolean( lua, v.get<bool>() ? 1 : 0 );
+        else                            lua_pushnil( lua );
     }
 
     void JsonFile::load(std::istream& s)
@@ -79,10 +78,5 @@ namespace bodobeep
 
         fileType = ft;
         obj = std::move(outObj);
-    }
-
-    void JsonFile::pushPublicToLua(luawrap::Lua& lua)
-    {
-        pushToLua(lua, obj);
     }
 }
