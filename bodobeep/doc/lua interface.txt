@@ -8,6 +8,10 @@ Global variables provided by Editor:
         
     _bodo_private       (general table for stuff that should be opaque to the Lua, but has to exist for GC purposes)
         .chanUser       (table, keyed by chan name.  Each value is a table of user data to be accessed/modified by the Lua)
+        
+        
+        (maybe _bodo_private doesn't have to be exposed to the Lua.  If I leave it at first position on the stack it'll
+        never get cleaned up by the GC)
 
 Channels:
     Each ChanObj will have a series of functions that can be called to configure their audio output.
@@ -35,7 +39,7 @@ Stuff provided by the Lua:
     bodo_getLength(tone, channel, song)
         Called intermittently.  Given a tone/channel/song, should return the length of that tone in updates
         
-    bodo_playStart()    [optional]
+    bodo_startPlay()    [optional]
         Called when the user is about to start audio playback.  bodo.curSong will be set to the song being played
         
     bodo_startTone(tone, channel)
