@@ -2,6 +2,7 @@
 #define BODOBEEP_AUDIO_AUDIOSYSTEM_H_INCLUDED
 
 #include <SFML/Audio.hpp>
+#include <luawrap.h>
 #include "types.h"
 
 #ifdef _MSC_VER
@@ -22,6 +23,8 @@ namespace bodobeep
         void            initialize();
         void            play();
         void            stop();
+
+        virtual void    addChannelsToLua(luawrap::Lua& lua) = 0;
         
     protected:
         virtual void    startAudio() = 0;

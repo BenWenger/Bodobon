@@ -15,6 +15,8 @@ namespace bodobeep
                         NesAudio();
         virtual         ~NesAudio();
         
+        virtual void    addChannelsToLua(luawrap::Lua& lua) override;
+        
     protected:
         virtual void    startAudio() override;
         virtual int     getAudio(const s16*& buffer) override;

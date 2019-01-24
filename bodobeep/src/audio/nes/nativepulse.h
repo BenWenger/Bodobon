@@ -8,7 +8,7 @@
 
 namespace bodobeep
 {
-    class NativePulse : public luawrap::LuaObject, public NesChannel
+    class NativePulse : public NesChannel
     {
     public:
                         NativePulse();

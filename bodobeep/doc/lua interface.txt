@@ -1,0 +1,45 @@
+Global variables provided by Editor:
+    bodo                (general table with info in it)
+        bodo.host       (all the user data from the host file)
+        bodo.curSong    (the user data for the current song being interacted with)
+        bodo.channels   (table of all chan objects -- keyed by the chan name)
+        bodo.songs      (table of user data for all loaded songs -- arbitrary integer key)
+        .songs._chanData    (table of user data for each channel of the song)
+        
+    _bodo_private       (general table for stuff that should be opaque to the Lua, but has to exist for GC purposes)
+        .chanUser       (table, keyed by chan name.  Each value is a table of user data to be accessed/modified by the Lua)
+
+Channels:
+    Each ChanObj will have a series of functions that can be called to configure their audio output.
+    The functions available will depend on the channel.
+    
+    Additionally, each channel will have a 'data' table (which the Editor will redirect to _bodo_private.chanUser for
+        the channel) that the user can set runtime info for playback.
+        
+    The channel also has a 'name' property which will return its name
+
+        
+Stuff provided by the Lua:
+    bodo_driver()
+        Should return a table (or BE a table, it doesn't have to be a function) indicating what audio driver to use,
+        and what channels to use.  In below form:
+            {
+                ["system"]={"nes"},
+                ["channels"]={"pulse1", "pulse2", "triangle"}
+            }
+        
+    bodo_init()         [optional]
+        Called after the audio driver and everything has been set up, to let the Lua set up its own stuff
+        
+        
+    bodo_getLength(tone, channel, song)
+        Called intermittently.  Given a tone/channel/song, should return the length of that tone in updates
+        
+    bodo_playStart()    [optional]
+        Called when the user is about to start audio playback.  bodo.curSong will be set to the song being played
+        
+    bodo_startTone(tone, channel)
+        Called when a tone is to be played.
+        
+    bodo_updateTone(tone, channel)
+        Called every frame after until the end of the tone

@@ -3,6 +3,8 @@
 #include "driver.h"
 #include "jsonfile.h"
 
+#include "audio/nes/nes.h"
+
 namespace bodobeep
 {
     Driver::Driver(const std::string& fullpath)
@@ -15,6 +17,9 @@ namespace bodobeep
         dshfs::Filename fn(fullpath);
         lua.loadFile(fullpath, fn.getFullName().c_str());
         lua.callFunction(0,0);
+
+        audioSystem = std::make_unique<NesAudio>();         // TODO replace this
+        audioSystem->addChannelsToLua(lua);
     }
 
     void Driver::playSong(const Song* song)

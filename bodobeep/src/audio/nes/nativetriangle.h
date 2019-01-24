@@ -8,7 +8,7 @@
 
 namespace bodobeep
 {
-    class NativeTriangle : public luawrap::LuaObject, public NesChannel
+    class NativeTriangle : public NesChannel
     {
     public:
                         NativeTriangle();

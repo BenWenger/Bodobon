@@ -4,6 +4,7 @@
 #include <luawrap.h>
 #include "json.h"
 #include "data.h"
+#include "driver.h"
 
 using namespace bodobeep;
 
@@ -13,7 +14,12 @@ int main()
     {
         Data dat;
 
-        auto song = dat.loadSong("../lua/17_song.bbs.json");
+        auto song = dat.loadSong("../lua/05_song.bbs.json");
+
+        song->host->driver->playSong(song);
+
+        char c;
+        std::cin >> c;
 
         return 0;
     }catch(std::exception& e){

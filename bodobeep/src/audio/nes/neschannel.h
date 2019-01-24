@@ -2,11 +2,12 @@
 #define BODOBEEP_AUDIO_NES_NESCHANNEL_H_INCLUDED
 
 #include "types.h"
+#include <luawrap.h>
 
 namespace bodobeep
 {
     class BlSynth;
-    class NesChannel
+    class NesChannel : public luawrap::LuaObject
     {
     public:
         virtual         ~NesChannel() {}
