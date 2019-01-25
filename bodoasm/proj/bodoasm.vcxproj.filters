@@ -37,6 +37,9 @@
     <Filter Include="src\tbl">
       <UniqueIdentifier>{cfb8d9f0-c4ff-4f6f-a1e9-12b2adc26e94}</UniqueIdentifier>
     </Filter>
+    <Filter Include="src\cmdline">
+      <UniqueIdentifier>{a73cf7a2-6145-45d5-9f82-8d8888c25f45}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\src\main.cpp">
@@ -95,6 +98,9 @@
     </ClCompile>
     <ClCompile Include="..\src\tbl\tblfile.cpp">
       <Filter>src\tbl</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\cmdline\cmdlineargs.cpp">
+      <Filter>src\cmdline</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -157,6 +163,9 @@
     </ClInclude>
     <ClInclude Include="..\src\tbl\tblfile.h">
       <Filter>src\tbl</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\cmdline\cmdlineargs.h">
+      <Filter>src\cmdline</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

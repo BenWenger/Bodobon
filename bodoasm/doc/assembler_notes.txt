@@ -13,6 +13,9 @@ Other things I want
     
     
     
+-d and two-phase modes not supported yet.  Not sure if I need to for this simple assembler
+    
+    
 bodoasm <srcfile_0> [<srcfile_1>] [<srcfile_n>] [<options>]
 Options:
     -d <dir>        Object file directory.  When creating object files, they will be placed in this dir, 

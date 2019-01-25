@@ -274,6 +274,7 @@
     <ClCompile Include="..\src\asmdefs\asmdefinition.cpp" />
     <ClCompile Include="..\src\assembler\assembler.cpp" />
     <ClCompile Include="..\src\assembler\assembler_directives.cpp" />
+    <ClCompile Include="..\src\cmdline\cmdlineargs.cpp" />
     <ClCompile Include="..\src\directives\directivespecs.cpp" />
     <ClCompile Include="..\src\error\error.cpp" />
     <ClCompile Include="..\src\expression\expression.cpp" />
@@ -294,6 +295,7 @@
   <ItemGroup>
     <ClInclude Include="..\src\asmdefs\asmdefinition.h" />
     <ClInclude Include="..\src\assembler\assembler.h" />
+    <ClInclude Include="..\src\cmdline\cmdlineargs.h" />
     <ClInclude Include="..\src\directives\directivespecs.h" />
     <ClInclude Include="..\src\error\error.h" />
     <ClInclude Include="..\src\expression\expression.h" />
