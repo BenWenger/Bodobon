@@ -3,6 +3,8 @@
 
 #include <SFML/Audio.hpp>
 #include <luawrap.h>
+#include <memory>
+#include <set>
 #include "types.h"
 
 #ifdef _MSC_VER
@@ -20,11 +22,12 @@ namespace bodobeep
     {
     public:
         virtual         ~AudioSystem() {}
-        void            initialize();
         void            play();
         void            stop();
 
-        virtual void    addChannelsToLua(luawrap::Lua& lua) = 0;
+        virtual std::set<std::string>           addChannelsToLua(luawrap::Lua& lua) = 0;
+
+        static std::unique_ptr<AudioSystem>     factory(luawrap::Lua& lua);
         
     protected:
         virtual void    startAudio() = 0;
@@ -35,6 +38,9 @@ namespace bodobeep
         // sf::SoundStream inherited members
         virtual bool    onGetData(sf::SoundStream::Chunk& data) override;
         virtual void    onSeek(sf::Time timeOffset) override;
+
+    private:
+        void            initialize();
     };
 }
 

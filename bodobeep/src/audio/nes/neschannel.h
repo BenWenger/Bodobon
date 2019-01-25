@@ -10,10 +10,12 @@ namespace bodobeep
     class NesChannel : public luawrap::LuaObject
     {
     public:
+                        NesChannel(const std::string& _name) : name(_name) {}
         virtual         ~NesChannel() {}
         
         virtual void    runForCycs(BlSynth& synth, timestamp_t cycs) = 0;
         virtual void    reset() = 0;
+        const std::string           name;
 
     protected:
         static constexpr float      totalBase   = 0.5f;

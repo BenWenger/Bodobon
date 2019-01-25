@@ -91,15 +91,11 @@ namespace bodobeep
         // Second half is the channel and score data!
         auto chani = file.obj.find("_channels");
         if(chani == file.obj.end())                 throw std::runtime_error("Song is missing '_channels' tag");
-        if(!chani->second.is<json::array>())        throw std::runtime_error("Song's '_channels' tag is not an array");
-        auto& chanarray = chani->second.get<json::array>();
+        if(!chani->second.is<json::object>())        throw std::runtime_error("Song's '_channels' tag is not an object");
+        auto& chanobj = chani->second.get<json::object>();
 
-        int chanId = 0;
-        for(auto& i : chanarray)
-        {
-            loadChannel(chanId, i);
-            ++chanId;
-        }
+        for(auto& i : chanobj)
+            loadChannel(i.first, i.second);
 
         // drop _channels
         file.obj.erase(chani);
@@ -108,11 +104,13 @@ namespace bodobeep
         userData = std::move(file.obj);
     }
 
-    void Song::loadChannel(int chanId, json::value& chanv)
+    void Song::loadChannel(const std::string& chanName, json::value& chanv)
     {
+        // TODO verify that 'chanName' is a valid channel name (ask the Driver)
+
         Channel chanObj;
 
-        if(!chanv.is<json::object>())               throw std::runtime_error("One or more entries in the '_channels' array is not an object");
+        if(!chanv.is<json::object>())               throw std::runtime_error("One or more entries in the '_channels' entry is not an object");
         auto& ch = chanv.get<json::object>();
         
         // Load '_proprties' tag
@@ -120,12 +118,6 @@ namespace bodobeep
         if(propi == ch.end())                       throw std::runtime_error("Channel is missing '_properties' tag");
         if(!propi->second.is<json::object>())       throw std::runtime_error("Channel's '_properties' tag is not an object");
         auto& prop = propi->second.get<json::object>();
-
-        // Load '_track' property
-        auto i = prop.find("_track");
-        if(i == prop.end())                         throw std::runtime_error("Channel is missing '_track' property");
-        if(!i->second.is<std::string>())            throw std::runtime_error("Channel's '_track' property is not a string");
-        chanObj.track = i->second.get<std::string>();
 
         // TODO - loopPos property
 
@@ -143,7 +135,7 @@ namespace bodobeep
         {
             Tone t;
             t.userData = std::move(i);
-            t.length = host->driver->getLengthOfTone(chanId, t);
+            t.length = host->driver->getLengthOfTone(t, chanName, 0);       // TODO song index
             auto tmp = t.length;
             chanObj.score.addTone( position, std::move(t) );
             position += tmp;
@@ -178,7 +170,6 @@ namespace bodobeep
             if(file.fileType != JsonFile::FileType::Host)
                 throw std::runtime_error("Not a host file");
 
-            // Load the first half of the song
             auto host = std::make_unique<Host>();
             host->load(file);
 
@@ -227,8 +218,7 @@ namespace bodobeep
 
     std::unique_ptr<Driver> Data::loadDriver(const Host* host, const std::string& path)
     {
-        auto driver = std::make_unique<Driver>(path);
-        driver->setHostData(host->userData);
+        auto driver = std::make_unique<Driver>(host, path);
         return std::move(driver);
     }
 }

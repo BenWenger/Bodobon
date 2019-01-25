@@ -156,9 +156,7 @@ class ChannelBuilder:
                 keepGoing = False
         
         # done with the loop, finalize our stuff
-        properties = {
-            '_track':       chName
-        }
+        properties = {}
         if loopPos >= 0 and not hasFullStop:
             properties['_loopPos'] = loopPos
             
@@ -181,14 +179,15 @@ class ChannelBuilder:
     
 class SongBuilder:
     def build(self, file, songId):
-        channels = [(0, 'Pulse 1'), (1, 'Pulse 2'), (2, 'Triangle')]
+        channels = [(0, 'pulse1'), (1, 'pulse2'), (2, 'triangle')]
         bldr = ChannelBuilder()
         return {
             '_header':      buildHeader(False),
             '_properties':  {
                 '_host':        'FinalFantasy.bbh.json'
             },
-            '_channels':    [bldr.build(file, songId, chId, chName) for (chId, chName) in channels]
+            '_channels': {chName : bldr.build(file, songId, chId, chName)
+                for (chId, chName) in channels}
         }
         
     

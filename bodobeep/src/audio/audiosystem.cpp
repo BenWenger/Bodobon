@@ -1,8 +1,16 @@
 
 #include "audiosystem.h"
 
+#include "nes/nes.h"
+
 namespace bodobeep
 {
+    std::unique_ptr<AudioSystem> AudioSystem::factory(luawrap::Lua& lua)
+    {
+        //  TODO - use the table on the top of the Lua stack to generate the appropriate AudioSystem
+
+        return std::make_unique<NesAudio>(lua);
+    }
 
     void AudioSystem::initialize()
     {

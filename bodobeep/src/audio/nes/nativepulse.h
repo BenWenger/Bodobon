@@ -11,7 +11,7 @@ namespace bodobeep
     class NativePulse : public NesChannel
     {
     public:
-                        NativePulse();
+                        NativePulse(const std::string& name);
         virtual void    runForCycs(BlSynth& synth, timestamp_t cycs) override;
         virtual void    reset() override;
 

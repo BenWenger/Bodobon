@@ -12,10 +12,10 @@ namespace bodobeep
     class NesAudio : public AudioSystem
     {
     public:
-                        NesAudio();
+                        NesAudio(luawrap::Lua& lua);
         virtual         ~NesAudio();
         
-        virtual void    addChannelsToLua(luawrap::Lua& lua) override;
+        virtual std::set<std::string>       addChannelsToLua(luawrap::Lua& lua) override;
         
     protected:
         virtual void    startAudio() override;
@@ -23,8 +23,8 @@ namespace bodobeep
         virtual void    getAudioFormat(int& samplerate, bool& stereo) override;
 
     private:
-        std::unique_ptr<NesChannel>         channels[3];        // TODO fix this '3' shit
-        BlSynth                             synth;
+        std::vector<std::unique_ptr<NesChannel>>    channels;
+        BlSynth                                     synth;
 
         static constexpr timestamp_t        frameCycs = static_cast<timestamp_t>(((341.0 * 261.0) + 340.5) / 3.0);
         static constexpr double             cpuClockRate = 1789772.7272;

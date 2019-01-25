@@ -18,7 +18,8 @@ namespace bodobeep
         };
     }
 
-    NativePulse::NativePulse()
+    NativePulse::NativePulse(const std::string& name)
+        : NesChannel(name)
     {
         for(int i = 0; i < 0x10; ++i)
             outputLevels[i] = i * totalBase * pulseBase;

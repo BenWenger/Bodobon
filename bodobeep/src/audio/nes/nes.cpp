@@ -6,28 +6,31 @@
 namespace bodobeep
 {
 
-    NesAudio::NesAudio()
+    NesAudio::NesAudio(luawrap::Lua& lua)
     {
-        channels[0] = std::make_unique<NativePulse>();
-        channels[1] = std::make_unique<NativePulse>();
-        channels[2] = std::make_unique<NativeTriangle>();
+        // TODO use the lua to determine which channels to create
+
+        channels.emplace_back( std::make_unique<NativePulse>("pulse1") );
+        channels.emplace_back( std::make_unique<NativePulse>("pulse2") );
+        channels.emplace_back( std::make_unique<NativeTriangle>("triangle") );
 
         synth.setFormat(sampleRate, cpuClockRate, frameCycs);
     }
 
-    void NesAudio::addChannelsToLua(luawrap::Lua& lua)
+    std::set<std::string> NesAudio::addChannelsToLua(luawrap::Lua& lua)
     {
-        luawrap::LuaStackSaver stk(lua);
+        std::set<std::string>        out;
 
-        //  'bodo' table is currently on the stack
-        lua_pushliteral(lua, "_channels");
-        lua_newtable(lua);
-        for(int i = 0; i < 3; ++i)          // TODO remove this '3' shit
+        // The table we're adding to is already on the stack!
+        for(auto& i : channels)
         {
-            lua.pushLightUserData(channels[i].get());
-            lua_seti(lua, -2, i);
+            out.insert(i->name);
+            lua.pushString(i->name);
+            lua.pushLightUserData(i.get());
+            lua_settable(lua, -3);
         }
-        lua_settable(lua, -3);
+
+        return out;
     }
 
     NesAudio::~NesAudio()

@@ -1,4 +1,11 @@
 
+bodo_driver = {
+    ["system"]={"nes"},
+    ["channels"]={"pulse1", "pulse2", "triangle"}
+}
+    
+
+
 
 chanDuties = {
     [0] = 1,
@@ -10,7 +17,7 @@ chanDuties = {
         - envCounter        (current envelope counter)
         ... and I guess that's all I need?
 ]]--
-chanNames = {"Pulse 1", "Pulse 2", "Triangle"}
+chanNames = {"pulse1", "pulse2", "triangle"}
 chanStatus = {}
 for k,v in pairs(chanNames) do
     chanStatus[v] = {}
@@ -23,7 +30,7 @@ bodo_startPlayback = function()
 end
 
 
-bodo_getLength = function(chanId, tone)
+bodo_getLength = function(tone)
     return bodo.host.lengthTable[tone.length]
 end
 

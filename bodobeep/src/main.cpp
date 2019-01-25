@@ -16,7 +16,9 @@ int main()
 
         auto song = dat.loadSong("../lua/05_song.bbs.json");
 
-        song->host->driver->playSong(song);
+        //song->host->driver->playSong(song);
+
+        std::cout << "OK" << std::endl;
 
         char c;
         std::cin >> c;
@@ -27,6 +29,8 @@ int main()
     }catch(...){
         std::cout << "unknown error!" << std::endl;
     }
-
+    
+    char c;
+    std::cin >> c;
     return 1;
 }

@@ -38,7 +38,7 @@ namespace bodobeep
         void                loadSecondHalf(JsonFile& file);
 
     private:
-        void                loadChannel(int chanId, json::value& chanv);
+        void                loadChannel(const std::string& name, json::value& chanv);
     };
     
     /////////////////////////////////////////////////////////////

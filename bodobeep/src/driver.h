@@ -5,25 +5,26 @@
 #include <string>
 #include <memory>
 #include <luawrap.h>
+#include <set>
 #include "audio/audiosystem.h"
 
 namespace bodobeep
 {
     class Song;
+    class Host;
     class Driver
     {
     public:
                         Driver() = delete;
-                        Driver(const std::string& fullpath);
+                        Driver(const Host* host, const std::string& fullpath);
         void            playSong(const Song* song);
 
-        void            setHostData(const json::object& hostdata);
-
-        timestamp_t     getLengthOfTone(int chanId, const Tone& tone);
+        timestamp_t     getLengthOfTone(const Tone& tone, const std::string& chanId, int songIndex);
 
     private:
         luawrap::Lua                    lua;
         std::unique_ptr<AudioSystem>    audioSystem;
+        std::set<std::string>           chanNames;
     };
 
 }

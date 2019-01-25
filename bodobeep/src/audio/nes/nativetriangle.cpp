@@ -7,7 +7,8 @@
 
 namespace bodobeep
 {
-    NativeTriangle::NativeTriangle()
+    NativeTriangle::NativeTriangle(const std::string& name)
+        : NesChannel(name)
     {
         for(int i = 0; i < 0x10; ++i)
             outputLevels[i] = i * totalBase * triangleBase;

@@ -2,24 +2,89 @@
 #include <dshfs.h>
 #include "driver.h"
 #include "jsonfile.h"
+#include "data.h"
 
 #include "audio/nes/nes.h"
 
 namespace bodobeep
 {
-    Driver::Driver(const std::string& fullpath)
+    Driver::Driver(const Host* host, const std::string& fullpath)
     {
+        // First, put the super-secret private table on the stack
+        lua_createtable(lua, 0, 1);     // at position '1', always
+
+        // Stack saver from here (don't want it to drop our private table -- EVER)
         luawrap::LuaStackSaver stk(lua);
 
+        // finish building the secret table
+        lua_pushliteral(lua, "chanUser");
         lua_newtable(lua);
-        lua_setglobal(lua, "bodo");
+        lua_settable(lua, -3);
 
+        // Now actually load the file!
         dshfs::Filename fn(fullpath);
         lua.loadFile(fullpath, fn.getFullName().c_str());
         lua.callFunction(0,0);
 
-        audioSystem = std::make_unique<NesAudio>();         // TODO replace this
-        audioSystem->addChannelsToLua(lua);
+        // Now that we have the Lua file, call the bodo_driver func to get our audio system
+        {
+            auto t = lua_getglobal(lua, "bodo_driver");
+            if(t == LUA_TFUNCTION)
+            {
+                lua.callFunction(0,1);
+                t = lua_type(lua,-1);
+            }
+            if(t != LUA_TTABLE)
+                throw std::runtime_error("Lua error:  bodo_driver needs to be a table, or a function that returns a table.");
+        }
+
+        // Build the audio system
+        audioSystem = std::move( AudioSystem::factory(lua) );
+
+        // Make global 'bodo' table
+        lua_createtable(lua, 0, 4);     // 4 entries:  'host', 'curSong', 'channels', 'songs'
+        {
+            // Set 'bodo.host'
+            lua_pushliteral(lua, "host");
+            JsonFile::pushJsonToLua( lua, host->userData );
+            lua_settable(lua, -3);
+
+            // Set 'bodo.channels'
+            lua_pushliteral(lua, "channels");
+            lua_newtable(lua);
+            {
+                luawrap::LuaStackSaver wooooop(lua);
+                chanNames = audioSystem->addChannelsToLua(lua);
+
+                {
+                    // create 'chanUser' in our super secret table
+                    //   none of this actually touches the "channels" table, but it's put here for convenience
+                    lua_pushliteral(lua, "chanUser");
+                    lua_createtable(lua, 0, static_cast<int>(chanNames.size()));
+                    for(auto& n : chanNames)
+                    {
+                        lua.pushString(n);
+                        lua_newtable(lua);
+                        lua_settable(lua, -3);
+                    }
+                    lua_settable(lua, 1);       // super sekrit
+                }
+            }
+            lua_settable(lua, -3);
+
+            // 'songs' is just an empty table for now
+            lua_pushliteral(lua, "songs");
+            lua_newtable(lua);
+            lua_settable(lua, -3);
+        }
+        // Set global 'bodo' table
+        lua_setglobal(lua, "bodo");
+
+
+        // Once 'bodo' is prepped, we can call bodo_init to notify
+        auto t = lua_getglobal(lua, "bodo_init");
+        if(t == LUA_TFUNCTION)
+            lua.callFunction(0,0);
     }
 
     void Driver::playSong(const Song* song)
@@ -27,16 +92,31 @@ namespace bodobeep
         // TODO
     }
 
-    timestamp_t Driver::getLengthOfTone(int chanId, const Tone& tone)
+    timestamp_t Driver::getLengthOfTone(const Tone& tone, const std::string& chanId, int songIndex)
     {
         luawrap::LuaStackSaver stk(lua);
 
         if(lua_getglobal(lua, "bodo_getLength") != LUA_TFUNCTION)
             throw std::runtime_error("Lua error:  'bodo_getLength' must be a global function defined in the Lua driver");
 
-        lua_pushinteger(lua, chanId);
+        // param 1 = the tone
         JsonFile::pushJsonToLua(lua, tone.userData);
-        lua.callFunction(2, 1);
+
+        // param 2 = the channel object
+        lua_getglobal(lua, "bodo");
+        lua_pushliteral(lua, "channels");
+        lua_gettable(lua, -2);                  // get the channels table
+        lua_remove(lua, -2);                    // remove 'bodo'
+        lua.pushString(chanId);
+        lua_gettable(lua, -2);                  // get the chan object
+        lua_remove(lua, -2);                    // remove the channels table
+
+        // param 3 = the song object
+        //   TODO - do this, for now just push nil
+        lua_pushnil(lua);
+
+        // Call the function
+        lua.callFunction(3, 1);
 
         int isnum = 0;
         auto len = static_cast<timestamp_t>(lua_tointegerx(lua, -1, &isnum));
@@ -44,16 +124,5 @@ namespace bodobeep
             throw std::runtime_error("Lua error:  'bodo_getLength' must return an integer greater than zero");
 
         return len;
-    }
-
-    void Driver::setHostData(const json::object& hostdata)
-    {
-        luawrap::LuaStackSaver stk(lua);
-        if(lua_getglobal(lua, "bodo") != LUA_TTABLE)
-            throw std::runtime_error("Global 'bodo' table has been corrupted");
-
-        lua_pushliteral(lua, "host");
-        JsonFile::pushJsonToLua( lua, hostdata );
-        lua_settable(lua, -3);
     }
 }
