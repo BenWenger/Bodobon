@@ -19,6 +19,7 @@ namespace bodobeep
         BEGIN_LUA_MEMBER_SET()
         LUA_MEMBER_SET(NativeTriangle, setVolume)
         LUA_MEMBER_SET(NativeTriangle, setPitch)
+        LUA_MEMBER_STRING("name", name)
         END_LUA_MEMBER_SET()
     }
 

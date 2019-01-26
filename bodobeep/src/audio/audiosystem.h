@@ -17,12 +17,13 @@
 
 namespace bodobeep
 {
+    class Driver;
 
     class AudioSystem : private sf::SoundStream
     {
     public:
         virtual         ~AudioSystem() {}
-        void            play();
+        void            play(Driver* drv);
         void            stop();
 
         virtual std::set<std::string>           addChannelsToLua(luawrap::Lua& lua) = 0;
@@ -40,6 +41,7 @@ namespace bodobeep
         virtual void    onSeek(sf::Time timeOffset) override;
 
     private:
+        Driver*         driver;
         void            initialize();
     };
 }

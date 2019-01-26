@@ -2,6 +2,7 @@
 #include "audiosystem.h"
 
 #include "nes/nes.h"
+#include "driver.h"
 
 namespace bodobeep
 {
@@ -9,7 +10,9 @@ namespace bodobeep
     {
         //  TODO - use the table on the top of the Lua stack to generate the appropriate AudioSystem
 
-        return std::make_unique<NesAudio>(lua);
+        auto out = std::make_unique<NesAudio>(lua);
+        out->initialize();
+        return std::move(out);
     }
 
     void AudioSystem::initialize()
@@ -21,8 +24,9 @@ namespace bodobeep
         sf::SoundStream::initialize(stereo ? 2 : 1, samplerate);
     }
 
-    void AudioSystem::play()
+    void AudioSystem::play(Driver* drv)
     {
+        driver = drv;
         startAudio();
         sf::SoundStream::play();
     }
@@ -34,6 +38,8 @@ namespace bodobeep
 
     bool AudioSystem::onGetData(sf::SoundStream::Chunk& data)
     {
+        if(!driver->playbackUpdate())
+            return false;
         data.sampleCount = getAudio(data.samples);
         return true;
     }

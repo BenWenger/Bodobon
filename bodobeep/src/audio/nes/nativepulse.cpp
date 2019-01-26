@@ -31,6 +31,7 @@ namespace bodobeep
         LUA_MEMBER_SET(NativePulse, setVolume)
         LUA_MEMBER_SET(NativePulse, setDuty)
         LUA_MEMBER_SET(NativePulse, setPitch)
+        LUA_MEMBER_STRING("name", name)
         END_LUA_MEMBER_SET()
     }
 

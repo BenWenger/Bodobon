@@ -109,6 +109,7 @@ namespace bodobeep
         // TODO verify that 'chanName' is a valid channel name (ask the Driver)
 
         Channel chanObj;
+        chanObj.name = chanName;
 
         if(!chanv.is<json::object>())               throw std::runtime_error("One or more entries in the '_channels' entry is not an object");
         auto& ch = chanv.get<json::object>();

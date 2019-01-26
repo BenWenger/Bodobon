@@ -89,7 +89,26 @@ namespace bodobeep
 
     void Driver::playSong(const Song* song)
     {
-        // TODO
+        // TODO - set bodo.cursong
+
+        callLuaStartPlay(song);
+
+        playStatus.clear();
+        ChanPlayStatus st;
+        for(auto& chan : song->channels)
+        {
+            st.pos = -1;
+            st.lenCtr = 0;
+            playStatus[chan.name] = st;
+        }
+        playingSong = song;
+
+        audioSystem->play(this);
+    }
+
+    void Driver::stop()
+    {
+        audioSystem->stop();
     }
 
     timestamp_t Driver::getLengthOfTone(const Tone& tone, const std::string& chanId, int songIndex)
@@ -124,5 +143,65 @@ namespace bodobeep
             throw std::runtime_error("Lua error:  'bodo_getLength' must return an integer greater than zero");
 
         return len;
+    }
+
+    void Driver::callLuaStartPlay(const Song* song)
+    {
+        luawrap::LuaStackSaver stk(lua);
+        if(lua_getglobal(lua, "bodo_startPlay") == LUA_TFUNCTION) {
+            lua_pushnil(lua);   // TODO actually push the song object
+            lua.callFunction(1,0);
+        }
+    }
+    
+    bool Driver::playbackUpdate()
+    {
+        luawrap::LuaStackSaver stk(lua);
+
+        try
+        {
+            for(auto& songCh : playingSong->channels)
+            {
+                //if(songCh.name != "triangle")     continue;       // isolating for debug purposes
+                auto& st = playStatus[songCh.name];
+                --st.lenCtr;
+                ++st.pos;
+
+                const char* func = "bodo_updateTone";
+                if(st.lenCtr <= 0)
+                    func = "bodo_startTone";
+                if(lua_getglobal(lua, func) != LUA_TFUNCTION)
+                    throw std::runtime_error("Lua driver is missing required function " + std::string(func));
+
+                // function is on the stack
+                // push first arg (tone)
+                {
+                    auto& i = songCh.score.getAtTime(st.pos);
+                    if(st.lenCtr <= 0)
+                        st.lenCtr = i->second.length;
+                    JsonFile::pushJsonToLua( lua, i->second.userData );
+                }
+
+
+                // push second arg (chan)
+                lua_getglobal(lua, "bodo");
+                lua_pushliteral(lua, "channels");
+                lua_gettable(lua, -2);
+                lua_remove(lua, -2);
+                lua.pushString(songCh.name);
+                lua_gettable(lua, -2);
+                lua_remove(lua, -2);
+
+                lua.callFunction(2,0);
+            }
+        }
+        catch(std::exception& e)
+        {
+            // TODO log this somehow
+            std::cout << "Error in playback:  " << e.what() << std::endl;
+            return false;
+        }
+
+        return true;
     }
 }

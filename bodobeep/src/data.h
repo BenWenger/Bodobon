@@ -22,7 +22,7 @@ namespace bodobeep
     public:
         struct Channel
         {
-            std::string     track;
+            std::string     name;
             int             loopPos = -1;
             ToneChain       score;
             json::object    userData;

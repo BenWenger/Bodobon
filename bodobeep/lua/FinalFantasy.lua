@@ -8,8 +8,8 @@ bodo_driver = {
 
 
 chanDuties = {
-    [0] = 1,
-    [1] = 0
+    ["pulse1"] = 1,
+    ["pulse2"] = 0
 }
 
 --[[
@@ -34,12 +34,16 @@ bodo_getLength = function(tone)
     return bodo.host.lengthTable[tone.length]
 end
 
-bodo_startTone = function(chanObj, chanId, tone)    
+bodo_startTone = function(tone, chanObj)
+    local chanId = chanObj.name
+    chanStatus["pulse1"].envCounter = 0
+    chanStatus["pulse2"].envCounter = 0
+    chanStatus["triangle"].envCounter = 0
     if tone.pitch >= 0 then             -- play an actual tone
         local fVal = bodo.host.freqTable[tone.pitch]
         chanObj.setPitch(fVal)
         
-        if chanId == "Triangle" then
+        if chanId == "triangle" then
             chanObj.setVolume( 1 )
         else
             chanStatus[chanId].envCounter = 0
@@ -47,16 +51,17 @@ bodo_startTone = function(chanObj, chanId, tone)
             chanObj.setDuty( chanDuties[chanId] )
         end
     else                                -- rest / sustain
-        if chanId == "Triangle" then    -- triangle is a rest
+        if chanId == "triangle" then    -- triangle is a rest
             chanObj.setVolume( 0 )
         end
     end 
 end
 
 
-bodo_updateTone = function(chanObj, chanId, tone)
+bodo_updateTone = function(tone, chanObj)
+    local chanId = chanObj.name
     -- Triangle doesn't need any update work
-    if chanId ~= "Triangle" then
+    if chanId ~= "triangle" then
         local e = chanStatus[chanId].envCounter
         e = e + bodo.host.speedTable[ tone.envSpeed ]
         if e > 255 then e = 255 end

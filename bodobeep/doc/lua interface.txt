@@ -39,7 +39,7 @@ Stuff provided by the Lua:
     bodo_getLength(tone, channel, song)
         Called intermittently.  Given a tone/channel/song, should return the length of that tone in updates
         
-    bodo_startPlay()    [optional]
+    bodo_startPlay(song)    [optional]
         Called when the user is about to start audio playback.  bodo.curSong will be set to the song being played
         
     bodo_startTone(tone, channel)

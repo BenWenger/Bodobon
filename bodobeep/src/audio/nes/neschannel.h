@@ -18,9 +18,9 @@ namespace bodobeep
         const std::string           name;
 
     protected:
-        static constexpr float      totalBase   = 0.5f;
+        static constexpr float      totalBase   = 2.0f;
         static constexpr float      pulseBase   = 0.00752f * 0.5f;
-        static constexpr float      triangleBase= 0.00851f;
+        static constexpr float      triangleBase= 0.00851f * 2;
         static constexpr float      noiseBase   = 0.00494f;
         static constexpr float      dmcBase     = 0.00335f;
     };

@@ -15,13 +15,17 @@ int main()
         Data dat;
 
         auto song = dat.loadSong("../lua/05_song.bbs.json");
+        
+        std::cout << "Load OK" << std::endl;
 
-        //song->host->driver->playSong(song);
-
-        std::cout << "OK" << std::endl;
+        song->host->driver->playSong(song);
+        
+        std::cout << "Play OK" << std::endl;
 
         char c;
         std::cin >> c;
+
+        song->host->driver->stop();
 
         return 0;
     }catch(std::exception& e){

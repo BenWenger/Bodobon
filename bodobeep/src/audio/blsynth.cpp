@@ -120,6 +120,7 @@ namespace bodobeep
         for(std::size_t i = transitionBuffer.size() - completeSamples; i < transitionBuffer.size(); ++i)
             transitionBuffer[i] = 0;
 
+        buffer = sampleBuffer.data();
         return completeSamples;
     }
 }
