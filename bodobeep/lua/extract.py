@@ -130,6 +130,7 @@ class ChannelBuilder:
                     self._readPtrAndSeek(file)
                 elif loopCtr == 1:
                     loopCtr = 0
+                    file.read(2)        # skip over the pointer
                 else:
                     loopCtr -= 1
                     self._readPtrAndSeek(file)
