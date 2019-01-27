@@ -23,9 +23,10 @@ for k,v in pairs(chanNames) do
     chanStatus[v] = {}
 end
 
-bodo_startPlayback = function()
-    for k,v in chanNames do
+bodo_startPlay = function()
+    for k,v in pairs(chanNames) do
         chanStatus[v].envCounter = 0
+        chanStatus[v].started = false
     end
 end
 
@@ -36,10 +37,9 @@ end
 
 bodo_startTone = function(tone, chanObj)
     local chanId = chanObj.name
-    chanStatus["pulse1"].envCounter = 0
-    chanStatus["pulse2"].envCounter = 0
-    chanStatus["triangle"].envCounter = 0
     if tone.pitch >= 0 then             -- play an actual tone
+        chanStatus[chanObj.name].envCounter = 0
+        chanStatus[chanObj.name].started = true
         local fVal = bodo.host.freqTable[tone.pitch]
         chanObj.setPitch(fVal)
         
@@ -61,7 +61,7 @@ end
 bodo_updateTone = function(tone, chanObj)
     local chanId = chanObj.name
     -- Triangle doesn't need any update work
-    if chanId ~= "triangle" then
+    if chanId ~= "triangle" and chanStatus[chanObj.name].started then
         local e = chanStatus[chanId].envCounter
         e = e + bodo.host.speedTable[ tone.envSpeed ]
         if e > 255 then e = 255 end

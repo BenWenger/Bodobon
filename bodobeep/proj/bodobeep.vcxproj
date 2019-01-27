@@ -126,6 +126,7 @@
     <ClCompile Include="..\src\audio\nes\nativepulse.cpp" />
     <ClCompile Include="..\src\audio\nes\nativetriangle.cpp" />
     <ClCompile Include="..\src\audio\nes\nes.cpp" />
+    <ClCompile Include="..\src\audio\nes\neschannel.cpp" />
     <ClCompile Include="..\src\data.cpp" />
     <ClCompile Include="..\src\driver.cpp" />
     <ClCompile Include="..\src\editor.cpp" />

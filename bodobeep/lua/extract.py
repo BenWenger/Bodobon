@@ -51,14 +51,14 @@ class HostBuilder:
     def _loadSpeedTable(self, file):
         out = []
         for i in range(16):     # 16 speeds
-            out.append( file.read(2)[0] )
+            out.append( file.read(1)[0] )
         return out
         
     def _loadEnvTables(self, file):
         out = []
         for x in range(16):     # 16 patterns
             pattern = []
-            for i in range(16): # 32 entries per pattern
+            for i in range(32): # 32 entries per pattern
                 pattern.append( file.read(1)[0] )
             out.append(pattern)
         return out

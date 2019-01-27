@@ -43,6 +43,9 @@
     <ClCompile Include="..\src\data.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="..\src\audio\nes\neschannel.cpp">
+      <Filter>Source Files\audio\nes</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\src\driver.h">

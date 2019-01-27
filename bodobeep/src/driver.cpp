@@ -162,7 +162,7 @@ namespace bodobeep
         {
             for(auto& songCh : playingSong->channels)
             {
-                //if(songCh.name != "triangle")     continue;       // isolating for debug purposes
+                //if(songCh.name != "pulse1")     continue;       // isolating for debug purposes
                 auto& st = playStatus[songCh.name];
                 --st.lenCtr;
                 ++st.pos;

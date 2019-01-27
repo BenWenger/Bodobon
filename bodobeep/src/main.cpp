@@ -14,7 +14,8 @@ int main()
     {
         Data dat;
 
-        auto song = dat.loadSong("../lua/05_song.bbs.json");
+        auto song = dat.loadSong("../lua/0F_song.bbs.json");
+        //auto song = dat.loadSong("../lua/test.json");
         
         std::cout << "Load OK" << std::endl;
 
@@ -26,6 +27,8 @@ int main()
         std::cin >> c;
 
         song->host->driver->stop();
+        
+        //std::cin >> c;
 
         return 0;
     }catch(std::exception& e){
