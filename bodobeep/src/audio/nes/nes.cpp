@@ -5,38 +5,42 @@
 
 namespace bodobeep
 {
-
-    NesAudio::NesAudio(luawrap::Lua& lua)
+    NesAudio::NesAudio()
     {
-        // TODO use the lua to determine which channels to create
-
-        channels.emplace_back( std::make_unique<NativePulse>("pulse1") );
-        channels.emplace_back( std::make_unique<NativePulse>("pulse2") );
-        channels.emplace_back( std::make_unique<NativeTriangle>("triangle") );
-
         synth.setFormat(sampleRate, cpuClockRate, frameCycs);
-    }
-
-    std::set<std::string> NesAudio::addChannelsToLua(luawrap::Lua& lua)
-    {
-        std::set<std::string>        out;
-
-        // The table we're adding to is already on the stack!
-        for(auto& i : channels)
-        {
-            out.insert(i->name);
-            lua.pushString(i->name);
-            lua.pushLightUserData(i.get());
-            lua_settable(lua, -3);
-        }
-
-        return out;
     }
 
     NesAudio::~NesAudio()
     {
     }
 
+    void NesAudio::createChannels(luawrap::Lua& lua, const DriverSpec& spec)
+    {
+        std::set<std::string>       found;
+
+        luawrap::LuaStackSaver stk(lua);
+        for(auto& i : spec.channels)
+        {
+            if(!found.insert(i).second)
+                throw std::runtime_error("Lua error:  bodo_driver has multiple channels named \"" + i + "\"");
+
+            if(i == "pulse1" || i == "pulse2")
+            {
+                lua.pushString(i);
+                channels.push_back(lua.pushNewUserData<NativePulse>(i));
+                lua_settable(lua, -3);
+            }
+            else if(i == "triangle")
+            {
+                lua.pushString(i);
+                channels.push_back(lua.pushNewUserData<NativeTriangle>(i));
+                lua_settable(lua, -3);
+            }
+            // TODO noise / dmc / expansions
+            else
+                throw std::runtime_error("Lua error:  bodo_driver channel name \"" + i + "\" is unrecognized");
+        }
+    }
     
     void NesAudio::startAudio()
     {

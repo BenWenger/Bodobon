@@ -84,6 +84,7 @@ namespace bodobeep
 
     int NativePulse::lua_setPitch(Lua& lua)
     {
+        auto x = lua_gettop(lua);
         int isnum;
         auto v = lua_tointegerx(lua, 1, &isnum);
         if(isnum)

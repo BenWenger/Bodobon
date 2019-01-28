@@ -8,83 +8,124 @@
 
 namespace bodobeep
 {
+    const char* const Driver::registryKey           = "bodobeep";
+    const char* const Driver::regkey_channels       = "chans";
+    const char* const Driver::regkey_chanuser       = "chanUser";
+    const char* const Driver::regkey_songs          = "songs";
+    const char* const Driver::bodkey_host           = "host";
+    const char* const Driver::bodkey_curSong        = "curSong";
+    const char* const Driver::bodkey_channels       = "channels";
+    const char* const Driver::bodkey_songChanData   = "_chanData";
+
+
     Driver::Driver(const Host* host, const std::string& fullpath)
     {
-        // First, put the super-secret private table on the stack
-        lua_createtable(lua, 0, 1);     // at position '1', always
-
-        // Stack saver from here (don't want it to drop our private table -- EVER)
         luawrap::LuaStackSaver stk(lua);
+        
+        // Loading stuffs   (the order is important!  Don't change it!)
+        init_prepRegistry();
+        init_loadDriverLuaFile(fullpath);
+        init_buildAudioSystem();
+        init_setHost(host);
+    }
 
-        // finish building the secret table
-        lua_pushliteral(lua, "chanUser");
-        lua_newtable(lua);
-        lua_settable(lua, -3);
+    void Driver::init_prepRegistry()
+    {
+        // Build registry basics
+        lua_pushstring(lua, registryKey);
+        lua_createtable(lua, 0, 3);
+            lua_pushstring(lua, regkey_channels);   lua_newtable(lua);          lua_settable(lua, -3);
+            lua_pushstring(lua, regkey_chanuser);   lua_newtable(lua);          lua_settable(lua, -3);
+            lua_pushstring(lua, regkey_songs);      lua_newtable(lua);          lua_settable(lua, -3);
+        lua_settable(lua, LUA_REGISTRYINDEX);
 
-        // Now actually load the file!
+        // Build bodo table
+        lua_createtable(lua, 0, 3);
+        lua_setglobal(lua, "bodo");
+    }
+
+    void Driver::init_loadDriverLuaFile(const std::string& fullpath)
+    {
+        ////////////////////////////////////
+        // Load the driver file!
         dshfs::Filename fn(fullpath);
         lua.loadFile(fullpath, fn.getFullName().c_str());
         lua.callFunction(0,0);
+    }
 
-        // Now that we have the Lua file, call the bodo_driver func to get our audio system
+    void Driver::init_buildAudioSystem()
+    {
+        luawrap::LuaStackSaver stk(lua);
+
+        auto t = lua_getglobal(lua, "bodo_driver");
+        if(t == LUA_TFUNCTION)
         {
-            auto t = lua_getglobal(lua, "bodo_driver");
-            if(t == LUA_TFUNCTION)
-            {
-                lua.callFunction(0,1);
-                t = lua_type(lua,-1);
-            }
-            if(t != LUA_TTABLE)
-                throw std::runtime_error("Lua error:  bodo_driver needs to be a table, or a function that returns a table.");
+            lua.callFunction(0,1);
+            t = lua_type(lua,-1);
         }
+        if(t != LUA_TTABLE)
+            throw std::runtime_error("Lua error:  bodo_driver needs to be a table, or a function that returns a table.");
 
-        // Build the audio system
+        // Pass that data to the AudioSystem factory to build our audio system
         audioSystem = std::move( AudioSystem::factory(lua) );
 
-        // Make global 'bodo' table
-        lua_createtable(lua, 0, 4);     // 4 entries:  'host', 'curSong', 'channels', 'songs'
+        // Top of the lua stack is now the channels table -- duplicate it
+        dupTable();
+
+        // one of those tables goes in registry, the other goes in the global bodo table
+        pushRegistryTable();
+            lua.pushString(regkey_channels);
+            lua_pushvalue(lua, -3);
+            lua_settable(lua, -3);
+            lua_pop(lua, 2);                    // drop the registry table, AND the duplicated channel table
+
+        // The other goes in global bodo
+        lua_getglobal(lua, "bodo");
+            lua.pushString(bodkey_channels);
+            lua_pushvalue(lua, -3);
+            lua_settable(lua, -3);
+            lua_pop(lua, 2);
+    }
+    
+    void Driver::init_setHost(const Host* host)
+    {
+        luawrap::LuaStackSaver stk(lua);
+        lua_getglobal(lua, "bodo");
+            lua.pushString(bodkey_host);
+            JsonFile::pushJsonToLua(lua, host->userData);
+            lua_settable(lua, -3);
+            lua_pop(lua, 1);
+    }
+
+    void Driver::dupTable()
+    {
+        int srcIndex = lua_gettop(lua);
+        lua_newtable(lua);
+        int dstIndex = lua_gettop(lua);
+
+        lua_pushnil(lua);
+        while(lua_next(lua, srcIndex))
         {
-            // Set 'bodo.host'
-            lua_pushliteral(lua, "host");
-            JsonFile::pushJsonToLua( lua, host->userData );
-            lua_settable(lua, -3);
-
-            // Set 'bodo.channels'
-            lua_pushliteral(lua, "channels");
-            lua_newtable(lua);
-            {
-                luawrap::LuaStackSaver wooooop(lua);
-                chanNames = audioSystem->addChannelsToLua(lua);
-
-                {
-                    // create 'chanUser' in our super secret table
-                    //   none of this actually touches the "channels" table, but it's put here for convenience
-                    lua_pushliteral(lua, "chanUser");
-                    lua_createtable(lua, 0, static_cast<int>(chanNames.size()));
-                    for(auto& n : chanNames)
-                    {
-                        lua.pushString(n);
-                        lua_newtable(lua);
-                        lua_settable(lua, -3);
-                    }
-                    lua_settable(lua, 1);       // super sekrit
-                }
-            }
-            lua_settable(lua, -3);
-
-            // 'songs' is just an empty table for now
-            lua_pushliteral(lua, "songs");
-            lua_newtable(lua);
-            lua_settable(lua, -3);
+            lua_pushvalue(lua, -2);     // push key
+            lua_pushvalue(lua, -2);     // push value
+            lua_settable(lua, dstIndex);
+            lua_pop(lua, 1);            // pop key
         }
-        // Set global 'bodo' table
-        lua_setglobal(lua, "bodo");
+        lua_settop(lua, dstIndex);
+    }
 
-
-        // Once 'bodo' is prepped, we can call bodo_init to notify
-        auto t = lua_getglobal(lua, "bodo_init");
-        if(t == LUA_TFUNCTION)
-            lua.callFunction(0,0);
+    void Driver::pushRegistryTable()
+    {                                           //  bottom -> top
+        lua_pushstring(lua, registryKey);       //  registryKey
+        lua_gettable(lua, LUA_REGISTRYINDEX);   //  registryTbl
+    }
+    
+    void Driver::pushRegistrySubTable(const char* tablename)
+    {
+        pushRegistryTable();                    //  registryTbl
+        lua_pushstring(lua, tablename);         //  registryTbl,  tablename
+        lua_gettable(lua, -2);                  //  registryTbl,  targetTable
+        lua_remove(lua, -2);                    //  targetTable
     }
 
     void Driver::playSong(const Song* song)

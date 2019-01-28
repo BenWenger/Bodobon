@@ -3,15 +3,13 @@ Global variables provided by Editor:
         bodo.host       (all the user data from the host file)
         bodo.curSong    (the user data for the current song being interacted with)
         bodo.channels   (table of all chan objects -- keyed by the chan name)
-        bodo.songs      (table of user data for all loaded songs -- arbitrary integer key)
         .songs._chanData    (table of user data for each channel of the song)
         
-    _bodo_private       (general table for stuff that should be opaque to the Lua, but has to exist for GC purposes)
+    In the registry:
+        .channels       (all channels duplicate of bodo.channels for GC purposes)
         .chanUser       (table, keyed by chan name.  Each value is a table of user data to be accessed/modified by the Lua)
+        .songs          (table of user data for all loaded songs -- arbitrary integer key)
         
-        
-        (maybe _bodo_private doesn't have to be exposed to the Lua.  If I leave it at first position on the stack it'll
-        never get cleaned up by the GC)
 
 Channels:
     Each ChanObj will have a series of functions that can be called to configure their audio output.

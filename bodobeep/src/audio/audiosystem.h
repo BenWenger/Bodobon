@@ -4,7 +4,8 @@
 #include <SFML/Audio.hpp>
 #include <luawrap.h>
 #include <memory>
-#include <set>
+#include <map>
+#include <string>
 #include "types.h"
 
 #ifdef _MSC_VER
@@ -26,8 +27,6 @@ namespace bodobeep
         void            play(Driver* drv);
         void            stop();
 
-        virtual std::set<std::string>           addChannelsToLua(luawrap::Lua& lua) = 0;
-
         static std::unique_ptr<AudioSystem>     factory(luawrap::Lua& lua);
         
     protected:
@@ -40,9 +39,22 @@ namespace bodobeep
         virtual bool    onGetData(sf::SoundStream::Chunk& data) override;
         virtual void    onSeek(sf::Time timeOffset) override;
 
+        
+        // Stuff for derived classes
+        struct DriverSpec
+        {
+            std::string                 systemName;
+            std::vector<std::string>    systemExtra;
+            std::vector<std::string>    channels;
+        };
+
+        virtual void    createChannels(luawrap::Lua& lua, const DriverSpec& spec) = 0;
+
     private:
-        Driver*         driver;
-        void            initialize();
+        Driver*         driver = nullptr;
+        
+        static DriverSpec       getDriverSpecFromLua(luawrap::Lua& lua);
+        void                    primeAudio();
     };
 }
 
