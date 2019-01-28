@@ -19,10 +19,12 @@ namespace bodobeep
     public:
                         Driver() = delete;
                         Driver(const Host* host, const std::string& fullpath);
-        void            playSong(const Song* song);
+        void            playSong(Song* song);
         void            stop();
 
-        timestamp_t     getLengthOfTone(const Tone& tone, const std::string& chanId, int songIndex);
+        void            registerSong(Song* song);
+
+        timestamp_t     getLengthOfTone(const Tone& tone, const std::string& chanName, Song* song);
 
     private:
         luawrap::Lua                    lua;                // should be the first item, so it is the last to be destroyed
@@ -35,7 +37,7 @@ namespace bodobeep
             timestamp_t     lenCtr;
         };
         std::map<std::string, ChanPlayStatus>       playStatus;
-        const Song*                                 playingSong = nullptr;
+        Song*                                       playingSong = nullptr;
 
     private:
         // Initialization stuff
@@ -44,15 +46,20 @@ namespace bodobeep
         void                init_buildAudioSystem();
         void                init_setHost(const Host* host);
 
-        // Misc
-        void                dupTable();
 
-        //Registry stuff
+        //Registry and support stuff
+        void                dupTable();
         void                pushRegistryTable();
         void                pushRegistrySubTable(const char* tablename);
+        void                pushBodoTable();
+        void                setCurSong(Song* song);         // (song must be registered)
+        
+        void                pushSong(Song* song);           // (song must be registered)
+        void                pushTone(const Tone& tone);
+        void                pushChannel(const std::string& chanName);
 
         friend class        AudioSystem;
-        void                callLuaStartPlay(const Song* song);
+        void                callLuaStartPlay(Song* song);
         bool                playbackUpdate();
 
         //////////////////////////////////////////

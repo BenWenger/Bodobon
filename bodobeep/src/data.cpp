@@ -91,7 +91,7 @@ namespace bodobeep
         // Second half is the channel and score data!
         auto chani = file.obj.find("_channels");
         if(chani == file.obj.end())                 throw std::runtime_error("Song is missing '_channels' tag");
-        if(!chani->second.is<json::object>())        throw std::runtime_error("Song's '_channels' tag is not an object");
+        if(!chani->second.is<json::object>())       throw std::runtime_error("Song's '_channels' tag is not an object");
         auto& chanobj = chani->second.get<json::object>();
 
         for(auto& i : chanobj)
@@ -102,6 +102,13 @@ namespace bodobeep
 
         // the rest is userData
         userData = std::move(file.obj);
+
+        // Now that everything is loaded, register us with the driver
+        host->driver->registerSong(this);
+
+        // Now that it's registered, recalcuate the tone chain
+        for(auto& i : channels)
+            recalculateToneChain(i);
     }
 
     void Song::loadChannel(const std::string& chanName, json::value& chanv)
@@ -134,16 +141,38 @@ namespace bodobeep
         timestamp_t position = 0;
         for(auto& i : score)
         {
+            //  We can't build the tone chain PROPERLY here, because we'd have to call the driver
+            //    to get the tone length, which we can't do yet because this song has not yet been
+            //    registered in the driver (because it hasn't been loaded yet)
+            //
+            //  So just give all tones a length of 1, and then correct it later
             Tone t;
             t.userData = std::move(i);
-            t.length = host->driver->getLengthOfTone(t, chanName, 0);       // TODO song index
-            auto tmp = t.length;
+            t.length = 1;
             chanObj.score.addTone( position, std::move(t) );
-            position += tmp;
+            ++position;
         }
 
         // now that the chanObj is loaded, put it in our array
         channels.emplace_back( std::move(chanObj) );
+    }
+
+    void Song::recalculateToneChain(Channel& chan)
+    {
+        ToneChain out;
+
+        timestamp_t pos = 0;
+        for(auto& i : chan.score)
+        {
+            auto& tone = i.second;
+            auto length = host->driver->getLengthOfTone(tone, chan.name, this);
+
+            tone.length = length;
+            out.addTone(pos, std::move(tone));
+            pos += length;
+        }
+
+        chan.score = std::move(out);
     }
     
     //////////////////////////////////////////////////////////////////////

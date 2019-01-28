@@ -90,7 +90,7 @@ namespace bodobeep
     void Driver::init_setHost(const Host* host)
     {
         luawrap::LuaStackSaver stk(lua);
-        lua_getglobal(lua, "bodo");
+        pushBodoTable();
             lua.pushString(bodkey_host);
             JsonFile::pushJsonToLua(lua, host->userData);
             lua_settable(lua, -3);
@@ -114,6 +114,15 @@ namespace bodobeep
         lua_settop(lua, dstIndex);
     }
 
+    void Driver::pushBodoTable()
+    {
+        if(lua_getglobal(lua, "bodo") != LUA_TTABLE)
+        {
+            lua_pop(lua, 1);
+            throw std::runtime_error("Lua error:  Globally accessed 'bodo' table has been corrupted.");
+        }
+    }
+
     void Driver::pushRegistryTable()
     {                                           //  bottom -> top
         lua_pushstring(lua, registryKey);       //  registryKey
@@ -128,9 +137,70 @@ namespace bodobeep
         lua_remove(lua, -2);                    //  targetTable
     }
 
-    void Driver::playSong(const Song* song)
+    void Driver::registerSong(Song* song)
     {
-        // TODO - set bodo.cursong
+        luawrap::LuaStackSaver stk(lua);
+
+        pushRegistrySubTable(regkey_songs);                         // songs
+        lua_pushlightuserdata(lua, reinterpret_cast<void*>(song));  // songs, songKey
+        JsonFile::pushJsonToLua(lua, song->userData);               // songs, songKey, songTable
+        lua.pushString(bodkey_songChanData);                        // songs, songKey, songTable, "_chanData"
+        lua_newtable(lua);                                          // songs, songKey, songTable, "_chanData", dataTable
+
+        // push channel user data
+        for(auto& i : song->channels)
+        {
+            lua.pushString(i.name);                                 // ..., dataTable, chanName
+            JsonFile::pushJsonToLua(lua, i.userData);               // ..., dataTable, chanName, chanUserData
+            lua_settable(lua, -3);                                  // ..., dataTable
+        }
+
+        // at this point:                                           // songs, songKey, songTable, "_chanData", dataTable
+        lua_settable(lua, -3);                                      // songs, songKey, songTable
+        lua_settable(lua, -3);                                      // songs
+        lua_pop(lua, 1);                                            // [empty]
+    }
+
+    void Driver::pushSong(Song* song)
+    {
+        pushRegistrySubTable(regkey_songs);                         // songs
+        lua_pushlightuserdata(lua, reinterpret_cast<void*>(song));  // songs, songKey
+        auto t = lua_gettable(lua, -2);                             // songs, songTable
+        lua_remove(lua, -2);                                        // songTable
+
+        if(t != LUA_TTABLE)
+            throw std::runtime_error("Internal error in Driver:  pushSong attempting to push a song that hasn't been registered");
+    }
+    
+    void Driver::pushTone(const Tone& tone)
+    {
+        //  Pretty simple!
+        JsonFile::pushJsonToLua(lua, tone.userData);
+    }
+
+    void Driver::pushChannel(const std::string& chanName)
+    {
+        pushRegistrySubTable(regkey_channels);      // channels
+        lua.pushString(chanName);                   // channels, key
+        auto t = lua_gettable(lua, -2);             // channels, goal
+        lua_remove(lua, -2);                        // goal
+
+        if(t != LUA_TUSERDATA)
+            throw std::runtime_error("Internal error in Driver:  pushChannel found entry in channels registry that was not a Channel object");
+    }
+
+    void Driver::setCurSong(Song* song)
+    {
+        luawrap::LuaStackSaver stk(lua);
+        pushBodoTable();
+        lua.pushString(bodkey_curSong);
+        pushSong(song);
+        lua_settable(lua, -3);
+    }
+
+    void Driver::playSong(Song* song)
+    {
+        setCurSong(song);
 
         callLuaStartPlay(song);
 
@@ -152,28 +222,16 @@ namespace bodobeep
         audioSystem->stop();
     }
 
-    timestamp_t Driver::getLengthOfTone(const Tone& tone, const std::string& chanId, int songIndex)
+    timestamp_t Driver::getLengthOfTone(const Tone& tone, const std::string& chanId, Song* song)
     {
         luawrap::LuaStackSaver stk(lua);
 
         if(lua_getglobal(lua, "bodo_getLength") != LUA_TFUNCTION)
             throw std::runtime_error("Lua error:  'bodo_getLength' must be a global function defined in the Lua driver");
 
-        // param 1 = the tone
-        JsonFile::pushJsonToLua(lua, tone.userData);
-
-        // param 2 = the channel object
-        lua_getglobal(lua, "bodo");
-        lua_pushliteral(lua, "channels");
-        lua_gettable(lua, -2);                  // get the channels table
-        lua_remove(lua, -2);                    // remove 'bodo'
-        lua.pushString(chanId);
-        lua_gettable(lua, -2);                  // get the chan object
-        lua_remove(lua, -2);                    // remove the channels table
-
-        // param 3 = the song object
-        //   TODO - do this, for now just push nil
-        lua_pushnil(lua);
+        pushTone(tone);         // param 1
+        pushChannel(chanId);    // param 2
+        pushSong(song);         // param 3
 
         // Call the function
         lua.callFunction(3, 1);
@@ -186,11 +244,11 @@ namespace bodobeep
         return len;
     }
 
-    void Driver::callLuaStartPlay(const Song* song)
+    void Driver::callLuaStartPlay(Song* song)
     {
         luawrap::LuaStackSaver stk(lua);
         if(lua_getglobal(lua, "bodo_startPlay") == LUA_TFUNCTION) {
-            lua_pushnil(lua);   // TODO actually push the song object
+            pushSong(song);         // param 1
             lua.callFunction(1,0);
         }
     }
@@ -220,18 +278,12 @@ namespace bodobeep
                     auto& i = songCh.score.getAtTime(st.pos);
                     if(st.lenCtr <= 0)
                         st.lenCtr = i->second.length;
-                    JsonFile::pushJsonToLua( lua, i->second.userData );
+                    pushTone(i->second);
                 }
 
 
                 // push second arg (chan)
-                lua_getglobal(lua, "bodo");
-                lua_pushliteral(lua, "channels");
-                lua_gettable(lua, -2);
-                lua_remove(lua, -2);
-                lua.pushString(songCh.name);
-                lua_gettable(lua, -2);
-                lua_remove(lua, -2);
+                pushChannel(songCh.name);
 
                 lua.callFunction(2,0);
             }

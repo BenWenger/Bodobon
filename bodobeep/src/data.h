@@ -39,6 +39,7 @@ namespace bodobeep
 
     private:
         void                loadChannel(const std::string& name, json::value& chanv);
+        void                recalculateToneChain(Channel& chan);
     };
     
     /////////////////////////////////////////////////////////////
