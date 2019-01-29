@@ -27,6 +27,7 @@ namespace bodobeep
         init_loadDriverLuaFile(fullpath);
         init_buildAudioSystem();
         init_setHost(host);
+        init_prepChannelUserData();
     }
 
     void Driver::init_prepRegistry()
@@ -97,6 +98,16 @@ namespace bodobeep
             lua_pop(lua, 1);
     }
 
+    void Driver::init_prepChannelUserData()
+    {
+        luawrap::LuaStackSaver stk(lua);
+        for(auto& i : audioSystem->getChanNames())
+        {
+            lua_newtable(lua);
+            popAndSetChannelUserData(lua, i);
+        }
+    }
+
     void Driver::dupTable()
     {
         int srcIndex = lua_gettop(lua);
@@ -123,15 +134,15 @@ namespace bodobeep
         }
     }
 
-    void Driver::pushRegistryTable()
+    void Driver::pushRegistryTable(luawrap::Lua& lua)
     {                                           //  bottom -> top
         lua_pushstring(lua, registryKey);       //  registryKey
         lua_gettable(lua, LUA_REGISTRYINDEX);   //  registryTbl
     }
     
-    void Driver::pushRegistrySubTable(const char* tablename)
+    void Driver::pushRegistrySubTable(luawrap::Lua& lua, const char* tablename)
     {
-        pushRegistryTable();                    //  registryTbl
+        pushRegistryTable(lua);                 //  registryTbl
         lua_pushstring(lua, tablename);         //  registryTbl,  tablename
         lua_gettable(lua, -2);                  //  registryTbl,  targetTable
         lua_remove(lua, -2);                    //  targetTable
@@ -197,13 +208,28 @@ namespace bodobeep
         pushSong(song);
         lua_settable(lua, -3);
     }
+    
+    void Driver::pushChannelUserData(luawrap::Lua& lua, const std::string& chanName)
+    {
+        pushRegistrySubTable(lua, regkey_chanuser);         // chantable
+        lua.pushString(chanName);                           // chantable, key
+        lua_gettable(lua, -2);                              // chantable, goal
+        lua_remove(lua, -2);                                // goal
+    }
+
+    void Driver::popAndSetChannelUserData(luawrap::Lua& lua, const std::string& chanName)
+    {                                                       // value                            <- stack starts with this on it
+        pushRegistrySubTable(lua, regkey_chanuser);         // value, chantable
+        lua.pushString(chanName);                           // value, chantable, key
+        lua_pushvalue(lua, -3);                             // value, chantable, key, value
+        lua_settable(lua, -3);                              // value, chantable
+        lua_pop(lua, 2);                                    // [empty]
+    }
 
     void Driver::playSong(Song* song)
     {
         setCurSong(song);
-
-        callLuaStartPlay(song);
-
+        
         playStatus.clear();
         ChanPlayStatus st;
         for(auto& chan : song->channels)
@@ -212,6 +238,10 @@ namespace bodobeep
             st.lenCtr = 0;
             playStatus[chan.name] = st;
         }
+        
+        audioSystem->resetAudio();
+
+        callLuaStartPlay(song);
         playingSong = song;
 
         audioSystem->play(this);

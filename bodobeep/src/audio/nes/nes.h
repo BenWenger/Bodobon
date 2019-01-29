@@ -15,13 +15,14 @@ namespace bodobeep
                         NesAudio();
         virtual         ~NesAudio();
         
+        virtual void    resetAudio() override;
+        
     protected:
-        virtual void    startAudio() override;
         virtual int     getAudio(const s16*& buffer) override;
         virtual void    getAudioFormat(int& samplerate, bool& stereo) override;
 
         
-        virtual void    createChannels(luawrap::Lua& lua, const DriverSpec& spec) override;
+        virtual std::vector<std::string>    createChannels(luawrap::Lua& lua, const DriverSpec& spec) override;
 
     private:
         std::vector<NesChannel*>            channels;

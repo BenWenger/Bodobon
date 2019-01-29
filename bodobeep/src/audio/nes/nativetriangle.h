@@ -18,7 +18,7 @@ namespace bodobeep
     protected:
         typedef luawrap::Lua        Lua;
         
-        virtual int     indexHandler(Lua& lua) override;
+        virtual void    pushMember(luawrap::Lua& lua, const std::string& name) override;
 
     private:
         int             lua_setVolume(Lua& lua);

@@ -1,5 +1,4 @@
 #include "nativetriangle.h"
-#include "luasupport.h"
 #include "audio/blsynth.h"
 #include <map>
 #include <string>
@@ -13,14 +12,11 @@ namespace bodobeep
         for(int i = 0; i < 0x10; ++i)
             outputLevels[i] = i * totalBase * triangleBase;
     }
-
-    int NativeTriangle::indexHandler(Lua& lua)
+    
+    void NativeTriangle::pushMember(luawrap::Lua& lua, const std::string& name)
     {
-        BEGIN_LUA_MEMBER_SET()
-        LUA_MEMBER_SET(NativeTriangle, setVolume)
-        LUA_MEMBER_SET(NativeTriangle, setPitch)
-        LUA_MEMBER_STRING("name", name)
-        END_LUA_MEMBER_SET()
+        if     (name == "setVolume")        lua.pushFunction(this, &NativeTriangle::lua_setVolume);
+        else if(name == "setPitch")         lua.pushFunction(this, &NativeTriangle::lua_setPitch);
     }
 
     void NativeTriangle::runForCycs(BlSynth& synth, timestamp_t cycs)

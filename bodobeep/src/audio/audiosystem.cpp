@@ -20,7 +20,7 @@ namespace bodobeep
         if(!out)
             throw std::runtime_error("Error when loading driver.  Audio system \"" + spec.systemName + "\" is not recognized or supported");
 
-        out->createChannels(lua, spec);
+        out->chanNames = out->createChannels(lua, spec);
         out->primeAudio();
         return std::move(out);
     }
@@ -37,7 +37,6 @@ namespace bodobeep
     void AudioSystem::play(Driver* drv)
     {
         driver = drv;
-        startAudio();
         sf::SoundStream::play();
     }
 

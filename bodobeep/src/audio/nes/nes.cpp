@@ -2,6 +2,7 @@
 #include "nes.h"
 #include "nativepulse.h"
 #include "nativetriangle.h"
+#include <algorithm>
 
 namespace bodobeep
 {
@@ -14,15 +15,16 @@ namespace bodobeep
     {
     }
 
-    void NesAudio::createChannels(luawrap::Lua& lua, const DriverSpec& spec)
+    std::vector<std::string> NesAudio::createChannels(luawrap::Lua& lua, const DriverSpec& spec)
     {
-        std::set<std::string>       found;
+        std::vector<std::string>    out;
 
         luawrap::LuaStackSaver stk(lua);
         for(auto& i : spec.channels)
         {
-            if(!found.insert(i).second)
+            if(std::find(out.begin(), out.end(), i) != out.end())
                 throw std::runtime_error("Lua error:  bodo_driver has multiple channels named \"" + i + "\"");
+            out.push_back(i);
 
             if(i == "pulse1" || i == "pulse2")
             {
@@ -40,9 +42,11 @@ namespace bodobeep
             else
                 throw std::runtime_error("Lua error:  bodo_driver channel name \"" + i + "\" is unrecognized");
         }
+
+        return out;
     }
     
-    void NesAudio::startAudio()
+    void NesAudio::resetAudio()
     {
         for(auto& i : channels)
             i->reset();

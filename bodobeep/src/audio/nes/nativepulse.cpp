@@ -1,5 +1,4 @@
 #include "nativepulse.h"
-#include "luasupport.h"
 #include "audio/blsynth.h"
 #include <map>
 #include <string>
@@ -24,15 +23,12 @@ namespace bodobeep
         for(int i = 0; i < 0x10; ++i)
             outputLevels[i] = i * totalBase * pulseBase;
     }
-
-    int NativePulse::indexHandler(Lua& lua)
+    
+    void NativePulse::pushMember(luawrap::Lua& lua, const std::string& name)
     {
-        BEGIN_LUA_MEMBER_SET()
-        LUA_MEMBER_SET(NativePulse, setVolume)
-        LUA_MEMBER_SET(NativePulse, setDuty)
-        LUA_MEMBER_SET(NativePulse, setPitch)
-        LUA_MEMBER_STRING("name", name)
-        END_LUA_MEMBER_SET()
+        if     (name == "setVolume")        lua.pushFunction(this, &NativePulse::lua_setVolume);
+        else if(name == "setPitch")         lua.pushFunction(this, &NativePulse::lua_setPitch);
+        else if(name == "setDuty")          lua.pushFunction(this, &NativePulse::lua_setDuty);
     }
 
     void NativePulse::runForCycs(BlSynth& synth, timestamp_t cycs)
@@ -84,11 +80,18 @@ namespace bodobeep
 
     int NativePulse::lua_setPitch(Lua& lua)
     {
-        auto x = lua_gettop(lua);
+        // param 1 = the pitch
         int isnum;
         auto v = lua_tointegerx(lua, 1, &isnum);
         if(isnum)
             freqTimer = v & 0x07FF;
+
+        // param 2 = boolean, true if phase is to reset
+        if(lua_isboolean(lua, 2) && lua_toboolean(lua, 2))
+        {
+            freqCounter = (freqTimer + 1) * 2;
+            dutyCounter = 0;
+        }
         return 0;
     }
 

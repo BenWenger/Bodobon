@@ -24,13 +24,16 @@ namespace bodobeep
     {
     public:
         virtual         ~AudioSystem() {}
+
+        virtual void    resetAudio() = 0;
         void            play(Driver* drv);
         void            stop();
 
         static std::unique_ptr<AudioSystem>     factory(luawrap::Lua& lua);
-        
+
+        const std::vector<std::string>&     getChanNames() const        { return chanNames;     }
+                
     protected:
-        virtual void    startAudio() = 0;
         virtual int     getAudio(const s16*& buffer) = 0;
         virtual void    getAudioFormat(int& samplerate, bool& stereo) = 0;
 
@@ -48,11 +51,12 @@ namespace bodobeep
             std::vector<std::string>    channels;
         };
 
-        virtual void    createChannels(luawrap::Lua& lua, const DriverSpec& spec) = 0;
+        virtual std::vector<std::string>    createChannels(luawrap::Lua& lua, const DriverSpec& spec) = 0;
 
     private:
-        Driver*         driver = nullptr;
+        Driver*                 driver = nullptr;
         
+        std::vector<std::string>        chanNames;
         static DriverSpec       getDriverSpecFromLua(luawrap::Lua& lua);
         void                    primeAudio();
     };

@@ -26,10 +26,12 @@ namespace bodobeep
 
         timestamp_t     getLengthOfTone(const Tone& tone, const std::string& chanName, Song* song);
 
+        static void     pushChannelUserData(luawrap::Lua& lua, const std::string& chanName);
+        static void     popAndSetChannelUserData(luawrap::Lua& lua, const std::string& chanName);
+
     private:
         luawrap::Lua                    lua;                // should be the first item, so it is the last to be destroyed
         std::unique_ptr<AudioSystem>    audioSystem;
-        std::set<std::string>           chanNames;
 
         struct ChanPlayStatus
         {
@@ -45,12 +47,15 @@ namespace bodobeep
         void                init_loadDriverLuaFile(const std::string& fullpath);
         void                init_buildAudioSystem();
         void                init_setHost(const Host* host);
+        void                init_prepChannelUserData();
 
 
         //Registry and support stuff
         void                dupTable();
-        void                pushRegistryTable();
-        void                pushRegistrySubTable(const char* tablename);
+        void                pushRegistryTable()                             { pushRegistryTable(lua);                   }
+        void                pushRegistrySubTable(const char* tablename)     { pushRegistrySubTable(lua, tablename);     }
+        static void         pushRegistryTable(luawrap::Lua& lua);
+        static void         pushRegistrySubTable(luawrap::Lua& lua, const char* tablename);
         void                pushBodoTable();
         void                setCurSong(Song* song);         // (song must be registered)
         

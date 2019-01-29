@@ -10,6 +10,9 @@ Global variables provided by Editor:
         .chanUser       (table, keyed by chan name.  Each value is a table of user data to be accessed/modified by the Lua)
         .songs          (table of user data for all loaded songs -- arbitrary integer key)
         
+    channelObject.data   how to access .chanUser from the registry from the Lua
+    channelObject.name   access the channel name
+        
 
 Channels:
     Each ChanObj will have a series of functions that can be called to configure their audio output.

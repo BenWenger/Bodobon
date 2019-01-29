@@ -125,6 +125,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="..\src\audio\audiochannel.cpp" />
     <ClCompile Include="..\src\audio\audiosystem.cpp" />
     <ClCompile Include="..\src\audio\blsynth.cpp" />
     <ClCompile Include="..\src\audio\nes\nativepulse.cpp" />
@@ -138,6 +139,7 @@
     <ClCompile Include="..\src\jsonfile.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\src\audio\audiochannel.h" />
     <ClInclude Include="..\src\audio\audiosystem.h" />
     <ClInclude Include="..\src\audio\blsynth.h" />
     <ClInclude Include="..\src\audio\nes\nativetriangle.h" />
@@ -149,7 +151,6 @@
     <ClInclude Include="..\src\editor.h" />
     <ClInclude Include="..\src\json.h" />
     <ClInclude Include="..\src\jsonfile.h" />
-    <ClInclude Include="..\src\luasupport.h" />
     <ClInclude Include="..\src\tonechain.h" />
     <ClInclude Include="..\src\types.h" />
   </ItemGroup>

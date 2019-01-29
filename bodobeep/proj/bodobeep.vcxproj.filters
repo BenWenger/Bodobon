@@ -46,6 +46,9 @@
     <ClCompile Include="..\src\audio\nes\neschannel.cpp">
       <Filter>Source Files\audio\nes</Filter>
     </ClCompile>
+    <ClCompile Include="..\src\audio\audiochannel.cpp">
+      <Filter>Source Files\audio</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\src\driver.h">
@@ -69,9 +72,6 @@
     <ClInclude Include="..\src\audio\nes\nativepulse.h">
       <Filter>Source Files\audio\nes</Filter>
     </ClInclude>
-    <ClInclude Include="..\src\luasupport.h">
-      <Filter>Source Files</Filter>
-    </ClInclude>
     <ClInclude Include="..\src\audio\nes\nativetriangle.h">
       <Filter>Source Files\audio\nes</Filter>
     </ClInclude>
@@ -89,6 +89,9 @@
     </ClInclude>
     <ClInclude Include="..\src\data.h">
       <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\audio\audiochannel.h">
+      <Filter>Source Files\audio</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
