@@ -10,13 +10,13 @@ namespace bodobeep
 
         std::string getFileType(const json::object& obj)
         {
-            auto i = obj.find("_header");
-            if(i == obj.end())                  throw std::runtime_error("_header field missing");
-            if(!i->second.is<json::object>())   throw std::runtime_error("_header field is not an object");
+            auto i = obj.find("__header");
+            if(i == obj.end())                  throw std::runtime_error("__header field missing");
+            if(!i->second.is<json::object>())   throw std::runtime_error("__header field is not an object");
 
             auto hdr = i->second.get<json::object>();
             i = hdr.find("_fileType");
-            if(i == hdr.end())                  throw std::runtime_error("_header field is missing _filetype field");
+            if(i == hdr.end())                  throw std::runtime_error("__header field is missing _filetype field");
             if(!i->second.is<std::string>())    throw std::runtime_error("_fileType field is not a string");
 
             return i->second.get<std::string>();

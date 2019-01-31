@@ -1,7 +1,9 @@
 import json
+from collections import OrderedDict
 
 def jsonWriteDict(file, dictionary, indent=2):
-    file.write( bytearray(json.JSONEncoder(indent=indent).encode(dictionary), encoding='utf-8') )
+    ordered = OrderedDict( sorted(dictionary.items(), key=lambda t: t[0]) )
+    file.write( bytearray(json.JSONEncoder(indent=indent, sort_keys=True).encode(dictionary), encoding='utf-8') )
     
 def buildHeader(isHost):
     out = {
@@ -18,7 +20,7 @@ class HostBuilder:
     def build(self, file):
     
         out = {
-            '_header':      buildHeader(True),
+            '__header':     buildHeader(True),
             '_properties':  {
                 '_driver':      'FinalFantasy.lua'
             }
@@ -183,7 +185,7 @@ class SongBuilder:
         channels = [(0, 'pulse1'), (1, 'pulse2'), (2, 'triangle')]
         bldr = ChannelBuilder()
         return {
-            '_header':      buildHeader(False),
+            '__header':     buildHeader(False),
             '_properties':  {
                 '_host':        'FinalFantasy.bbh.json'
             },

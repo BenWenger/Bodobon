@@ -14,7 +14,7 @@ int main()
     {
         Data dat;
 
-        auto song = dat.loadSong("../lua/08_song.bbs.json");
+        auto song = dat.loadSong("../lua/0A_song.bbs.json");
         //auto song = dat.loadSong("../lua/test.json");
         
         std::cout << "Load OK" << std::endl;
