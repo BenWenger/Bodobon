@@ -23,10 +23,26 @@ namespace bodobeep
         const_iterator      begin() const           { return theMap.begin();        }
         const_iterator      end() const             { return theMap.end();          }
 
+        timestamp_t         size() const            { return static_cast<timestamp_t>( theMap.size() ); }
+
         const_iterator      getAtTime(timestamp_t t) const
         {
             auto i = theMap.upper_bound(t);
-            if(i != begin()) --i;
+            if(i != begin())
+                --i;
+            if(i != end())
+            {
+                if(t >= (i->first + i->second.length))
+                    i = end();
+            }
+            return i;
+        }
+
+        const_iterator      getNth(timestamp_t index) const
+        {
+            auto i = theMap.begin();
+            for(timestamp_t ctr = 0; ctr < index && i != theMap.end(); ++ctr)
+                ++i;
             return i;
         }
 

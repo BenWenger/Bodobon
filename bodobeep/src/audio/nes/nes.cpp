@@ -66,4 +66,13 @@ namespace bodobeep
         stereo = false;
     }
 
+    void NesAudio::stopChannel(const std::string& chanName)
+    {
+        for(auto& i : channels)
+        {
+            if(i->name == chanName)
+                i->reset();
+        }
+    }
+
 }

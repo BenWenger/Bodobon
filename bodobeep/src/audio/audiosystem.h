@@ -29,6 +29,8 @@ namespace bodobeep
         void            play(Driver* drv);
         void            stop();
 
+        virtual void    stopChannel(const std::string& chanName) = 0;
+
         static std::unique_ptr<AudioSystem>     factory(luawrap::Lua& lua);
 
         const std::vector<std::string>&     getChanNames() const        { return chanNames;     }

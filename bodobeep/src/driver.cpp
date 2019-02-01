@@ -236,6 +236,7 @@ namespace bodobeep
         {
             st.pos = -1;
             st.lenCtr = 0;
+            st.endReached = false;
             playStatus[chan.name] = st;
         }
         
@@ -291,29 +292,43 @@ namespace bodobeep
         {
             for(auto& songCh : playingSong->channels)
             {
-                //if(songCh.name != "pulse1")     continue;       // isolating for debug purposes
                 auto& st = playStatus[songCh.name];
+                if(st.endReached)
+                    continue;
+
+                bool newtone = false;
                 --st.lenCtr;
                 ++st.pos;
 
-                const char* func = "bodo_updateTone";
+                // Do we need to get a new tone?
                 if(st.lenCtr <= 0)
-                    func = "bodo_startTone";
+                {
+                    newtone = true;
+                    auto i = songCh.score.getAtTime(st.pos);
+                    if(i == songCh.score.end())     // end of song reached
+                    {
+                        if(songCh.loopPos >= 0)
+                            i = songCh.score.getNth(songCh.loopPos);
+                        if(i == songCh.score.end())
+                        {
+                            st.endReached = true;
+                            audioSystem->stopChannel(songCh.name);
+                            continue;
+                        }
+                        else
+                            st.pos = i->first;
+                    }
+                    st.playingTone = i->second;
+                    st.lenCtr = st.playingTone.length;
+                }
+
+                // push function
+                const char* func = newtone ? "bodo_startTone" : "bodo_updateTone";
                 if(lua_getglobal(lua, func) != LUA_TFUNCTION)
                     throw std::runtime_error("Lua driver is missing required function " + std::string(func));
 
-                // function is on the stack
-                // push first arg (tone)
-                {
-                    auto& i = songCh.score.getAtTime(st.pos);
-                    if(st.lenCtr <= 0)
-                        st.lenCtr = i->second.length;
-                    pushTone(i->second);
-                }
-
-
-                // push second arg (chan)
-                pushChannel(songCh.name);
+                pushTone(st.playingTone);       // param 1
+                pushChannel(songCh.name);       // param 2
 
                 lua.callFunction(2,0);
             }

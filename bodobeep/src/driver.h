@@ -37,6 +37,8 @@ namespace bodobeep
         {
             timestamp_t     pos;
             timestamp_t     lenCtr;
+            bool            endReached;
+            Tone            playingTone;
         };
         std::map<std::string, ChanPlayStatus>       playStatus;
         Song*                                       playingSong = nullptr;

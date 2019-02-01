@@ -127,7 +127,19 @@ namespace bodobeep
         if(!propi->second.is<json::object>())       throw std::runtime_error("Channel's '_properties' tag is not an object");
         auto& prop = propi->second.get<json::object>();
 
-        // TODO - loopPos property
+        {
+            auto i = prop.find("_loopPos");
+            if(i != prop.end())
+            {
+                if(!i->second.is<std::int64_t>())
+                    throw std::runtime_error("Channel's _loopPos property is not an integer");
+                auto loopPos = i->second.get<std::int64_t>();
+                if(loopPos < 0 || loopPos >= std::numeric_limits<timestamp_t>::max())
+                    throw std::runtime_error("Channel's _loopPos property is out of range");
+
+                chanObj.loopPos = static_cast<timestamp_t>( loopPos );
+            }
+        }
 
         // Drop all other properties
         ch.erase(propi);
@@ -152,6 +164,9 @@ namespace bodobeep
             chanObj.score.addTone( position, std::move(t) );
             ++position;
         }
+
+        if(chanObj.loopPos >= 0 && chanObj.loopPos >= chanObj.score.size())
+            throw std::runtime_error("Channel's _loopPos property is out of range");
 
         // now that the chanObj is loaded, put it in our array
         channels.emplace_back( std::move(chanObj) );

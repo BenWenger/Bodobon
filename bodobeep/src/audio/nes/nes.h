@@ -17,6 +17,8 @@ namespace bodobeep
         
         virtual void    resetAudio() override;
         
+        virtual void    stopChannel(const std::string& chanName) override;
+        
     protected:
         virtual int     getAudio(const s16*& buffer) override;
         virtual void    getAudioFormat(int& samplerate, bool& stereo) override;
