@@ -25,7 +25,7 @@ namespace bodobeep
 
     void JsonFile::pushJsonToLua(luawrap::Lua& lua, const json::object& obj)
     {
-        lua_createtable(lua, 0, obj.size());
+        lua_createtable(lua, 0, static_cast<int>(obj.size()));
         for(auto& i : obj)
         {
             auto& name = i.first;
@@ -40,7 +40,7 @@ namespace bodobeep
 
     void JsonFile::pushJsonToLua(luawrap::Lua& lua, const json::array& ar)
     {
-        lua_createtable(lua, ar.size(), 1);
+        lua_createtable(lua, static_cast<int>(ar.size()), 1);
         for(std::size_t i = 0; i < ar.size(); ++i)
         {
             pushJsonToLua(lua, ar[i]);
