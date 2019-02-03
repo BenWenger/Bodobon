@@ -11,11 +11,11 @@
     <Filter Include="Source Files\audio\nes">
       <UniqueIdentifier>{0ed1e8f1-d012-44a7-b0ef-25c92e5ddeca}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\gui">
+      <UniqueIdentifier>{686784e1-1275-46a5-b59b-8bba28df85f6}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\src\main.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="..\src\jsonfile.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -48,6 +48,15 @@
     </ClCompile>
     <ClCompile Include="..\src\audio\audiochannel.cpp">
       <Filter>Source Files\audio</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\wxpch.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\gui\bodobeepapp.cpp">
+      <Filter>Source Files\gui</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\gui\bodomainframe.cpp">
+      <Filter>Source Files\gui</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -92,6 +101,15 @@
     </ClInclude>
     <ClInclude Include="..\src\audio\audiochannel.h">
       <Filter>Source Files\audio</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\wxpch.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\gui\bodobeepapp.h">
+      <Filter>Source Files\gui</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\gui\bodomainframe.h">
+      <Filter>Source Files\gui</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
