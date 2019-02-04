@@ -61,13 +61,10 @@ namespace bodobeep
     class Data
     {
     public:
-        typedef std::unordered_map<std::string, std::unique_ptr<Song>>      songMap_t;
         typedef std::unordered_map<std::string, std::unique_ptr<Host>>      hostMap_t;
+        hostMap_t               hosts;
 
-        songMap_t       songs;
-        hostMap_t       hosts;
-
-        Song*           loadSong(const std::string& filename);
+        std::unique_ptr<Song>   loadSong(const std::string& filename);
 
     private:
         static std::string      makeAbsoluteRelativeTo(const std::string& srcPath, const std::string& dstFile);

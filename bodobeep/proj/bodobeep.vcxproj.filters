@@ -37,9 +37,6 @@
     <ClCompile Include="..\src\driver.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\src\editor.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="..\src\data.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -56,6 +53,15 @@
       <Filter>Source Files\gui</Filter>
     </ClCompile>
     <ClCompile Include="..\src\gui\bodomainframe.cpp">
+      <Filter>Source Files\gui</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\gui\songnotebook.cpp">
+      <Filter>Source Files\gui</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\gui\songsheet.cpp">
+      <Filter>Source Files\gui</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\gui\trackersheet.cpp">
       <Filter>Source Files\gui</Filter>
     </ClCompile>
   </ItemGroup>
@@ -93,9 +99,6 @@
     <ClInclude Include="..\src\tonechain.h">
       <Filter>Source Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\src\editor.h">
-      <Filter>Source Files</Filter>
-    </ClInclude>
     <ClInclude Include="..\src\data.h">
       <Filter>Source Files</Filter>
     </ClInclude>
@@ -109,6 +112,15 @@
       <Filter>Source Files\gui</Filter>
     </ClInclude>
     <ClInclude Include="..\src\gui\bodomainframe.h">
+      <Filter>Source Files\gui</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\gui\songnotebook.h">
+      <Filter>Source Files\gui</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\gui\songsheet.h">
+      <Filter>Source Files\gui</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\gui\trackersheet.h">
       <Filter>Source Files\gui</Filter>
     </ClInclude>
   </ItemGroup>

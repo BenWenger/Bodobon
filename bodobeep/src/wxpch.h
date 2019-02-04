@@ -3,6 +3,20 @@
 #define WXPCH_H_INCLUDED
 
 #include <wx/wx.h>
+#include <wx/splitter.h>
+#include <wx/scrolwin.h>
+#include <wx/aui/auibook.h>
+#include <wx/dcbuffer.h>
+
+// Wide strings are stupid and useless -- ditch wxWidget's conversion to wide strings
+//   and instead use UTF-8.  Why this isn't the default for EVERYTHING EVER still baffles me
+#ifdef wxT
+#undef wxT
+#endif
+inline wxString     wxT(const char* c)          { return wxString::FromUTF8(c);             }
+inline wxString     wxT(const std::string& s)   { return wxString::FromUTF8(s.c_str());     }
+inline std::string  toStr(const wxString& s)    { return std::string( s.ToUTF8() );         }
+
 
 
 #ifdef _MSC_VER
@@ -20,7 +34,7 @@
 //        #pragma comment(lib, "wxjpegd.lib")
 
 //        #pragma comment(lib, "wxmsw31ud_adv.lib")
-//        #pragma comment(lib, "wxmsw31ud_aui.lib")
+        #pragma comment(lib, "wxmsw31ud_aui.lib")
         #pragma comment(lib, "wxmsw31ud_core.lib")
 //        #pragma comment(lib, "wxmsw31ud_gl.lib")
 //        #pragma comment(lib, "wxmsw31ud_html.lib")
@@ -41,6 +55,7 @@
 
     #else               // Release
         #pragma comment(lib, "wxbase31u.lib")
+        #pragma comment(lib, "wxmsw31u_aui.lib")
         #pragma comment(lib, "wxmsw31u_core.lib")
 
         #pragma comment(lib, "wxpng.lib")

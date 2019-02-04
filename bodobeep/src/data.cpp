@@ -17,25 +17,18 @@ namespace bodobeep
         dshfs::Filename fn(srcPath);
         fn.setFullPath( fn.getPathPart() + dstFile );
         fn.makeAbsolute();
+        fn.fullResolve();
         return fn.getFullPath();
     }
 
     //////////////////////////////////////////////////////////////////////
     //  Song loading
 
-    Song* Data::loadSong(const std::string& filename)
+    std::unique_ptr<Song> Data::loadSong(const std::string& filename)
     {
-        Song* out = nullptr;
         try
         {
             std::string path = dshfs::fs.makeAbsolute(filename);
-
-            // do we already have this song loaded?
-            {
-                auto i = songs.find(path);
-                if(i != songs.end())
-                    return i->second.get();
-            }
 
             // parse the json file
             JsonFile file;
@@ -58,14 +51,13 @@ namespace bodobeep
             // Then we can load the rest
             song->loadSecondHalf(file);
 
-            out = song.get();
-            songs[path] = std::move(song);
+            return std::move(song);
         }
         catch(std::exception& e)
         {
             throw std::runtime_error("When loading song (" + filename + "):  " + e.what());
         }
-        return out;
+        return nullptr;
     }
 
     void Song::loadFirstHalf(JsonFile& file)

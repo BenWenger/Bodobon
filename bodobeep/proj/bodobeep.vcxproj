@@ -196,14 +196,11 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">NotUsing</PrecompiledHeader>
     </ClCompile>
-    <ClCompile Include="..\src\editor.cpp">
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">NotUsing</PrecompiledHeader>
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">NotUsing</PrecompiledHeader>
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">NotUsing</PrecompiledHeader>
-    </ClCompile>
     <ClCompile Include="..\src\gui\bodobeepapp.cpp" />
     <ClCompile Include="..\src\gui\bodomainframe.cpp" />
+    <ClCompile Include="..\src\gui\songnotebook.cpp" />
+    <ClCompile Include="..\src\gui\songsheet.cpp" />
+    <ClCompile Include="..\src\gui\trackersheet.cpp" />
     <ClCompile Include="..\src\jsonfile.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">NotUsing</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">NotUsing</PrecompiledHeader>
@@ -231,9 +228,11 @@
     <ClInclude Include="..\src\audio\nes\neschannel.h" />
     <ClInclude Include="..\src\data.h" />
     <ClInclude Include="..\src\driver.h" />
-    <ClInclude Include="..\src\editor.h" />
     <ClInclude Include="..\src\gui\bodobeepapp.h" />
     <ClInclude Include="..\src\gui\bodomainframe.h" />
+    <ClInclude Include="..\src\gui\songnotebook.h" />
+    <ClInclude Include="..\src\gui\songsheet.h" />
+    <ClInclude Include="..\src\gui\trackersheet.h" />
     <ClInclude Include="..\src\json.h" />
     <ClInclude Include="..\src\jsonfile.h" />
     <ClInclude Include="..\src\tonechain.h" />

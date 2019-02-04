@@ -64,6 +64,16 @@ namespace bodobeep
         {
             theMap[time] = std::move(tone);
         }
+        
+
+        timestamp_t         getTotalLength()
+        {
+            if(theMap.empty())
+                return 0;
+            auto i = theMap.end();
+            --i;
+            return i->first + i->second.length;
+        }
 
     private:
         map_t               theMap;
