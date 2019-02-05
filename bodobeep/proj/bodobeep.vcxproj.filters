@@ -64,6 +64,9 @@
     <ClCompile Include="..\src\gui\trackersheet.cpp">
       <Filter>Source Files\gui</Filter>
     </ClCompile>
+    <ClCompile Include="..\src\gui\trackerdrawing.cpp">
+      <Filter>Source Files\gui</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\src\driver.h">
@@ -121,6 +124,9 @@
       <Filter>Source Files\gui</Filter>
     </ClInclude>
     <ClInclude Include="..\src\gui\trackersheet.h">
+      <Filter>Source Files\gui</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\gui\trackerdrawing.h">
       <Filter>Source Files\gui</Filter>
     </ClInclude>
   </ItemGroup>

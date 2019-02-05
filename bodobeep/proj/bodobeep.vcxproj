@@ -200,6 +200,7 @@
     <ClCompile Include="..\src\gui\bodomainframe.cpp" />
     <ClCompile Include="..\src\gui\songnotebook.cpp" />
     <ClCompile Include="..\src\gui\songsheet.cpp" />
+    <ClCompile Include="..\src\gui\trackerdrawing.cpp" />
     <ClCompile Include="..\src\gui\trackersheet.cpp" />
     <ClCompile Include="..\src\jsonfile.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">NotUsing</PrecompiledHeader>
@@ -232,6 +233,7 @@
     <ClInclude Include="..\src\gui\bodomainframe.h" />
     <ClInclude Include="..\src\gui\songnotebook.h" />
     <ClInclude Include="..\src\gui\songsheet.h" />
+    <ClInclude Include="..\src\gui\trackerdrawing.h" />
     <ClInclude Include="..\src\gui\trackersheet.h" />
     <ClInclude Include="..\src\json.h" />
     <ClInclude Include="..\src\jsonfile.h" />

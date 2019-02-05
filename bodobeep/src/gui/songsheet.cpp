@@ -3,6 +3,7 @@
 #include "songnotebook.h"
 #include "songsheet.h"
 #include "data.h"
+#include "trackersheet.h"
 
 namespace
 {
@@ -20,6 +21,6 @@ namespace bodobeep
     {
         parent->AddPage(this, wxT("booger"), true, NO_IMAGE);
         for(auto& i : song->channels)
-            AddPage( new wxPanel(this), wxT(i.name), false, NO_IMAGE );
+            AddPage( new TrackerSheet(this, song, &i), wxT(i.name), false, NO_IMAGE );
     }
 }

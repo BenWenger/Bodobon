@@ -22,15 +22,15 @@ namespace bodobeep
         Song*               song            = nullptr;
         Song::Channel*      channel         = nullptr;
         
-        static const int    naturalZoomX    = 8;
-        int                 zoomX           = naturalZoomX;
-        static const int    naturalZoomY    = 8;
-        int                 zoomY           = naturalZoomY;
+        double              zoomWd          = 4.0;          // number of pixels for each update column (x-axis)
+        double              zoomHt          = 12.0;         // number of pixels for each tone row (y-axis)
 
-        int                 maxYSlots       = 64;
+        int                 maxRows         = 64;           // the maximum number of tone rows
 
 
-        void                paintRect(wxDC& dc, const wxRect& rect);
+        void                paintRect(wxDC& dc, int pixelX, int pixelY, int pixelWd, int pixelHt);
+
+        void                recalcScroll();
     };
 
 }
