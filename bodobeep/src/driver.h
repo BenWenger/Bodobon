@@ -26,6 +26,11 @@ namespace bodobeep
 
         timestamp_t     getLengthOfTone(const Tone& tone, const std::string& chanName, Song* song);
 
+        PitchRange      getPitchRange(const std::string& chanName, Song* song);
+        int             getPitchPos(const Tone& tone, const std::string& chanName, Song* song);
+        void            setTonePitch(int pitchPos, Tone& tone, const std::string& chanName, Song* song);
+        /* TODO         getToneEditDetails(const std::string& chanName, Song* song);            */
+
         static void     pushChannelUserData(luawrap::Lua& lua, const std::string& chanName);
         static void     popAndSetChannelUserData(luawrap::Lua& lua, const std::string& chanName);
 
@@ -69,6 +74,10 @@ namespace bodobeep
         void                callLuaStartPlay(Song* song);
         bool                playbackUpdate();
 
+        // Other misc support garbage
+        int                 getPitchPos_FromToneData(const Tone& tone);
+        void                setTonePitch_NoLua(int pitchPos, Tone& tone);
+
         //////////////////////////////////////////
         //  Constant keys
                 // stuff in the registry
@@ -81,6 +90,19 @@ namespace bodobeep
         static const char* const        bodkey_curSong;         // current song
         static const char* const        bodkey_channels;        // channel list (user accessible)
         static const char* const        bodkey_songChanData;    // user data for each channel in a song
+
+    public:
+                // stuff provided by the Lua
+        static const std::string        luausr_driver;          // The driver details
+        static const std::string        luausr_init;
+        static const std::string        luausr_getLength;
+        static const std::string        luausr_playStartSong;
+        static const std::string        luausr_playStartTone;
+        static const std::string        luausr_playUpdateTone;
+        static const std::string        luausr_getPitchRange;
+        static const std::string        luausr_getPitchPos;
+        static const std::string        luausr_setTonePitch;
+        static const std::string        luausr_getToneEditDetails;
     };
 
 }

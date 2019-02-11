@@ -37,14 +37,55 @@ Stuff provided by the Lua:
         Called after the audio driver and everything has been set up, to let the Lua set up its own stuff
         
         
-    bodo_getLength(tone, channel, song)
+    bodo_getLength(tone, channel, song)     [optional]
         Called intermittently.  Given a tone/channel/song, should return the length of that tone in updates
         
-    bodo_startPlay(song)    [optional]
+        This function is optional if tones have a 'length' property.  If this function does not exist, the value of the
+        'length' property is used'
+        
+    bodo_playStartSong(song)    [optional]
         Called when the user is about to start audio playback.  bodo.curSong will be set to the song being played
         
-    bodo_startTone(tone, channel)
+    bodo_playStartTone(tone, channel)
         Called when a tone is to be played.
         
-    bodo_updateTone(tone, channel)
+    bodo_playUpdateTone(tone, channel)
         Called every frame after until the end of the tone
+        
+        
+    bodo_getPitchRange(channel, song)
+        Called ~once for each channel when a song is loaded.  Returns an integer (greater than zero) indicating the number
+        of "pitch rows" available in the editor.  Other return values might include "rest" or "sustain".  Example:
+        
+            bodo_getPitchRange = function(channel, song)
+                return 12*4, "rest"
+            end
+            
+    bodo_getPitchPos(tone, channel, song) [optional]
+        Called intermittently.  Given a tone/channel/song, should return which "pitch row" (zero indexed) the tone should
+            appear on.  Zero is the bottom row, with higher values being drawn higher.  May also return "rest" or "sustain" if
+            the tone should be drawn as them instead.
+            
+        This function is optional if tones have a 'pitch' property.  If this function does not exist, the value of the 'pitch'
+        property is used.
+            
+            
+    bodo_setTonePitch(pitchPos, tone, channel, song)  [optional]
+        Called intermittently.  This function is expected to modify 'tone' to apply the given pitchPos.  It should return 'tone'
+        (as a table).  The tone may be a numerical value >= 0 (indicating its pitch row), or it may be the string "rest" or
+        "sustain" if those values were explicitly allowed by bodo_getPitchRange.
+        
+        This function is optional if tones have a 'pitch' property.  If this function does not exist, the value is assigned
+        to the 'pitch' of the tone.
+        
+    bodo_getToneEditDetails(channel, song)
+        Called for each channel once a song is loaded.  Must return a table of all properties for a tone that can be edited
+        by the editor, as well as legal values for those properties.
+        
+        The key in the table is the property name, and the value is an array containing exactly 2 elements:
+            - String:  the type of the field (can be "int", "float" or "string")
+            - Table:   legal values for this field
+            
+        The legal value table must be an array with exactly 2 or 3 elements:
+        
+        TODO WORK THIS OUT

@@ -117,7 +117,7 @@ class ChannelBuilder:
             elif v < 0xD0:
                 # rest / sustain
                 L = (v & 0x0F) + curTempo
-                score.append( makeTone(-1, L, curEnv, curEnvSpeed) )
+                score.append( makeTone("rest", L, curEnv, curEnvSpeed) )
             elif v == 0xD0:
                 # Infinite loop marker -- possibly [likely] the end of the song
                 self._readPtrAndSeek(file)

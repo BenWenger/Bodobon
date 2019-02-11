@@ -25,6 +25,13 @@ namespace bodobeep
         static void pushJsonToLua(luawrap::Lua& lua, const json::value&  v);
         static void pushJsonToLua(luawrap::Lua& lua, const json::object& v);
         static void pushJsonToLua(luawrap::Lua& lua, const json::array&  v);
+
+        static json::value getJsonFromLua(luawrap::Lua& lua, int index);
+
+    private:
+        static json::value  getJsonFromLua_Value(luawrap::Lua& lua);
+        static json::object getJsonFromLua_Object(luawrap::Lua& lua);
+        static json::array  getJsonFromLua_Array(luawrap::Lua& lua);
     };
 }
 

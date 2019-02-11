@@ -15,6 +15,20 @@ namespace bodobeep
         timestamp_t         length;
         json::value         userData;
     };
+
+    struct PitchRange
+    {
+        int                 range = 1;
+        bool                hasRest = false;
+        bool                hasSustain = false;
+    };
+
+    enum PitchPos
+    {
+        Rest =      -1,
+        Sustain =   -2,
+        Unknown =   -3
+    };
 }
 
 #endif

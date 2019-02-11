@@ -79,4 +79,91 @@ namespace bodobeep
         fileType = ft;
         obj = std::move(outObj);
     }
+
+
+    /////////////////////////////////////////////////////////////////
+
+    json::value JsonFile::getJsonFromLua(luawrap::Lua& lua, int index)
+    {
+        luawrap::LuaStackSaver stk(lua);
+
+        //put the value we're interested in at the top of the stack, just for convenience
+        lua_pushvalue(lua, index);
+        return getJsonFromLua_Value(lua);
+    }
+    
+    json::value JsonFile::getJsonFromLua_Value(luawrap::Lua& lua)
+    {
+        switch(lua_type(lua, -1))
+        {
+        case LUA_TBOOLEAN:      return json::value( !!lua_toboolean(lua, -1) );
+        case LUA_TSTRING:       return json::value( lua.toString(-1, false) );
+        case LUA_TNUMBER:
+            {
+                if(lua_isinteger(lua, -1))      return json::value( static_cast<std::int64_t>( lua_tointeger(lua, -1) ) );
+                else                            return json::value( static_cast<double>( lua_tonumber(lua, -1) ) );
+            }break;
+        case LUA_TTABLE:
+            {
+                // is this an object?  or an array?  Check the first key we find to see if it's a number.
+                //    if a number, assume an array, otherwise assume an object
+                bool isArray = false;
+                lua_pushnil(lua);
+                if(lua_next(lua, -2))
+                {
+                    isArray = (lua_type(lua, -2) == LUA_TNUMBER);
+                    lua_pop(lua, 2);    // drop key and val
+                }
+
+                if(isArray)         return json::value( getJsonFromLua_Array(lua) );
+                else                return json::value( getJsonFromLua_Object(lua) );
+            }break;
+        }
+
+        return json::value();
+    }
+   
+    json::object JsonFile::getJsonFromLua_Object(luawrap::Lua& lua)
+    {
+        // To fit with JSon, we have to restrict this to string keys
+        json::object out;
+        std::string key;
+
+        lua_pushnil(lua);
+        while(lua_next(lua,-2))
+        {
+            if(lua_type(lua, -2) == LUA_TSTRING)        // is it a string?
+            {
+                key = lua.toString(-2);
+                out[key] = getJsonFromLua_Value(lua);
+            }
+            lua_pop(lua, 1);        // drop value to continue loop
+        }
+
+        return out;
+    }
+    
+    json::array JsonFile::getJsonFromLua_Array(luawrap::Lua& lua)
+    {
+        // Strictly integer keys (>= 0)
+        json::array out;
+        int key;
+
+        lua_pushnil(lua);
+        while(lua_next(lua, -2))
+        {
+            if(lua_isinteger(lua, -2))          // integer key?
+            {
+                key = static_cast<int>( lua_tointeger(lua, -2) );
+                if(key >= 0)
+                {
+                    if(key >= static_cast<int>(out.size()))     out.resize(key);
+                    out[key] = getJsonFromLua_Value(lua);
+                }
+            }
+            lua_pop(lua, 1);        // drop value to continue loop
+        }
+        
+        return out;
+    }
 }

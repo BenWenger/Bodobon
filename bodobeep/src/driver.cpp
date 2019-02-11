@@ -16,6 +16,17 @@ namespace bodobeep
     const char* const Driver::bodkey_curSong        = "curSong";
     const char* const Driver::bodkey_channels       = "channels";
     const char* const Driver::bodkey_songChanData   = "_chanData";
+    
+    const std::string Driver::luausr_driver                 = "bodo_driver";
+    const std::string Driver::luausr_init                   = "bodo_init";
+    const std::string Driver::luausr_getLength              = "bodo_getLength";
+    const std::string Driver::luausr_playStartSong          = "bodo_playStartSong";
+    const std::string Driver::luausr_playStartTone          = "bodo_playStartTone";
+    const std::string Driver::luausr_playUpdateTone         = "bodo_playUpdateTone";
+    const std::string Driver::luausr_getPitchRange          = "bodo_getPitchRange";
+    const std::string Driver::luausr_getPitchPos            = "bodo_getPitchPos";
+    const std::string Driver::luausr_setTonePitch           = "bodo_setTonePitch";
+    const std::string Driver::luausr_getToneEditDetails     = "bodo_getToneEditDetails";
 
 
     Driver::Driver(const Host* host, const std::string& fullpath)
@@ -58,14 +69,14 @@ namespace bodobeep
     {
         luawrap::LuaStackSaver stk(lua);
 
-        auto t = lua_getglobal(lua, "bodo_driver");
+        auto t = lua_getglobal(lua, Driver::luausr_driver.c_str());
         if(t == LUA_TFUNCTION)
         {
             lua.callFunction(0,1);
             t = lua_type(lua,-1);
         }
         if(t != LUA_TTABLE)
-            throw std::runtime_error("Lua error:  bodo_driver needs to be a table, or a function that returns a table.");
+            throw std::runtime_error("Lua error:  " + Driver::luausr_driver + " needs to be a table, or a function that returns a table.");
 
         // Pass that data to the AudioSystem factory to build our audio system
         audioSystem = std::move( AudioSystem::factory(lua) );
@@ -257,8 +268,26 @@ namespace bodobeep
     {
         luawrap::LuaStackSaver stk(lua);
 
-        if(lua_getglobal(lua, "bodo_getLength") != LUA_TFUNCTION)
-            throw std::runtime_error("Lua error:  'bodo_getLength' must be a global function defined in the Lua driver");
+        if(lua_getglobal(lua, Driver::luausr_getLength.c_str()) != LUA_TFUNCTION)
+        {
+            // If there isn't a function, look at the 'length' property of the tone, if it exists
+            if(tone.userData.is<json::object>())
+            {
+                auto& obj = tone.userData.get<json::object>();
+                auto i = obj.find("length");
+                if(i != obj.end())
+                {
+                    auto& len = i->second;
+                    if(len.is<std::int64_t>())
+                    {
+                        auto out = static_cast<timestamp_t>(len.get<std::int64_t>());
+                        if(out > 0)
+                            return out;
+                    }
+                }
+            }
+            throw std::runtime_error("Lua error:  '" + Driver::luausr_getLength + "' is not a global function defined in the Lua driver, and a tone is missing a valid 'length' property");
+        }
 
         pushTone(tone);         // param 1
         pushChannel(chanId);    // param 2
@@ -270,7 +299,7 @@ namespace bodobeep
         int isnum = 0;
         auto len = static_cast<timestamp_t>(lua_tointegerx(lua, -1, &isnum));
         if(!isnum || len <= 0)
-            throw std::runtime_error("Lua error:  'bodo_getLength' must return an integer greater than zero");
+            throw std::runtime_error("Lua error:  '" + Driver::luausr_getLength + "' must return an integer greater than zero");
 
         return len;
     }
@@ -278,7 +307,7 @@ namespace bodobeep
     void Driver::callLuaStartPlay(Song* song)
     {
         luawrap::LuaStackSaver stk(lua);
-        if(lua_getglobal(lua, "bodo_startPlay") == LUA_TFUNCTION) {
+        if(lua_getglobal(lua, luausr_playStartSong.c_str()) == LUA_TFUNCTION) {
             pushSong(song);         // param 1
             lua.callFunction(1,0);
         }
@@ -323,7 +352,7 @@ namespace bodobeep
                 }
 
                 // push function
-                const char* func = newtone ? "bodo_startTone" : "bodo_updateTone";
+                const char* func = newtone ? luausr_playStartTone.c_str() : luausr_playUpdateTone.c_str();
                 if(lua_getglobal(lua, func) != LUA_TFUNCTION)
                     throw std::runtime_error("Lua driver is missing required function " + std::string(func));
 
@@ -341,5 +370,141 @@ namespace bodobeep
         }
 
         return true;
+    }
+
+
+    PitchRange Driver::getPitchRange(const std::string& chanName, Song* song)
+    {
+        luawrap::LuaStackSaver stk(lua);
+
+        PitchRange out;
+
+        if(lua_getglobal(lua, luausr_getPitchRange.c_str()) != LUA_TFUNCTION)
+            throw std::runtime_error("Lua driver is missing required function " + luausr_getPitchRange);
+
+        pushChannel(chanName);      // param 1
+        pushSong(song);             // param 2
+        int resultCount = lua.callFunction(2, -1);
+
+        if(resultCount <= 0)
+            throw std::runtime_error("Lua driver error:  " + luausr_getPitchRange + " must return at least one value");
+
+        int isnum = 0;
+        out.range = static_cast<int>(lua_tointegerx(lua, -resultCount, &isnum));
+        if(!isnum)
+            throw std::runtime_error("Lua driver error:  " + luausr_getPitchRange + "'s first return value must be an integer");
+        if(out.range <= 0)
+            throw std::runtime_error("Lua driver error:  Pitch range provided by " + luausr_getPitchRange + " must be greater than zero");
+
+        // look for other things
+        for(int i = -resultCount + 1; i < 0; ++i)
+        {
+            if(lua_type(lua, i) != LUA_TSTRING)     throw std::runtime_error("Lua driver error:  " + luausr_getPitchRange + " return values after the first must be strings");
+            auto str = lua.toString(i,false);
+            if(str == "rest")           out.hasRest = true;
+            else if(str == "sustain")   out.hasSustain = true;
+        }
+
+        return out;
+    }
+
+    int Driver::getPitchPos(const Tone& tone, const std::string& chanName, Song* song)
+    {
+        luawrap::LuaStackSaver stk(lua);
+
+        if(lua_getglobal(lua, luausr_getPitchPos.c_str()) != LUA_TFUNCTION)
+            return getPitchPos_FromToneData(tone);
+
+        pushTone(tone);
+        pushChannel(chanName);
+        pushSong(song);
+        lua.callFunction(3, 1);
+
+        int out = PitchPos::Unknown;
+
+        switch(lua_type(lua, -1))
+        {
+        case LUA_TNUMBER:
+            {
+                int isnum = 0;
+                out = static_cast<int>( lua_tointegerx(lua, -1, &isnum) );
+                if(out < 0 || !isnum)
+                    out = PitchPos::Unknown;
+            }break;
+        case LUA_TSTRING:
+            {
+                auto str = lua.toString(-1, false);
+                if(str == "rest")           out = PitchPos::Rest;
+                else if(str == "sustain")   out = PitchPos::Sustain;
+                else                        out = PitchPos::Unknown;
+            }break;
+        default:
+            throw std::runtime_error("Lua driver error:  " + luausr_getPitchPos + " returned an invalid type");
+        }
+
+        return out;
+    }
+    
+    int Driver::getPitchPos_FromToneData(const Tone& tone)
+    {
+        if(!tone.userData.is<json::object>())
+            throw std::runtime_error(luausr_getPitchPos + " is missing from driver Lua, and pitch cannot be determined from the tone data because it's not an object");
+
+        auto& obj = tone.userData.get<json::object>();
+        auto i = obj.find("pitch");
+        if(i == obj.end())
+            throw std::runtime_error(luausr_getPitchPos + " is missing from driver Lua, and the tone data lacks a 'pitch' property");
+
+        int out = PitchPos::Unknown;
+        auto& v = i->second;
+        if(v.is<std::int64_t>())
+        {
+            out = static_cast<int>( v.get<std::int64_t>() );
+            if(out < 0)     out = PitchPos::Unknown;
+        }
+        else if(v.is<std::string>())
+        {
+            auto& str = v.get<std::string>();
+            if(str == "rest")           out = PitchPos::Rest;
+            else if(str == "sustain")   out = PitchPos::Sustain;
+        }
+
+        return out;
+    }
+
+    void Driver::setTonePitch(int pitchPos, Tone& tone, const std::string& chanName, Song* song)
+    {
+        if(pitchPos == PitchPos::Unknown)       // shouldn't happen, but if it does, it should be a NOP
+            return;
+
+        luawrap::LuaStackSaver stk(lua);
+
+        if(lua_getglobal(lua, luausr_setTonePitch.c_str()) != LUA_TFUNCTION)
+        {
+            setTonePitch_NoLua(pitchPos, tone);
+            return;
+        }
+        
+        if(pitchPos == PitchPos::Rest)          lua_pushliteral(lua, "rest");
+        else if(pitchPos == PitchPos::Sustain)  lua_pushliteral(lua, "sustain");
+        else                                    lua_pushinteger(lua, static_cast<lua_Integer>(pitchPos));
+
+        JsonFile::pushJsonToLua(lua, tone.userData);
+        pushChannel(chanName);
+        pushSong(song);
+        lua.callFunction(4, 1);
+        tone.userData = JsonFile::getJsonFromLua(lua, -1);
+    }
+
+    void Driver::setTonePitch_NoLua(int pitchPos, Tone& tone)
+    {
+        if(!tone.userData.is<json::object>())
+            throw std::runtime_error(luausr_setTonePitch + " is missing from driver Lua, and pitch cannot be determined from the tone data because it's not an object");
+        
+        auto& obj = tone.userData.get<json::object>();
+        
+        if(pitchPos >= 0)                       obj["pitch"] = json::value( static_cast<std::int64_t>(pitchPos) );
+        else if(pitchPos == PitchPos::Rest)     obj["pitch"] = json::value("rest");
+        else if(pitchPos == PitchPos::Sustain)  obj["pitch"] = json::value("sustain");
     }
 }

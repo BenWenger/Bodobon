@@ -76,7 +76,7 @@ namespace bodobeep
             {
                 foundSystem = true;
                 bool sysName = false;
-                if(lua_type(lua, -1) != LUA_TTABLE)     throw std::runtime_error("Lua error:  bodo_driver's \"system\" value must be a table");
+                if(lua_type(lua, -1) != LUA_TTABLE)     throw std::runtime_error("Lua error:  " + Driver::luausr_driver + "'s \"system\" value must be a table");
                 for(int i = 0; i < 1000; ++i)       // 1000 is arbitrary -- this probably could be a while loop.
                 {
                     auto t = lua_geti(lua, -1, i);
@@ -85,7 +85,7 @@ namespace bodobeep
                         if(i == 0)      continue;
                         else            break;
                     }
-                    if(t != LUA_TSTRING)                throw std::runtime_error("Lua error:  bodo_driver's \"system\" table must have string values");
+                    if(t != LUA_TSTRING)                throw std::runtime_error("Lua error:  " + Driver::luausr_driver + "'s \"system\" table must have string values");
                     if(sysName)             out.systemExtra.push_back( lua.toString(-1,false) );
                     else                    out.systemName = lua.toString(-1,false);
                     sysName = true;
@@ -95,7 +95,7 @@ namespace bodobeep
             else if(key == "channels")
             {
                 foundChannels = true;
-                if(lua_type(lua, -1) != LUA_TTABLE)     throw std::runtime_error("Lua error:  bodo_driver's \"channels\" value must be a table");
+                if(lua_type(lua, -1) != LUA_TTABLE)     throw std::runtime_error("Lua error:  " + Driver::luausr_driver + "'s \"channels\" value must be a table");
                 for(int i = 0; i < 1000; ++i)       // 1000 is arbitrary -- this probably could be a while loop.
                 {
                     auto t = lua_geti(lua, -1, i);
@@ -104,7 +104,7 @@ namespace bodobeep
                         if(i == 0)      continue;
                         else            break;
                     }
-                    if(t != LUA_TSTRING)                throw std::runtime_error("Lua error:  bodo_driver's \"channels\" table must have string values");
+                    if(t != LUA_TSTRING)                throw std::runtime_error("Lua error:  " + Driver::luausr_driver + "'s \"channels\" table must have string values");
                     out.channels.push_back( lua.toString(-1,false) );
                     lua_pop(lua, 1);
                 }
@@ -112,8 +112,8 @@ namespace bodobeep
             lua_pop(lua, 1);        // drop the value for next loop
         }
         
-        if(!foundSystem)        throw std::runtime_error("Lua error:  bodo_driver is missing \"system\" entry");
-        if(!foundChannels)      throw std::runtime_error("Lua error:  bodo_driver is missing \"channels\" entry");
+        if(!foundSystem)        throw std::runtime_error("Lua error:  " + Driver::luausr_driver + " is missing \"system\" entry");
+        if(!foundChannels)      throw std::runtime_error("Lua error:  " + Driver::luausr_driver + " is missing \"channels\" entry");
 
         return out;
     }

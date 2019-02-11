@@ -2,6 +2,7 @@
 #include "nes.h"
 #include "nativepulse.h"
 #include "nativetriangle.h"
+#include "driver.h"
 #include <algorithm>
 
 namespace bodobeep
@@ -23,7 +24,7 @@ namespace bodobeep
         for(auto& i : spec.channels)
         {
             if(std::find(out.begin(), out.end(), i) != out.end())
-                throw std::runtime_error("Lua error:  bodo_driver has multiple channels named \"" + i + "\"");
+                throw std::runtime_error("Lua error:  " + Driver::luausr_driver + " has multiple channels named \"" + i + "\"");
             out.push_back(i);
 
             if(i == "pulse1" || i == "pulse2")
@@ -40,7 +41,7 @@ namespace bodobeep
             }
             // TODO noise / dmc / expansions
             else
-                throw std::runtime_error("Lua error:  bodo_driver channel name \"" + i + "\" is unrecognized");
+                throw std::runtime_error("Lua error:  " + Driver::luausr_driver + " channel name \"" + i + "\" is unrecognized");
         }
 
         return out;
