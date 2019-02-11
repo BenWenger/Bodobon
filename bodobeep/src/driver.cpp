@@ -284,6 +284,12 @@ namespace bodobeep
                         if(out > 0)
                             return out;
                     }
+                    else if(len.is<double>())
+                    {
+                        auto out = static_cast<timestamp_t>(len.get<double>());
+                        if(out > 0)
+                            return out;
+                    }
                 }
             }
             throw std::runtime_error("Lua error:  '" + Driver::luausr_getLength + "' is not a global function defined in the Lua driver, and a tone is missing a valid 'length' property");
@@ -462,6 +468,11 @@ namespace bodobeep
             out = static_cast<int>( v.get<std::int64_t>() );
             if(out < 0)     out = PitchPos::Unknown;
         }
+        else if(v.is<double>())
+        {
+            out = static_cast<int>( v.get<double>() );
+            if(out < 0)     out = PitchPos::Unknown;
+        }
         else if(v.is<std::string>())
         {
             auto& str = v.get<std::string>();
@@ -506,5 +517,79 @@ namespace bodobeep
         if(pitchPos >= 0)                       obj["pitch"] = json::value( static_cast<std::int64_t>(pitchPos) );
         else if(pitchPos == PitchPos::Rest)     obj["pitch"] = json::value("rest");
         else if(pitchPos == PitchPos::Sustain)  obj["pitch"] = json::value("sustain");
+    }
+
+    
+    ToneFieldDetails Driver::getToneEditDetails(const std::string& chanName, Song* song)
+    {
+        luawrap::LuaStackSaver stk(lua);
+
+        auto t = lua_getglobal(lua, luausr_getToneEditDetails.c_str());
+        if(t == LUA_TFUNCTION)
+        {
+            pushChannel(chanName);
+            pushSong(song);
+            lua.callFunction(2, 1);
+            t = lua_type(lua, -1);
+            if(t != LUA_TTABLE)
+                throw std::runtime_error("Lua driver error:  " + luausr_getToneEditDetails + " must return a table");
+        }
+        else if(t != LUA_TTABLE)
+            throw std::runtime_error("Lua driver error:  " + luausr_getToneEditDetails + " must be a table, or a function which returns a table");
+
+        /// parse the table here and fill a ToneFieldDetails object, and return it!
+        ToneFieldDetails out;
+        std::string key;
+
+        lua_pushnil(lua);
+        while(lua_next(lua, -2))
+        {
+            // To be valid, key has to be a string, value has to be a table
+            if((lua_type(lua, -2) == LUA_TSTRING) && (lua_type(lua, -1) == LUA_TTABLE))
+            {
+                key = lua.toString(-2);
+                out[key] = getToneFieldArray();
+            }
+            lua_pop(lua, 1);
+        }
+
+        return out;
+    }
+
+    std::vector<ToneField> Driver::getToneFieldArray()
+    {
+        std::vector<ToneField> out;
+
+        int i = 1;
+        bool looping = true;
+        while(looping)
+        {
+            luawrap::LuaStackSaver stk(lua);
+
+            auto t = lua_geti(lua, -1, static_cast<lua_Integer>(i++));
+            switch(t)
+            {
+            case LUA_TNONE: case LUA_TNIL:
+                looping = false;
+                break;
+
+            case LUA_TNUMBER:
+                out.push_back( static_cast<int>(lua_tointeger(lua,-1)) );
+                break;
+
+            case LUA_TSTRING:
+                out.push_back( lua.toString(-1,false) );
+                break;
+
+            case LUA_TTABLE:
+                if(lua_geti(lua, -1, 1) != LUA_TNUMBER)     break;
+                if(lua_geti(lua, -2, 2) != LUA_TNUMBER)     break;
+                
+                out.push_back( ToneField( static_cast<int>(lua_tointeger(lua,-2)), static_cast<int>(lua_tointeger(lua,-1)) ) );
+                break;
+            }
+        }
+
+        return out;
     }
 }

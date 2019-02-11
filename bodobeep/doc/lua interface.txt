@@ -79,6 +79,7 @@ Stuff provided by the Lua:
         to the 'pitch' of the tone.
         
     bodo_getToneEditDetails(channel, song)
+        (can also be a table, rather than a function)
         Called for each channel once a song is loaded.  Must return a table of all properties for a tone that can be edited
         by the editor, as well as legal values for those properties.
         
@@ -88,4 +89,24 @@ Stuff provided by the Lua:
             
         The legal value table must be an array with exactly 2 or 3 elements:
         
-        TODO WORK THIS OUT
+        TODO WORK THIS OUT  
+        
+        working example:
+        
+            bodo_getToneEditDetails = function(chan, song)
+                return {
+                    ["env"] = {     <-  name of field
+                        {0,16}      <-  legal range of integers
+                    },
+                    ["envSpeed"] = {
+                        {0,16}
+                    },
+                    ["pitch"] = {
+                        "rest",     <-  legal string literal
+                        {0,12 * 4}  <-  and also a range of integers
+                    },
+                    ["length"] = {
+                        {0,16 * 6}
+                    }
+                }
+            end

@@ -2,6 +2,8 @@
 #define BODOBEEP_TYPES_H_INCLUDED
 
 #include <cstdint>
+#include <map>
+#include <vector>
 #include "json.h"
 
 namespace bodobeep
@@ -29,6 +31,31 @@ namespace bodobeep
         Sustain =   -2,
         Unknown =   -3
     };
+
+    struct ToneField
+    {
+        enum class Type
+        {
+            Integer,
+            String,
+            IntRange
+        };
+        Type            type = Type::Integer;
+
+        int             loInt = 0;
+        int             hiInt = 0;
+        std::string     strVal;
+
+        ToneField() = default;
+        ToneField(int v)                : type(Type::Integer),  loInt(v) {}
+        ToneField(const std::string& s) : type(Type::String),   strVal(s) {}
+        ToneField(int a, int b)         : type(Type::IntRange), loInt(a), hiInt(b)
+        {
+            if(b <= a)      type = Type::Integer;
+        }
+    };
+
+    typedef std::map<std::string, std::vector<ToneField>>     ToneFieldDetails;
 }
 
 #endif

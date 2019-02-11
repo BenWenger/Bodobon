@@ -26,10 +26,10 @@ namespace bodobeep
 
         timestamp_t     getLengthOfTone(const Tone& tone, const std::string& chanName, Song* song);
 
-        PitchRange      getPitchRange(const std::string& chanName, Song* song);
-        int             getPitchPos(const Tone& tone, const std::string& chanName, Song* song);
-        void            setTonePitch(int pitchPos, Tone& tone, const std::string& chanName, Song* song);
-        /* TODO         getToneEditDetails(const std::string& chanName, Song* song);            */
+        PitchRange          getPitchRange(const std::string& chanName, Song* song);
+        int                 getPitchPos(const Tone& tone, const std::string& chanName, Song* song);
+        void                setTonePitch(int pitchPos, Tone& tone, const std::string& chanName, Song* song);
+        ToneFieldDetails    getToneEditDetails(const std::string& chanName, Song* song);
 
         static void     pushChannelUserData(luawrap::Lua& lua, const std::string& chanName);
         static void     popAndSetChannelUserData(luawrap::Lua& lua, const std::string& chanName);
@@ -75,8 +75,9 @@ namespace bodobeep
         bool                playbackUpdate();
 
         // Other misc support garbage
-        int                 getPitchPos_FromToneData(const Tone& tone);
-        void                setTonePitch_NoLua(int pitchPos, Tone& tone);
+        int                     getPitchPos_FromToneData(const Tone& tone);
+        void                    setTonePitch_NoLua(int pitchPos, Tone& tone);
+        std::vector<ToneField>  getToneFieldArray();
 
         //////////////////////////////////////////
         //  Constant keys

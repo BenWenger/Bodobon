@@ -2,6 +2,7 @@
 #ifndef BODOBEEP_GUI_TRACKERSHEET_H_INCLUDED
 #define BODOBEEP_GUI_TRACKERSHEET_H_INCLUDED
 
+#include "types.h"
 #include "data.h"
 
 namespace bodobeep
@@ -25,7 +26,8 @@ namespace bodobeep
         double              zoomWd          = 4.0;          // number of pixels for each update column (x-axis)
         double              zoomHt          = 12.0;         // number of pixels for each tone row (y-axis)
 
-        int                 maxRows         = 64;           // the maximum number of tone rows
+        PitchRange          pitchRange;
+        ToneFieldDetails    toneFieldDetails;
 
 
         void                paintRect(wxDC& dc, int pixelX, int pixelY, int pixelWd, int pixelHt);
